@@ -65,6 +65,7 @@ require('lsp-progress').setup({
     spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" }, -- animation string array
     update_time = 125, -- interval update time in milliseconds
     sign = " [LSP]", -- icon: nf-fa-gear \uf013
+	seperator = " ┆ ", -- seperator when multiple lsp messages
     decay = 1000, -- decay time after message gone in milliseconds
     event = "LspProgressStatusUpdate", -- default user event name
 })
