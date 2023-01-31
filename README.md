@@ -46,6 +46,7 @@ require("lualine").setup({
 		lualine_c = {
             require("lsp-progress").progress, -- lualine will invoke this function to get lsp progress message.
         },
+        ...
     }
 })
 
