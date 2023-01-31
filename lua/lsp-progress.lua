@@ -4,7 +4,7 @@
 
 local global_config = {
     spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" },
-    update_time = 125,
+    update_time = 200,
     sign = " LSP", -- nf-fa-gear \uf013
     seperator = " ┆ ",
     decay = 1000,
@@ -80,8 +80,8 @@ local function progress_handler(err, msg, ctx)
                 vim.cmd("echohl WarningMsg")
                 vim.cmd(
                     "[lsp-progress.nvim] Received `end` message with no corressponding `begin` from client_id:"
-                    .. client_id
-                    .. "!"
+                        .. client_id
+                        .. "!"
                 )
                 vim.cmd("echohl None")
             else

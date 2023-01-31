@@ -64,7 +64,7 @@ augroup END
 ```lua
 require('lsp-progress').setup({
     spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" }, -- animation string array
-    update_time = 125, -- interval update time in milliseconds
+    update_time = 200, -- interval update time in milliseconds
     sign = " LSP", -- icon: nf-fa-gear \uf013
     seperator = " ┆ ", -- seperator when multiple lsp messages
     decay = 1000, -- last progress message is cached in decay time in milliseconds,
