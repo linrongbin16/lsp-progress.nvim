@@ -60,9 +60,9 @@ local function log_log(level, msg)
         return
     end
     local content = string.format("[lsp-progress.nvim] %s %s: %s", level, os.date("%Y-%m-%d %H:%M:%S"), msg)
+    local split_content = vim.split(content, "\n")
     if config.console_log then
         vim.cmd("echohl " .. log_level[level].echohl)
-        local split_content = vim.split(content, "\n")
         for _, c in ipairs(split_content) do
             local tmp = string.format([[echom "%s"]], vim.fn.escape(c, '"'))
             print(tmp)
@@ -72,7 +72,9 @@ local function log_log(level, msg)
     end
     if config.file_log then
         local fp = io.open(state.log_file, "a")
-        fp:write(content)
+        for _, c in ipairs(split_content) do
+            fp:write(c .. "\n")
+        end
         fp:close()
     end
 end
