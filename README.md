@@ -1,6 +1,6 @@
 # lsp-progress.nvim
 
-Another simple lsp progress status for neovim.
+Another simple lsp progress status for Neovim.
 
 ![demo](https://user-images.githubusercontent.com/6496887/215637132-65e27eac-df71-4d17-9365-b516d6536ece.jpg)
 
