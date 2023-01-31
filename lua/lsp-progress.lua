@@ -136,15 +136,15 @@ end
 
 local function task_tostring(task)
     return "title:"
-        .. task.title
+        .. tostring(task.title)
         .. ", message:"
-        .. task.message
+        .. tostring(task.message)
         .. ", percentage:"
-        .. task.percentage
+        .. tostring(task.percentage)
         .. ", index:"
-        .. task.index
+        .. tostring(task.index)
         .. ", done:"
-        .. task.done
+        .. tostring(task.done)
 end
 
 -- }
