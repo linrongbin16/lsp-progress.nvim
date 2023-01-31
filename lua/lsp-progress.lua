@@ -80,8 +80,8 @@ local function progress_handler(err, msg, ctx)
                 vim.cmd("echohl WarningMsg")
                 vim.cmd(
                     "[lsp-progress.nvim] Received `end` message with no corressponding `begin` from client_id:"
-                        .. client_id
-                        .. "!"
+                    .. client_id
+                    .. "!"
                 )
                 vim.cmd("echohl None")
             else
@@ -196,30 +196,9 @@ local function progress()
     end
 end
 
-local function override_config(config)
-    if config["spinner"] then
-        global_config.spinner = config["spinner"]
-    end
-    if config["update_time"] then
-        global_config.update_time = config["update_time"]
-    end
-    if config["sign"] then
-        global_config.sign = config["sign"]
-    end
-    if config["seperator"] then
-        global_config.seperator = config["seperator"]
-    end
-    if config["decay"] then
-        global_config.decay = config["decay"]
-    end
-    if config["event"] then
-        global_config.event = config["event"]
-    end
-end
-
 local function setup(config)
     -- override default config
-    override_config(config)
+    global_config = vim.tbl_deep_extend("force", global_config, config or {})
 
     if not global_state.registered then
         if vim.lsp.handlers["$/progress"] then
