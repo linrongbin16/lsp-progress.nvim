@@ -7,7 +7,7 @@ local global_config = {
     update_time = 125,
     sign = " LSP", -- nf-fa-gear \uf013
     seperator = " ┆ ",
-    decay = 500,
+    decay = 1000,
     event = "LspProgressStatusUpdate",
 }
 local global_state = {
