@@ -3,8 +3,7 @@
 Another simple lsp progress status for Neovim.
 
 ![demo](https://user-images.githubusercontent.com/6496887/215637132-65e27eac-df71-4d17-9365-b516d6536ece.jpg)
-
-https://user-images.githubusercontent.com/6496887/215699738-ae724dd6-bb44-46cd-8a2d-9ef39ff5aa4f.mp4
+![demo-format](https://user-images.githubusercontent.com/6496887/215700315-9d205333-b0e8-4630-9afd-67e2a1c6e3ae.jpg)
 
 **Thanks to [lsp-status.nvim](https://github.com/nvim-lua/lsp-status.nvim) and [fidget.nvim](https://github.com/j-hui/fidget.nvim), everything about lsp progress I learned and copied source code is from them.**
 
