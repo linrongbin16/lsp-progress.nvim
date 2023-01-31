@@ -7,17 +7,22 @@ local global_config = {
     update_time = 125,
     sign = " [LSP]", -- nf-fa-gear \uf013
     seperator = " ┆ ",
-    decay = 1000,
+    decay = 500,
     event = "LspProgressStatusUpdate",
 }
 local global_state = {
     registered = false,
     redrawed = false,
     data = {},
+    cache = nil,
 }
 
 local function reset_last_redraw()
     global_state.redrawed = false
+end
+
+local function reset_cache()
+    global_state.cache = nil
 end
 
 local function register_client(id, name)
@@ -69,8 +74,8 @@ local function progress_handler(err, msg, ctx)
                 vim.cmd("echohl WarningMsg")
                 vim.cmd(
                     "[lsp-progress.nvim] Received `end` message with no corressponding `begin` from client_id:"
-                    .. client_id
-                    .. "!"
+                        .. client_id
+                        .. "!"
                 )
                 vim.cmd("echohl None")
             else
@@ -139,33 +144,50 @@ local function progress()
         global_state.data[item.client_id].progress_messages[item.token] = nil
     end
 
-    if #new_messages <= 0 then
-        return global_config.sign
-    end
-    local buffer = {}
-    for i, msg in ipairs(new_messages) do
-        local builder = { "[" .. msg.name .. "]" }
-        if msg.progress_message then
-            if msg.spinner_index then
-                table.insert(builder, global_config.spinner[msg.spinner_index])
+    local current = ""
+    if #new_messages > 0 then
+        local buffer = {}
+        for i, msg in ipairs(new_messages) do
+            local builder = { "[" .. msg.name .. "]" }
+            if msg.progress_message then
+                if msg.spinner_index then
+                    table.insert(builder, global_config.spinner[msg.spinner_index])
+                end
+                if msg.title and msg.title ~= "" then
+                    table.insert(builder, msg.title)
+                end
+                if msg.message and msg.message ~= "" then
+                    table.insert(builder, msg.message)
+                end
+                if msg.percentage then
+                    table.insert(builder, string.format("(%.0f%%%%)", msg.percentage))
+                end
+            elseif msg.once_message then
+                if msg.content and msg.content ~= "" then
+                    table.insert(builder, msg.content)
+                end
             end
-            if msg.title and msg.title ~= "" then
-                table.insert(builder, msg.title)
-            end
-            if msg.message and msg.message ~= "" then
-                table.insert(builder, msg.message)
-            end
-            if msg.percentage then
-                table.insert(builder, string.format("(%.0f%%%%)", msg.percentage))
-            end
-        elseif msg.once_message then
-            if msg.content and msg.content ~= "" then
-                table.insert(builder, msg.content)
-            end
+            table.insert(buffer, table.concat(builder, " "))
         end
-        table.insert(buffer, table.concat(builder, " "))
+        current = " " .. table.concat(buffer, global_config.seperator)
     end
-    return global_config.sign .. " " .. table.concat(buffer, global_config.seperator)
+
+    if current ~= nil and current ~= "" then
+        -- if has valid current message, cache it and return
+        global_state.cache = current
+        return global_config.sign .. current
+    else
+        -- if current message gone, but cache is still there
+        if global_state.cache ~= nil and global_state.cache ~= "" then
+            -- reset cache in decay
+            vim.defer_fn(reset_cache, global_config.decay)
+            -- return cache message
+            return global_config.sign .. global_state.cache
+        else
+            -- if current message is gone, and cache is gone, return ''
+            return global_config.sign .. ""
+        end
+    end
 end
 
 local function override_config(config)
