@@ -313,8 +313,11 @@ local function progress()
         end
     end
     if #messages > 0 then
-        return config.sign .. " " .. table.concat(messages, config.seperator)
+        local tmp = table.concat(messages, config.seperator)
+        log_debug("progress messages(" .. #messages .. "):" .. tmp)
+        return config.sign .. " " .. tmp
     else
+        log_debug("progress messages(" .. #messages .. "): no message")
         return config.sign
     end
 end
