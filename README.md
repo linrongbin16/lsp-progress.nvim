@@ -1,10 +1,10 @@
 # lsp-progress.nvim
 
-Simple LSP progress status plugin for neovim.
+Simple lsp progress status plugin for neovim.
 
 ![demo](https://user-images.githubusercontent.com/6496887/215637132-65e27eac-df71-4d17-9365-b516d6536ece.jpg)
 
-**Thanks to [lsp-status.nvim](https://github.com/nvim-lua/lsp-status.nvim) and [fidget.nvim](https://github.com/j-hui/fidget.nvim), everything about LSP progress I learned and copied source code is from them.**
+**Thanks to [lsp-status.nvim](https://github.com/nvim-lua/lsp-status.nvim) and [fidget.nvim](https://github.com/j-hui/fidget.nvim), everything about lsp progress I learned and copied source code is from them.**
 
 # Install
 
@@ -64,7 +64,7 @@ augroup END
 require('lsp-progress').setup({
     spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" }, -- animation string array
     update_time = 125, -- interval update time in milliseconds
-    sign = " [LSP]", -- icon: nf-fa-gear \uf013
+    sign = " LSP", -- icon: nf-fa-gear \uf013
     seperator = " ┆ ", -- seperator when multiple lsp messages
     decay = 500, -- last progress message is cached in decay time in milliseconds,
                  -- since progress message could appear and disappear in an instant

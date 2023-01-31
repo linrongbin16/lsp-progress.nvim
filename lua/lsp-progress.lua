@@ -5,7 +5,7 @@
 local global_config = {
     spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" },
     update_time = 125,
-    sign = " [LSP]", -- nf-fa-gear \uf013
+    sign = " LSP", -- nf-fa-gear \uf013
     seperator = " ┆ ",
     decay = 500,
     event = "LspProgressStatusUpdate",
@@ -17,12 +17,18 @@ local global_state = {
     cache = nil,
 }
 
-local function reset_last_redraw()
+local function emit_event()
+    vim.cmd("doautocmd User " .. global_config.event)
+end
+
+local function reset_redraw()
     global_state.redrawed = false
 end
 
 local function reset_cache()
     global_state.cache = nil
+    -- emit an event to user immediately after clean cache
+    emit_event()
 end
 
 local function register_client(id, name)
@@ -98,9 +104,9 @@ local function progress_handler(err, msg, ctx)
     end
 
     -- if redraw timeout, trigger lualine redraw, and defer until next time
-    vim.cmd("doautocmd User " .. global_config.event)
+    emit_event()
     global_state.redrawed = true
-    vim.defer_fn(reset_last_redraw, global_config.update_time)
+    vim.defer_fn(reset_redraw, global_config.update_time)
 end
 
 local function progress()
