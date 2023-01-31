@@ -71,5 +71,9 @@ require('lsp-progress').setup({
     decay = 1000, -- last progress message is cached in decay time in milliseconds,
                   -- since progress message could appear and disappear in an instant
     event = "LspProgressStatusUpdate", -- user event name
+    debug = false, -- set true to enable logging file
+    console_log = true, -- write log to vim console
+    file_log = false, -- write log to file
+    file_name = "lsp-progress.log", -- log file name, only if file_log=true.
 })
 ```

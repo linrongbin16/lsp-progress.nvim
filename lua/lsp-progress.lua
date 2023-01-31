@@ -9,31 +9,80 @@ local defaults = {
     seperator = " ",
     decay = 1000,
     event = "LspProgressStatusUpdate",
+    debug = false,
+    console_log = true,
+    file_log = false,
+    file_name = "lsp-progress.log",
 }
 local config = {}
 local state = {
     registered = false,
     datamap = {}, -- client_id => data { name, tasks }
-    cache = nil,
+    log_level = nil,
+    log_file = nil,
 }
 
 -- {
 -- util
 
+local log_level = {
+    err = {
+        value = 100,
+        echohl = "ErrorMsg",
+    },
+    warn = {
+        value = 90,
+        echohl = "WarningMsg",
+    },
+    info = {
+        value = 70,
+        echohl = "None",
+    },
+    debug = {
+        value = 50,
+        echohl = "Comment",
+    },
+}
+
+local function log_init()
+    if config.debug then
+        state.log_level = log_level.debug.value
+    else
+        state.log_level = log_level.warn.value
+    end
+    if config.file_log then
+        state.log_file = string.format("%s/%s", vim.fn.stdpath("data"), config.file_name)
+    end
+end
+
+local function log_log(level, msg)
+    if log_level[level].value < state.log_level then
+        return
+    end
+    local content = string.format("[lsp-progress.nvim] %s %s: %s", level, os.date("%Y-%m-%d %H:%M:%S"), msg)
+    if config.console_log then
+        vim.cmd("echohl " .. log_level[level].echohl)
+        vim.cmd(content)
+        vim.cmd("echohl " .. log_level.info.echohl)
+    end
+    if config.file_log then
+        local fp = io.open(state.log_file, "a")
+        fp:write(content)
+        fp:close()
+    end
+end
+
 local function log_warn(msg)
-    vim.cmd("echohl WarningMsg")
-    vim.cmd(string.format("[lsp-progress.nvim] %s", msg))
-    vim.cmd("echohl None")
+    log_log("warn", msg)
+end
+
+local function log_debug(msg)
+    log_log("debug", msg)
 end
 
 local function emit_event()
     vim.cmd("doautocmd User " .. config.event)
-end
-
-local function reset_cache()
-    state.cache = nil
-    -- emit an event to user immediately after clean cache
-    emit_event()
+    log_debug("Emit user event:" .. config.event)
 end
 
 -- }
@@ -45,20 +94,21 @@ local function task_new(title, message, percentage)
     return { title = title, message = message, percentage = percentage, index = 1, done = false }
 end
 
+local function task_spin(task)
+    local old = task.index
+    task.index = (task.index + 1) % #config.spinner + 1
+    log_debug("task spin:" .. old .. " => " .. task.index)
+end
+
 local function task_update(task, message, percentage)
     task.message = message
     task.percentage = percentage
-    task.index = (task.index + 1) % #config.spinner + 1
 end
 
 local function task_done(task, message)
     task.message = message
     task.index = nil
     task.done = true
-end
-
-local function task_spin(task)
-    task.index = task.index + 1
 end
 
 local function task_format(task, name)
@@ -80,6 +130,19 @@ local function task_format(task, name)
     end
 end
 
+local function task_tostring(task)
+    return "title:"
+        .. task.title
+        .. ", message:"
+        .. task.message
+        .. ", percentage:"
+        .. task.percentage
+        .. ", index:"
+        .. task.index
+        .. ", done:"
+        .. task.done
+end
+
 -- }
 
 -- {
@@ -98,10 +161,24 @@ local function spin(client_id, token)
     end
 
     if not state.datamap[client_id] then
+        log_debug(
+            "task not found (client_id:"
+                .. client_id
+                .. " not exist in state.datamap, token:"
+                .. token
+                .. "), stop spin"
+        )
         return
     end
     local data = state.datamap[client_id]
     if not data.tasks[token] then
+        log_debug(
+            "task not found (token:"
+                .. token
+                .. " not exist in state.datamap[client_id:"
+                .. client_id
+                .. "].tasks), stop spin"
+        )
         return
     end
     local task = data.tasks[token]
@@ -112,19 +189,37 @@ local function spin(client_id, token)
     if not task.done then
         -- task not done, continue next spin
         vim.defer_fn(again, config.update_time)
+        log_debug("task not done yet (client_id:" .. client_id .. ",token:" .. token .. "), defer next spin...")
     else
         local function remove_task_defer()
             if not state.datamap[client_id] then
+                log_debug(
+                    "task not found (client_id:"
+                        .. client_id
+                        .. " not exist in state.datamap, token:"
+                        .. token
+                        .. "), stop remove task"
+                )
                 return
             end
             if not state.datamap[client_id].tasks[token] then
-                state.datamap[client_id].tasks[token] = nil
-                emit_event() -- notify user
+                log_debug(
+                    "task not found (token:"
+                        .. token
+                        .. " not exist in state.datamap[client_id:"
+                        .. client_id
+                        .. "].tasks), stop remove task"
+                )
+                return
             end
+            state.datamap[client_id].tasks[token] = nil
+            log_debug("task removed (client_id:" .. client_id .. ",token:" .. token .. ")")
+            emit_event() -- notify user
         end
 
         -- task done, remove this task from data in decay time
         vim.defer_fn(remove_task_defer, config.decay)
+        log_debug("task done (client_id:" .. client_id .. ",token:" .. token .. "), defer remove task...")
     end
 end
 
@@ -139,6 +234,7 @@ local function progress_handler(err, msg, ctx)
     -- register client id if not exist
     if not state.datamap[client_id] then
         state.datamap[client_id] = data_new(client_name)
+        log_debug("register client_id:" .. client_id .. ", client_name:" .. client_name .. " in state.datamap")
     end
 
     local value = msg.value
@@ -152,10 +248,26 @@ local function progress_handler(err, msg, ctx)
     if value.kind == "begin" then
         -- add task
         tasks[token] = task_new(value.title, value.message, value.percentage)
+        log_debug(
+            "add task in state.datamap[client_id:"
+                .. client_id
+                .. "].tasks[token:"
+                .. token
+                .. "]: "
+                .. task_tostring(tasks[token])
+        )
         -- start spin
         spin(client_id, token)
     elseif value.kind == "report" then
         task_update(tasks[token], value.message, value.percentage)
+        log_debug(
+            "update task in state.datamap[client_id:"
+                .. client_id
+                .. "].tasks[token:"
+                .. token
+                .. "]: "
+                .. task_tostring(tasks[token])
+        )
     else
         local function from_client_msg()
             return "from client:[" .. client_id .. "-" .. client_name .. "]!"
@@ -168,6 +280,14 @@ local function progress_handler(err, msg, ctx)
             log_warn("Received `end` message with no corressponding `begin` " .. from_client_msg())
         else
             task_done(tasks[token], value.message)
+            log_debug(
+                "done task in state.datamap[client_id:"
+                    .. client_id
+                    .. "].tasks[token:"
+                    .. token
+                    .. "]: "
+                    .. task_tostring(tasks[token])
+            )
         end
     end
 end
@@ -196,6 +316,7 @@ end
 local function setup(option)
     -- override default config
     config = vim.tbl_deep_extend("force", defaults, option or {})
+    log_init()
 
     if not state.registered then
         if vim.lsp.handlers["$/progress"] then
