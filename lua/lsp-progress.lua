@@ -306,14 +306,15 @@ local function progress()
 
     local messages = {}
     for client_id, data in pairs(state.datamap) do
-        log_debug("progress format message on client_id:" .. client_id)
-        if not vim.lsp.client_is_stopped(client_id) then
-            for token, task in pairs(data.tasks) do
-                local tmp = task_format(task, data.name)
-                log_debug("progress format message on client_id:" .. client_id .. ", token:" .. token .. ', content:' .. tmp)
-                table.insert(messages, tmp)
-            end
+        -- if not vim.lsp.client_is_stopped(client_id) then
+        for token, task in pairs(data.tasks) do
+            local tmp = task_format(task, data.name)
+            log_debug(
+                "progress format message on client_id:" .. client_id .. ", token:" .. token .. ", content:" .. tmp
+            )
+            table.insert(messages, tmp)
         end
+        -- end
     end
     if #messages > 0 then
         local tmp = table.concat(messages, config.seperator)
