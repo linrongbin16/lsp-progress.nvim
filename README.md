@@ -1,6 +1,6 @@
 # lsp-progress.nvim
 
-Another simple LSP progress status plugin for neovim statusline integration.
+Simple LSP progress status plugin for neovim.
 
 <p align="center">
   <img
@@ -20,7 +20,7 @@ Another simple LSP progress status plugin for neovim statusline integration.
 {
     'nvim-lualine/lualine.nvim', -- integrate with lualine
     event = { 'VimEnter' },
-    dependencies = { 'nvim-tree/nvim-web-devicons', 'nvim-lua/lsp-status.nvim' },
+    dependencies = { 'nvim-tree/nvim-web-devicons', 'linrongbin16/lsp-progress.nvim' },
     config = function()
         ...
     end
@@ -37,10 +37,10 @@ Another simple LSP progress status plugin for neovim statusline integration.
 
 # API
 
-- `require('lsp-progress).progress()`: get the progress message.
-- `LspProgressStatusUpdate`: user event to trigger statusline refresh.
+- `require('lsp-progress).progress()`: get the progress status.
+- `LspProgressStatusUpdate`: user event to notify new status, listen and trigger statusline refresh.
 
-# Usage
+# Config
 
 ## Lualine
 
@@ -54,15 +54,23 @@ require("lualine").setup({
         },
     }
 })
+
+vim.cmd([[
+augroup lualine_refresh_augroup
+    autocmd!
+    autocmd User LspProgressStatusUpdate lua require("lualine").refresh() -- listen to user event and trigger refresh
+augroup END
+]])
 ```
 
-# Config
+# Option
 
 ```lua
 require('lsp-progress').setup({
-    spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" }, -- string array that animated the status
-    update_time = 125, -- interval message update time in milliseconds
+    spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" }, -- animation string array
+    update_time = 125, -- interval update time in milliseconds
     sign = " [LSP]", -- icon: nf-fa-gear \uf013
     decay = 1000, -- decay time after message gone in milliseconds
+    event = "LspProgressStatusUpdate", -- default user event name
 })
 ```
