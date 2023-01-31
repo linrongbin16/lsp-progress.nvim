@@ -21,7 +21,7 @@ local function reset_last_redraw()
     global_state.redrawed = false
 end
 
-local function reset_cache(cache)
+local function reset_cache()
     global_state.cache = nil
 end
 
