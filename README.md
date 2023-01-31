@@ -66,8 +66,8 @@ require('lsp-progress').setup({
     update_time = 125, -- interval update time in milliseconds
     sign = " [LSP]", -- icon: nf-fa-gear \uf013
     seperator = " ┆ ", -- seperator when multiple lsp messages
-    decay = 1000,   -- last progress message is cached in decay time in milliseconds,
-                    -- since progress message could appear and disappear in an instant
+    decay = 500, -- last progress message is cached in decay time in milliseconds,
+                 -- since progress message could appear and disappear in an instant
     event = "LspProgressStatusUpdate", -- default user event name
 })
 ```
