@@ -27,6 +27,7 @@ Another simple LSP progress status plugin for neovim statusline integration.
 },
 {
     'linrongbin16/lsp-progress.nvim',
+    branch = 'main',
     event = { 'VimEnter' },
     config = function()
         require('lsp-progress').setup({})
