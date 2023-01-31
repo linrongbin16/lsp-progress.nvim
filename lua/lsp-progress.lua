@@ -12,7 +12,7 @@ local defaults = {
     debug = false,
     console_log = true,
     file_log = false,
-    file_name = "lsp-progress.log",
+    file_log_name = "lsp-progress.log",
 }
 local config = {}
 local state = {
@@ -51,7 +51,7 @@ local function log_init()
         state.log_level = log_level.warn.value
     end
     if config.file_log then
-        state.log_file = string.format("%s/%s", vim.fn.stdpath("data"), config.file_name)
+        state.log_file = string.format("%s/%s", vim.fn.stdpath("data"), config.file_log_name)
     end
 end
 
@@ -62,7 +62,12 @@ local function log_log(level, msg)
     local content = string.format("[lsp-progress.nvim] %s %s: %s", level, os.date("%Y-%m-%d %H:%M:%S"), msg)
     if config.console_log then
         vim.cmd("echohl " .. log_level[level].echohl)
-        vim.cmd(content)
+        local split_content = vim.split(content, "\n")
+        for _, c in ipairs(split_content) do
+            local tmp = string.format([[echom "%s"]], vim.fn.escape(c, '"'))
+            print(tmp)
+            vim.cmd(tmp)
+        end
         vim.cmd("echohl " .. log_level.info.echohl)
     end
     if config.file_log then
@@ -107,7 +112,6 @@ end
 
 local function task_done(task, message)
     task.message = message
-    task.index = nil
     task.done = true
 end
 

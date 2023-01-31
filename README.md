@@ -74,6 +74,6 @@ require('lsp-progress').setup({
     debug = false, -- set true to enable logging file
     console_log = true, -- write log to vim console
     file_log = false, -- write log to file
-    file_name = "lsp-progress.log", -- log file name, only if file_log=true.
+    file_log_name = "lsp-progress.log", -- log file name, only if file_log=true.
 })
 ```
