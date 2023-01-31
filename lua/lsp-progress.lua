@@ -96,12 +96,12 @@ end
 -- task
 
 local function task_new(title, message, percentage)
-    return { title = title, message = message, percentage = percentage, index = 1, done = false }
+    return { title = title, message = message, percentage = percentage, index = 0, done = false }
 end
 
 local function task_spin(task)
     local old = task.index
-    task.index = (task.index + 1) % #config.spinner + 1
+    task.index = (task.index + 1) % #config.spinner
     log_debug("task spin:" .. old .. " => " .. task.index)
 end
 
@@ -118,7 +118,7 @@ end
 local function task_format(task, name)
     local builder = { "[" .. name .. "]" }
     if task.index then
-        table.insert(builder, config.spinner[task.index])
+        table.insert(builder, config.spinner[task.index + 1])
     end
     if task.title and task.title ~= "" then
         table.insert(builder, task.title)
