@@ -2,13 +2,7 @@
 
 Simple LSP progress status plugin for neovim.
 
-<p align="center">
-  <img
-    alt="demo.jpg"
-    src="https://raw.githubusercontent.com/linrongbin16/lsp-progress.nvim/main/demo.jpg"
-    width="60%"
-  />
-</p>
+![demo](https://user-images.githubusercontent.com/6496887/215637132-65e27eac-df71-4d17-9365-b516d6536ece.jpg)
 
 **Thanks to [lsp-status.nvim](https://github.com/nvim-lua/lsp-status.nvim) and [fidget.nvim](https://github.com/j-hui/fidget.nvim), everything about LSP progress I learned and copied source code is from them.**
 
