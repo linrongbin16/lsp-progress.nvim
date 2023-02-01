@@ -4,7 +4,7 @@
 
 local defaults = {
     spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" },
-    update_time = 125,
+    update_time = 200,
     sign = " LSP", -- nf-fa-gear \uf013
     seperator = " ",
     decay = 1000,
@@ -274,10 +274,11 @@ local function progress_handler(err, msg, ctx)
                 .. "]: "
                 .. task_tostring(tasks[token])
         )
-        -- start spin
+        -- start spin, inside it will notify user
         spin(client_id, token)
     elseif value.kind == "report" then
         task_update(tasks[token], value.message, value.percentage)
+        emit_event() -- notify user
         log_debug(
             "update task in state.clients[client_id:"
                 .. client_id
@@ -298,6 +299,7 @@ local function progress_handler(err, msg, ctx)
             log_warn("Received `end` message with no corressponding `begin` " .. from_client_msg())
         else
             task_done(tasks[token], value.message)
+            emit_event() -- notify user
             log_debug(
                 "done task in state.clients[client_id:"
                     .. client_id

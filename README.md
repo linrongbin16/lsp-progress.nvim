@@ -71,7 +71,7 @@ require('lsp-progress').setup({
     spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" },
 
     -- spin update rate in milliseconds
-    update_time = 125,
+    update_time = 200,
 
     -- if there's any lsp server active on current buffer
     -- icon: nf-fa-gear \uf013
