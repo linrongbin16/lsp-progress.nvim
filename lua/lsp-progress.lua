@@ -17,7 +17,7 @@ local defaults = {
 local config = {}
 local state = {
     registered = false,
-    datamap = {}, -- client_id => data { name, tasks }
+    clients = {}, -- client_id => data { name, tasks }
     log_level = nil,
     log_file = nil,
 }
@@ -176,22 +176,22 @@ local function spin(client_id, token)
         spin(client_id, token)
     end
 
-    if not state.datamap[client_id] then
+    if not state.clients[client_id] then
         log_debug(
             "task not found (client_id:"
                 .. client_id
-                .. " not exist in state.datamap, token:"
+                .. " not exist in state.clients, token:"
                 .. token
                 .. "), stop spin"
         )
         return
     end
-    local data = state.datamap[client_id]
+    local data = state.clients[client_id]
     if not data.tasks[token] then
         log_debug(
             "task not found (token:"
                 .. token
-                .. " not exist in state.datamap[client_id:"
+                .. " not exist in state.clients[client_id:"
                 .. client_id
                 .. "].tasks), stop spin"
         )
@@ -208,27 +208,27 @@ local function spin(client_id, token)
         log_debug("task not done yet (client_id:" .. client_id .. ",token:" .. token .. "), defer next spin...")
     else
         local function remove_task_defer()
-            if not state.datamap[client_id] then
+            if not state.clients[client_id] then
                 log_debug(
                     "task not found (client_id:"
                         .. client_id
-                        .. " not exist in state.datamap, token:"
+                        .. " not exist in state.clients, token:"
                         .. token
                         .. "), stop remove task"
                 )
                 return
             end
-            if not state.datamap[client_id].tasks[token] then
+            if not state.clients[client_id].tasks[token] then
                 log_debug(
                     "task not found (token:"
                         .. token
-                        .. " not exist in state.datamap[client_id:"
+                        .. " not exist in state.clients[client_id:"
                         .. client_id
                         .. "].tasks), stop remove task"
                 )
                 return
             end
-            state.datamap[client_id].tasks[token] = nil
+            state.clients[client_id].tasks[token] = nil
             log_debug("task removed (client_id:" .. client_id .. ",token:" .. token .. ")")
             emit_event() -- notify user
         end
@@ -248,9 +248,9 @@ local function progress_handler(err, msg, ctx)
     local client_name = not client and client.name or "null"
 
     -- register client id if not exist
-    if not state.datamap[client_id] then
-        state.datamap[client_id] = data_new(client_name)
-        log_debug("register client_id:" .. client_id .. ", client_name:" .. client_name .. " in state.datamap")
+    if not state.clients[client_id] then
+        state.clients[client_id] = data_new(client_name)
+        log_debug("register client_id:" .. client_id .. ", client_name:" .. client_name .. " in state.clients")
     end
 
     local value = msg.value
@@ -260,12 +260,12 @@ local function progress_handler(err, msg, ctx)
         return
     end
 
-    local tasks = state.datamap[client_id].tasks
+    local tasks = state.clients[client_id].tasks
     if value.kind == "begin" then
         -- add task
         tasks[token] = task_new(value.title, value.message, value.percentage)
         log_debug(
-            "add task in state.datamap[client_id:"
+            "add task in state.clients[client_id:"
                 .. client_id
                 .. "].tasks[token:"
                 .. token
@@ -277,7 +277,7 @@ local function progress_handler(err, msg, ctx)
     elseif value.kind == "report" then
         task_update(tasks[token], value.message, value.percentage)
         log_debug(
-            "update task in state.datamap[client_id:"
+            "update task in state.clients[client_id:"
                 .. client_id
                 .. "].tasks[token:"
                 .. token
@@ -297,7 +297,7 @@ local function progress_handler(err, msg, ctx)
         else
             task_done(tasks[token], value.message)
             log_debug(
-                "done task in state.datamap[client_id:"
+                "done task in state.clients[client_id:"
                     .. client_id
                     .. "].tasks[token:"
                     .. token
@@ -315,10 +315,10 @@ local function progress()
     end
 
     local messages = {}
-    for client_id, data in pairs(state.datamap) do
+    for client_id, data in pairs(state.clients) do
         if vim.lsp.client_is_stopped(client_id) then
-            -- if this client is stopped, clean it from state.datamap
-            state.datamap[client_id] = nil
+            -- if this client is stopped, clean it from state.clients
+            state.clients[client_id] = nil
         else
             for token, task in pairs(data.tasks) do
                 local tmp = task_format(task, data.name)
