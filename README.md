@@ -119,11 +119,11 @@ There're two hash maps based on this situation:
 ```
                     clients:
                     /      \
-            client_id1     client_id2
+            (client_id1)  (client_id2)
                   /          \
                 tasks        ...
                 /   \
-            token1  token2
+          (token1)  (token2)
               /       \
            task1      task2
 ```
