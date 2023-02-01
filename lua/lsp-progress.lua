@@ -122,7 +122,6 @@ local function task_format(task, name)
     local builder = { "[" .. name .. "]" }
     local has_title = false
     local has_message = false
-    local has_percentage = false
     if task.index then
         table.insert(builder, config.spinner[task.index + 1])
     end
@@ -136,10 +135,9 @@ local function task_format(task, name)
     end
     if task.percentage then
         table.insert(builder, string.format("(%.0f%%%%)", task.percentage))
-        has_percentage = true
     end
     if task.done then
-        if has_title or has_message or has_percentage then
+        if has_title or has_message then
             table.insert(builder, "- done")
         end
     end
