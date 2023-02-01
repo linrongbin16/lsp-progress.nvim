@@ -4,7 +4,7 @@
 
 local defaults = {
     spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" },
-    update_time = 200,
+    update_time = 125,
     sign = " LSP", -- nf-fa-gear \uf013
     seperator = " ",
     decay = 1000,
