@@ -13,9 +13,13 @@ Another lsp progress status for Neovim.
 
 ```lua
 {
-    'nvim-lualine/lualine.nvim', -- integrate with lualine
+    -- integrate with lualine
+    'nvim-lualine/lualine.nvim',
     event = { 'VimEnter' },
-    dependencies = { 'nvim-tree/nvim-web-devicons', 'linrongbin16/lsp-progress.nvim' },
+    dependencies = {
+        'nvim-tree/nvim-web-devicons',
+        'linrongbin16/lsp-progress.nvim'
+    },
     config = function()
         ...
     end
@@ -45,7 +49,8 @@ require("lualine").setup({
 		lualine_a = { "mode" },
 		lualine_b = { "filename" },
 		lualine_c = {
-            require("lsp-progress").progress, -- lualine will invoke this function to get lsp progress message.
+            -- invoke `progress` to get lsp progress message.
+            require("lsp-progress").progress,
         },
         ...
     }
@@ -64,16 +69,36 @@ augroup END
 
 ```lua
 require('lsp-progress').setup({
-    spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" }, -- animation string array
-    update_time = 125, -- interval update time in milliseconds
-    sign = " LSP", -- icon: nf-fa-gear \uf013
-    seperator = " ", -- seperator when multiple lsp messages
-    decay = 1000, -- last progress message is cached in decay time in milliseconds,
-                  -- since progress message could appear and disappear in an instant
-    event = "LspProgressStatusUpdated", -- user event name
-    debug = false, -- set true to enable logging file
-    console_log = true, -- write log to vim console
-    file_log = false, -- write log to file
-    file_log_name = "lsp-progress.log", -- log file name, only if file_log=true.
+    -- spin icon array
+    spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" },
+
+    -- spin update rate in milliseconds
+    update_time = 125,
+
+    -- if there's any lsp server active on current buffer
+    -- icon: nf-fa-gear \uf013
+    sign = " LSP",
+
+    -- seperate multiple messages in one statusline
+    seperator = " ",
+
+    -- last message is cached in decay time in milliseconds
+    -- since some messages could appear and disappear in an instant
+    decay = 1000,
+
+    -- user event name
+    event = "LspProgressStatusUpdated",
+
+    -- if enable debug
+    debug = false,
+
+    -- if print log to console
+    console_log = true,
+
+    -- if print log to file
+    file_log = false,
+
+    -- logging file to write, only if file_log=true
+    file_log_name = "lsp-progress.log",
 })
 ```
