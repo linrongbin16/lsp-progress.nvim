@@ -244,7 +244,7 @@ local function progress_handler(err, msg, ctx)
     if client then
         client_name = client.name
     else
-        client_name = "null"
+        client_name = "unknown"
     end
 
     -- register client id if not exist
