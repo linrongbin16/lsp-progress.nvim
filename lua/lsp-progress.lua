@@ -134,6 +134,7 @@ local function task_format(task, name)
     if task.done then
         table.insert(builder, "- done")
     end
+    return table.concat(builder, " ")
 end
 
 local function task_tostring(task)
