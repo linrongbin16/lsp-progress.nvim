@@ -17,7 +17,7 @@ local defaults = {
 local config = {}
 local state = {
     registered = false,
-    datamap = {}, -- client_id => data { name, tasks }
+    clients = {}, -- client_id => data { name, index, tasks }
     log_level = nil,
     log_file = nil,
 }
@@ -98,13 +98,7 @@ end
 -- task
 
 local function task_new(title, message, percentage)
-    return { title = title, message = message, percentage = percentage, index = 0, done = false }
-end
-
-local function task_spin(task)
-    local old = task.index
-    task.index = (task.index + 1) % #config.spinner
-    log_debug("task spin:" .. old .. " => " .. task.index)
+    return { title = title, message = message, percentage = percentage, done = false }
 end
 
 local function task_update(task, message, percentage)
@@ -118,14 +112,11 @@ local function task_done(task, message)
     task.done = true
 end
 
-local function task_format(task, name)
-    local builder = { "[" .. name .. "]" }
+local function task_format(task)
+    local builder = {}
     local has_title = false
     local has_message = false
     local has_percentage = false
-    if task.index then
-        table.insert(builder, config.spinner[task.index + 1])
-    end
     if task.title and task.title ~= "" then
         table.insert(builder, task.title)
         has_title = true
@@ -153,8 +144,6 @@ local function task_tostring(task)
         .. tostring(task.message)
         .. ", percentage:"
         .. tostring(task.percentage)
-        .. ", index:"
-        .. tostring(task.index)
         .. ", done:"
         .. tostring(task.done)
 end
@@ -163,72 +152,76 @@ end
 
 -- {
 -- data
--- data.tasks: token => task { title, message, percentage, index, done }
+-- data.tasks: token => task { title, message, percentage, done }
 
 local function data_new(name)
-    return { name = name, tasks = {} }
+    return { name = name, index = 0, tasks = {} }
+end
+
+local function data_spin(data)
+    local old = data.index
+    data.index = (data.index + 1) % #config.spinner
+    log_debug("data spin:" .. old .. " => " .. data.index)
+end
+
+-- }
+
+-- {
+-- state
+
+local function state_register_client(client_id, client_name)
+    if not state.clients[client_id] then
+        state.clients[client_id] = data_new(client_name)
+        log_debug("register client_id:" .. client_id .. ", client_name:" .. client_name .. " in state.clients")
+    end
+end
+
+local function state_remove_client(client_id)
+    if state.clients[client_id] then
+        state.clients[client_id] = nil
+    end
+end
+
+local function state_find_task(client_id, token)
+    if not state.clients[client_id] then
+        log_debug("task not found, client_id:" .. client_id .. " not found in state.clients")
+        return nil
+    end
+    local data = state.clients[client_id]
+    if not data.tasks[token] then
+        log_debug("task not found, token:" .. token .. " not found in state.clients[" .. client_id .. "].tasks")
+        return nil
+    end
+    return data.tasks[token]
 end
 
 -- }
 
 local function spin(client_id, token)
-    local function again()
+    local function spin_again()
         spin(client_id, token)
     end
 
-    if not state.datamap[client_id] then
-        log_debug(
-            "task not found (client_id:"
-                .. client_id
-                .. " not exist in state.datamap, token:"
-                .. token
-                .. "), stop spin"
-        )
+    local task = state_find_task(client_id, token)
+    if not task then
+        log_debug("task not found (client_id:" .. client_id .. ", token:" .. token .. "), stop spin")
         return
     end
-    local data = state.datamap[client_id]
-    if not data.tasks[token] then
-        log_debug(
-            "task not found (token:"
-                .. token
-                .. " not exist in state.datamap[client_id:"
-                .. client_id
-                .. "].tasks), stop spin"
-        )
-        return
-    end
-    local task = data.tasks[token]
 
-    task_spin(task)
+    data_spin(state.clients[client_id])
     emit_event() -- notify user
 
     if not task.done then
         -- task not done, continue next spin
-        vim.defer_fn(again, config.update_time)
+        vim.defer_fn(spin_again, config.update_time)
         log_debug("task not done yet (client_id:" .. client_id .. ",token:" .. token .. "), defer next spin...")
     else
         local function remove_task_defer()
-            if not state.datamap[client_id] then
-                log_debug(
-                    "task not found (client_id:"
-                        .. client_id
-                        .. " not exist in state.datamap, token:"
-                        .. token
-                        .. "), stop remove task"
-                )
+            if not state_find_task(client_id, token) then
+                log_debug("task not found (client_id:" .. client_id .. ", token:" .. token .. "), stop remove task")
                 return
             end
-            if not state.datamap[client_id].tasks[token] then
-                log_debug(
-                    "task not found (token:"
-                        .. token
-                        .. " not exist in state.datamap[client_id:"
-                        .. client_id
-                        .. "].tasks), stop remove task"
-                )
-                return
-            end
-            state.datamap[client_id].tasks[token] = nil
+            state.clients[client_id].tasks[token] = nil
             log_debug("task removed (client_id:" .. client_id .. ",token:" .. token .. ")")
             emit_event() -- notify user
         end
@@ -248,10 +241,7 @@ local function progress_handler(err, msg, ctx)
     local client_name = not client and client.name or "null"
 
     -- register client id if not exist
-    if not state.datamap[client_id] then
-        state.datamap[client_id] = data_new(client_name)
-        log_debug("register client_id:" .. client_id .. ", client_name:" .. client_name .. " in state.datamap")
-    end
+    state_register_client(client_id, client_name)
 
     local value = msg.value
     local token = msg.token
@@ -260,12 +250,12 @@ local function progress_handler(err, msg, ctx)
         return
     end
 
-    local tasks = state.datamap[client_id].tasks
+    local tasks = state.clients[client_id].tasks
     if value.kind == "begin" then
         -- add task
         tasks[token] = task_new(value.title, value.message, value.percentage)
         log_debug(
-            "add task in state.datamap[client_id:"
+            "add task in state.clients[client_id:"
                 .. client_id
                 .. "].tasks[token:"
                 .. token
@@ -277,7 +267,7 @@ local function progress_handler(err, msg, ctx)
     elseif value.kind == "report" then
         task_update(tasks[token], value.message, value.percentage)
         log_debug(
-            "update task in state.datamap[client_id:"
+            "update task in state.clients[client_id:"
                 .. client_id
                 .. "].tasks[token:"
                 .. token
@@ -297,7 +287,7 @@ local function progress_handler(err, msg, ctx)
         else
             task_done(tasks[token], value.message)
             log_debug(
-                "done task in state.datamap[client_id:"
+                "done task in state.clients[client_id:"
                     .. client_id
                     .. "].tasks[token:"
                     .. token
@@ -315,19 +305,23 @@ local function progress()
     end
 
     local messages = {}
-    for client_id, data in pairs(state.datamap) do
+    for client_id, data in pairs(state.clients) do
+        local data_messages = {}
+        table.insert(data_messages, string.format("[%s]", data.name))
+        table.insert(data_messages, config.spinner[data.index + 1])
         if vim.lsp.client_is_stopped(client_id) then
-            -- if this client is stopped, clean it from state.datamap
-            state.datamap[client_id] = nil
+            -- if this client is stopped, clean it from state.clients
+            state_remove_client(client_id)
         else
             for token, task in pairs(data.tasks) do
-                local tmp = task_format(task, data.name)
+                local tmp = task_format(task)
                 log_debug(
                     "progress format message on client_id:" .. client_id .. ", token:" .. token .. ", content:" .. tmp
                 )
-                table.insert(messages, tmp)
+                table.insert(data_messages, tmp)
             end
         end
+        table.insert(messages, table.concat(data_messages, ", "))
     end
     if #messages > 0 then
         local tmp = table.concat(messages, config.seperator)
