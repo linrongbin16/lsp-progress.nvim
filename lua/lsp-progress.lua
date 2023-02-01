@@ -134,7 +134,9 @@ local function task_format(task, name)
         has_message = true
     end
     if task.percentage then
-        table.insert(builder, string.format("(%.0f%%%%)", task.percentage))
+        if has_title or has_message then
+            table.insert(builder, string.format("(%.0f%%%%)", task.percentage))
+        end
     end
     if task.done then
         if has_title or has_message then
