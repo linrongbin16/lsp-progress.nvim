@@ -122,7 +122,6 @@ local function task_format(task, name)
     local builder = { "[" .. name .. "]" }
     local has_title = false
     local has_message = false
-    local has_percentage = false
     if task.index then
         table.insert(builder, config.spinner[task.index + 1])
     end
@@ -136,10 +135,9 @@ local function task_format(task, name)
     end
     if task.percentage then
         table.insert(builder, string.format("(%.0f%%%%)", task.percentage))
-        has_percentage = true
     end
     if task.done then
-        if has_title or has_message or has_percentage then
+        if has_title or has_message then
             table.insert(builder, "- done")
         end
     end
@@ -242,10 +240,12 @@ end
 local function progress_handler(err, msg, ctx)
     local client_id = ctx.client_id
     local client = vim.lsp.get_client_by_id(client_id)
-    if not client then
-        return
+    local client_name
+    if client then
+        client_name = client.name
+    else
+        client_name = "unknown"
     end
-    local client_name = not client and client.name or "null"
 
     -- register client id if not exist
     if not state.clients[client_id] then
@@ -316,10 +316,10 @@ local function progress()
 
     local messages = {}
     for client_id, data in pairs(state.clients) do
-        -- if vim.lsp.client_is_stopped(client_id) then
-        --     -- if this client is stopped, clean it from state.clients
-        --     state.clients[client_id] = nil
-        -- else
+        if vim.lsp.client_is_stopped(client_id) then
+            -- if this client is stopped, clean it from state.clients
+            state.clients[client_id] = nil
+        else
             for token, task in pairs(data.tasks) do
                 local tmp = task_format(task, data.name)
                 log_debug(
@@ -327,7 +327,7 @@ local function progress()
                 )
                 table.insert(messages, tmp)
             end
-        -- end
+        end
     end
     if #messages > 0 then
         local tmp = table.concat(messages, config.seperator)
