@@ -108,7 +108,7 @@ require('lsp-progress').setup({
 Implement with a producer/consumer pattern:
 
 - Producer: progress handler is registered to `$/progress`, callback when lsp status updated. Then update status data and emit event `LspProgressStatusUpdated`.
-- Consumer: statusline listens and consumes the message, get the latest status data, format and print to statusline.
+- Consumer: statusline listens and consumes the event, get the latest status data, format and print to statusline.
 
 ## Data Structure
 
