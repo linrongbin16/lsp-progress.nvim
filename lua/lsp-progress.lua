@@ -114,6 +114,7 @@ end
 
 local function task_done(task, message)
     task.message = message
+    task.percentage = 100
     task.done = true
 end
 
