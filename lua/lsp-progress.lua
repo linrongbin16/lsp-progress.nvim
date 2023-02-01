@@ -2,43 +2,240 @@
 --  * https://github.com/nvim-lua/lsp-status.nvim
 --  * https://github.com/j-hui/fidget.nvim
 
-local global_config = {
+local defaults = {
     spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" },
-    update_time = 200,
+    update_time = 125,
     sign = " LSP", -- nf-fa-gear \uf013
-    seperator = " ┆ ",
+    seperator = " ",
     decay = 1000,
-    event = "LspProgressStatusUpdate",
+    event = "LspProgressStatusUpdated",
+    debug = false,
+    console_log = true,
+    file_log = false,
+    file_log_name = "lsp-progress.log",
 }
-local global_state = {
+local config = {}
+local state = {
     registered = false,
-    redrawed = false,
-    data = {},
-    cache = nil,
+    clients = {}, -- client_id => data { name, tasks }
+    log_level = nil,
+    log_file = nil,
 }
+
+-- {
+-- util
+
+local log_level = {
+    err = {
+        value = 100,
+        echohl = "ErrorMsg",
+    },
+    warn = {
+        value = 90,
+        echohl = "WarningMsg",
+    },
+    info = {
+        value = 70,
+        echohl = "None",
+    },
+    debug = {
+        value = 50,
+        echohl = "Comment",
+    },
+}
+
+local function log_init()
+    if config.debug then
+        state.log_level = log_level.debug.value
+    else
+        state.log_level = log_level.warn.value
+    end
+    if config.file_log then
+        state.log_file = string.format("%s/%s", vim.fn.stdpath("data"), config.file_log_name)
+    end
+end
+
+local function log_log(level, msg)
+    if log_level[level].value < state.log_level then
+        return
+    end
+    local content = string.format("[lsp-progress.nvim] %s %s: %s", level, os.date("%Y-%m-%d %H:%M:%S"), msg)
+    local split_content = vim.split(content, "\n")
+    if config.console_log then
+        vim.cmd("echohl " .. log_level[level].echohl)
+        for _, c in ipairs(split_content) do
+            local tmp = string.format([[echom "%s"]], vim.fn.escape(c, '"'))
+            print(tmp)
+            vim.cmd(tmp)
+        end
+        vim.cmd("echohl " .. log_level.info.echohl)
+    end
+    if config.file_log then
+        local fp = io.open(state.log_file, "a")
+        for _, c in ipairs(split_content) do
+            fp:write(c .. "\n")
+        end
+        fp:close()
+    end
+end
+
+local function log_warn(msg)
+    log_log("warn", msg)
+end
+
+local function log_debug(msg)
+    log_log("debug", msg)
+end
 
 local function emit_event()
-    vim.cmd("doautocmd User " .. global_config.event)
+    vim.cmd("doautocmd User " .. config.event)
+    log_debug("Emit user event:" .. config.event)
 end
 
-local function reset_redraw()
-    global_state.redrawed = false
+-- }
+
+-- {
+-- task
+
+local function task_new(title, message, percentage)
+    return { title = title, message = message, percentage = percentage, index = 0, done = false }
 end
 
-local function reset_cache()
-    global_state.cache = nil
-    -- emit an event to user immediately after clean cache
-    emit_event()
+local function task_spin(task)
+    local old = task.index
+    task.index = (task.index + 1) % #config.spinner
+    log_debug("task spin:" .. old .. " => " .. task.index)
 end
 
-local function register_client(id, name)
-    -- register client id if not exist
-    if not global_state.data[id] then
-        global_state.data[id] = {
-            name = name,
-            once_messages = {},
-            progress_messages = {},
-        }
+local function task_update(task, message, percentage)
+    task.message = message
+    task.percentage = percentage
+end
+
+local function task_done(task, message)
+    task.message = message
+    task.percentage = 100
+    task.done = true
+end
+
+local function task_format(task, name)
+    local builder = { "[" .. name .. "]" }
+    local has_title = false
+    local has_message = false
+    local has_percentage = false
+    if task.index then
+        table.insert(builder, config.spinner[task.index + 1])
+    end
+    if task.title and task.title ~= "" then
+        table.insert(builder, task.title)
+        has_title = true
+    end
+    if task.message and task.message ~= "" then
+        table.insert(builder, task.message)
+        has_message = true
+    end
+    if task.percentage then
+        table.insert(builder, string.format("(%.0f%%%%)", task.percentage))
+        has_percentage = true
+    end
+    if task.done then
+        if has_title or has_message or has_percentage then
+            table.insert(builder, "- done")
+        end
+    end
+    return table.concat(builder, " ")
+end
+
+local function task_tostring(task)
+    return "title:"
+        .. tostring(task.title)
+        .. ", message:"
+        .. tostring(task.message)
+        .. ", percentage:"
+        .. tostring(task.percentage)
+        .. ", index:"
+        .. tostring(task.index)
+        .. ", done:"
+        .. tostring(task.done)
+end
+
+-- }
+
+-- {
+-- data
+-- data.tasks: token => task { title, message, percentage, index, done }
+
+local function data_new(name)
+    return { name = name, tasks = {} }
+end
+
+-- }
+
+local function spin(client_id, token)
+    local function again()
+        spin(client_id, token)
+    end
+
+    if not state.clients[client_id] then
+        log_debug(
+            "task not found (client_id:"
+                .. client_id
+                .. " not exist in state.clients, token:"
+                .. token
+                .. "), stop spin"
+        )
+        return
+    end
+    local data = state.clients[client_id]
+    if not data.tasks[token] then
+        log_debug(
+            "task not found (token:"
+                .. token
+                .. " not exist in state.clients[client_id:"
+                .. client_id
+                .. "].tasks), stop spin"
+        )
+        return
+    end
+    local task = data.tasks[token]
+
+    task_spin(task)
+    emit_event() -- notify user
+
+    if not task.done then
+        -- task not done, continue next spin
+        vim.defer_fn(again, config.update_time)
+        log_debug("task not done yet (client_id:" .. client_id .. ",token:" .. token .. "), defer next spin...")
+    else
+        local function remove_task_defer()
+            if not state.clients[client_id] then
+                log_debug(
+                    "task not found (client_id:"
+                        .. client_id
+                        .. " not exist in state.clients, token:"
+                        .. token
+                        .. "), stop remove task"
+                )
+                return
+            end
+            if not state.clients[client_id].tasks[token] then
+                log_debug(
+                    "task not found (token:"
+                        .. token
+                        .. " not exist in state.clients[client_id:"
+                        .. client_id
+                        .. "].tasks), stop remove task"
+                )
+                return
+            end
+            state.clients[client_id].tasks[token] = nil
+            log_debug("task removed (client_id:" .. client_id .. ",token:" .. token .. ")")
+            emit_event() -- notify user
+        end
+
+        -- task done, remove this task from data in decay time
+        vim.defer_fn(remove_task_defer, config.decay)
+        log_debug("task done (client_id:" .. client_id .. ",token:" .. token .. "), defer remove task...")
     end
 end
 
@@ -50,157 +247,104 @@ local function progress_handler(err, msg, ctx)
     end
     local client_name = not client and client.name or "null"
 
-    register_client(client_id, client_name)
+    -- register client id if not exist
+    if not state.clients[client_id] then
+        state.clients[client_id] = data_new(client_name)
+        log_debug("register client_id:" .. client_id .. ", client_name:" .. client_name .. " in state.clients")
+    end
+
     local value = msg.value
     local token = msg.token
 
-    if value.kind then
-        -- progress message
-
-        local pm = global_state.data[client_id].progress_messages
-        if value.kind == "begin" then
-            -- force begin messages redraw, so here we reset redraw flag
-            global_state.redrawed = false
-
-            pm[token] = {
-                title = value.title,
-                message = value.message,
-                percentage = value.percentage,
-                spinner_index = 1,
-                done = false,
-            }
-        elseif value.kind == "report" then
-            pm[token].message = value.message
-            pm[token].percentage = value.percentage
-            pm[token].spinner_index = (pm[token].spinner_index + 1) % #global_config.spinner + 1
-        elseif value.kind == "end" then
-            -- force begin messages redraw, so here we reset lastRedraw
-            global_state.redrawed = false
-            if pm[token] == nil then
-                vim.cmd("echohl WarningMsg")
-                vim.cmd(
-                    "[lsp-progress.nvim] Received `end` message with no corressponding `begin` from client_id:"
-                        .. client_id
-                        .. "!"
-                )
-                vim.cmd("echohl None")
-            else
-                pm[token].message = value.message
-                pm[token].done = true
-                pm[token].spinner_index = nil
-            end
-        end
-    else
-        -- once message
-
-        -- force once messages redraw, so here we reset lastRedraw
-        global_state.redrawed = false
-        table.insert(global_state.data.once_messages, { client_id = client_id, content = value, shown = 0 })
-    end
-
-    -- if last redraw in update time threshold, skip this redraw
-    if global_state.redrawed then
+    if not value.kind then
         return
     end
 
-    -- if redraw timeout, trigger lualine redraw, and defer until next time
-    emit_event()
-    global_state.redrawed = true
-    vim.defer_fn(reset_redraw, global_config.update_time)
+    local tasks = state.clients[client_id].tasks
+    if value.kind == "begin" then
+        -- add task
+        tasks[token] = task_new(value.title, value.message, value.percentage)
+        log_debug(
+            "add task in state.clients[client_id:"
+                .. client_id
+                .. "].tasks[token:"
+                .. token
+                .. "]: "
+                .. task_tostring(tasks[token])
+        )
+        -- start spin
+        spin(client_id, token)
+    elseif value.kind == "report" then
+        task_update(tasks[token], value.message, value.percentage)
+        log_debug(
+            "update task in state.clients[client_id:"
+                .. client_id
+                .. "].tasks[token:"
+                .. token
+                .. "]: "
+                .. task_tostring(tasks[token])
+        )
+    else
+        local function from_client_msg()
+            return "from client:[" .. client_id .. "-" .. client_name .. "]!"
+        end
+
+        if value.kind ~= "end" then
+            log_warn("Unknown message `" .. value.kind .. "` " .. from_client_msg())
+        end
+        if tasks[token] == nil then
+            log_warn("Received `end` message with no corressponding `begin` " .. from_client_msg())
+        else
+            task_done(tasks[token], value.message)
+            log_debug(
+                "done task in state.clients[client_id:"
+                    .. client_id
+                    .. "].tasks[token:"
+                    .. token
+                    .. "]: "
+                    .. task_tostring(tasks[token])
+            )
+        end
+    end
 end
 
 local function progress()
-    local client_count = #vim.lsp.get_active_clients()
-    if client_count <= 0 then
+    local n = #vim.lsp.get_active_clients()
+    if n <= 0 then
         return ""
     end
 
-    local new_messages = {}
-    local remove_progress = {}
-    local remove_once = {}
-    for client_id, data in pairs(global_state.data) do
-        if not vim.lsp.client_is_stopped(client_id) then
-            for token, ctx in pairs(data.progress_messages) do
-                table.insert(new_messages, {
-                    progress_message = true,
-                    name = data.name,
-                    title = ctx.title,
-                    message = ctx.message,
-                    percentage = ctx.percentage,
-                    spinner_index = ctx.spinner_index,
-                })
-                if ctx.done then
-                    table.insert(remove_progress, { client_id = client_id, token = token })
-                end
-            end
-            for i, once_msg in ipairs(data.once_messages) do
-                once_msg.shown = once_msg.shown + 1
-                if once_msg.shown > 1 then
-                    table.insert(remove_once, { client_id = client_id, index = i })
-                end
-                table.insert(new_messages, { once_message = true, name = data.name, content = once_msg.content })
-            end
-        end
-    end
-
-    for _, item in ipairs(remove_once) do
-        table.remove(global_state.data[item.client_id].once_messages, item.index)
-    end
-    for _, item in ipairs(remove_progress) do
-        global_state.data[item.client_id].progress_messages[item.token] = nil
-    end
-
-    local current = ""
-    if #new_messages > 0 then
-        local buffer = {}
-        for i, msg in ipairs(new_messages) do
-            local builder = { "[" .. msg.name .. "]" }
-            if msg.progress_message then
-                if msg.spinner_index then
-                    table.insert(builder, global_config.spinner[msg.spinner_index])
-                end
-                if msg.title and msg.title ~= "" then
-                    table.insert(builder, msg.title)
-                end
-                if msg.message and msg.message ~= "" then
-                    table.insert(builder, msg.message)
-                end
-                if msg.percentage then
-                    table.insert(builder, string.format("(%.0f%%%%)", msg.percentage))
-                end
-            elseif msg.once_message then
-                if msg.content and msg.content ~= "" then
-                    table.insert(builder, msg.content)
-                end
-            end
-            table.insert(buffer, table.concat(builder, " "))
-        end
-        current = " " .. table.concat(buffer, global_config.seperator)
-    end
-
-    if current ~= nil and current ~= "" then
-        -- if has valid current message, cache it and return
-        global_state.cache = current
-        return global_config.sign .. current
-    else
-        -- if current message gone, but cache is still there
-        if global_state.cache ~= nil and global_state.cache ~= "" then
-            -- reset cache in decay
-            vim.defer_fn(reset_cache, global_config.decay)
-            -- return cache message
-            return global_config.sign .. global_state.cache
+    local messages = {}
+    for client_id, data in pairs(state.clients) do
+        if vim.lsp.client_is_stopped(client_id) then
+            -- if this client is stopped, clean it from state.clients
+            state.clients[client_id] = nil
         else
-            -- if current message is gone, and cache is gone, return ''
-            return global_config.sign .. ""
+            for token, task in pairs(data.tasks) do
+                local tmp = task_format(task, data.name)
+                log_debug(
+                    "progress format message on client_id:" .. client_id .. ", token:" .. token .. ", content:" .. tmp
+                )
+                table.insert(messages, tmp)
+            end
         end
+    end
+    if #messages > 0 then
+        local tmp = table.concat(messages, config.seperator)
+        log_debug("progress messages(" .. #messages .. "):" .. tmp)
+        return config.sign .. " " .. tmp
+    else
+        log_debug("progress messages(" .. #messages .. "): no message")
+        return config.sign
     end
 end
 
-local function setup(config)
+local function setup(option)
     -- override default config
-    global_config = vim.tbl_deep_extend("force", global_config, config or {})
+    config = vim.tbl_deep_extend("force", defaults, option or {})
+    log_init()
 
-    if not global_state.registered then
+    if not state.registered then
         if vim.lsp.handlers["$/progress"] then
             local old_handler = vim.lsp.handlers["$/progress"]
             vim.lsp.handlers["$/progress"] = function(...)
@@ -210,7 +354,7 @@ local function setup(config)
         else
             vim.lsp.handlers["$/progress"] = progress_handler
         end
-        global_state.registered = true
+        state.registered = true
     end
 end
 
