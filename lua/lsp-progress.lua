@@ -172,7 +172,7 @@ end
 -- }
 
 local function spin(client_id, token)
-    local function again()
+    local function spin_again()
         spin(client_id, token)
     end
 
@@ -201,12 +201,10 @@ local function spin(client_id, token)
 
     task_spin(task)
     emit_event() -- notify user
+    vim.defer_fn(spin_again, config.update_time) -- no need to check if task is done or not, just keep spinning
 
-    if not task.done then
-        -- task not done, continue next spin
-        vim.defer_fn(again, config.update_time)
-        log_debug("task not done yet (client_id:" .. client_id .. ",token:" .. token .. "), defer next spin...")
-    else
+    -- if task done, remove this task from data in decay time
+    if task.done then
         local function remove_task_defer()
             if not state.clients[client_id] then
                 log_debug(
@@ -233,7 +231,6 @@ local function spin(client_id, token)
             emit_event() -- notify user
         end
 
-        -- task done, remove this task from data in decay time
         vim.defer_fn(remove_task_defer, config.decay)
         log_debug("task done (client_id:" .. client_id .. ",token:" .. token .. "), defer remove task...")
     end
