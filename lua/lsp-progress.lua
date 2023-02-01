@@ -4,11 +4,11 @@
 
 local defaults = {
     spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" },
-    update_time = 200,
+    update_time = 125,
     sign = " LSP", -- nf-fa-gear \uf013
     seperator = " ",
     decay = 1000,
-    event = "LspProgressStatusUpdate",
+    event = "LspProgressStatusUpdated",
     debug = false,
     console_log = true,
     file_log = false,
@@ -119,20 +119,28 @@ end
 
 local function task_format(task, name)
     local builder = { "[" .. name .. "]" }
+    local has_title = false
+    local has_message = false
+    local has_percentage = false
     if task.index then
         table.insert(builder, config.spinner[task.index + 1])
     end
     if task.title and task.title ~= "" then
         table.insert(builder, task.title)
+        has_title = true
     end
     if task.message and task.message ~= "" then
         table.insert(builder, task.message)
+        has_message = true
     end
     if task.percentage then
         table.insert(builder, string.format("(%.0f%%%%)", task.percentage))
+        has_percentage = true
     end
     if task.done then
-        table.insert(builder, "- done")
+        if has_title or has_message or has_percentage then
+            table.insert(builder, "- done")
+        end
     end
     return table.concat(builder, " ")
 end
@@ -307,15 +315,18 @@ local function progress()
 
     local messages = {}
     for client_id, data in pairs(state.datamap) do
-        -- if not vim.lsp.client_is_stopped(client_id) then
-        for token, task in pairs(data.tasks) do
-            local tmp = task_format(task, data.name)
-            log_debug(
-                "progress format message on client_id:" .. client_id .. ", token:" .. token .. ", content:" .. tmp
-            )
-            table.insert(messages, tmp)
+        if vim.lsp.client_is_stopped(client_id) then
+            -- if this client is stopped, clean it from state.datamap
+            state.datamap[client_id] = nil
+        else
+            for token, task in pairs(data.tasks) do
+                local tmp = task_format(task, data.name)
+                log_debug(
+                    "progress format message on client_id:" .. client_id .. ", token:" .. token .. ", content:" .. tmp
+                )
+                table.insert(messages, tmp)
+            end
         end
-        -- end
     end
     if #messages > 0 then
         local tmp = table.concat(messages, config.seperator)
