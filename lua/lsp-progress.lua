@@ -316,10 +316,10 @@ local function progress()
 
     local messages = {}
     for client_id, data in pairs(state.clients) do
-        if vim.lsp.client_is_stopped(client_id) then
-            -- if this client is stopped, clean it from state.clients
-            state.clients[client_id] = nil
-        else
+        -- if vim.lsp.client_is_stopped(client_id) then
+        --     -- if this client is stopped, clean it from state.clients
+        --     state.clients[client_id] = nil
+        -- else
             for token, task in pairs(data.tasks) do
                 local tmp = task_format(task, data.name)
                 log_debug(
@@ -327,7 +327,7 @@ local function progress()
                 )
                 table.insert(messages, tmp)
             end
-        end
+        -- end
     end
     if #messages > 0 then
         local tmp = table.concat(messages, config.seperator)
