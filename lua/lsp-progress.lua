@@ -67,7 +67,6 @@ function LoggerCls:log(level, msg)
     local split_msg = vim.split(msg, "\n")
 
     local function log_format(c, s)
-        print("c:", c, ", s:", s)
         return string.format( "[lsp-progress] %s-%d %s (%s): %s", os.date("%Y-%m-%d %H:%M:%S"), c, self.level, lineinfo, s)
     end
 
