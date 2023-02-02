@@ -348,9 +348,13 @@ local function progress_handler(err, msg, ctx)
         LOGGER:debug("Add new series to (client_id:" .. client_id .. ", token:" .. token .. "): " .. series:toString())
     elseif value.kind == "report" then
         local series = client:getSeries(token)
-        series:update(value.message, value.percentage)
-        emitEvent() -- notify user
-        LOGGER:debug("Update series (client_id:" .. client_id .. ", token:" .. token .. "): " .. series:toString())
+        if series then
+            series:update(value.message, value.percentage)
+            emitEvent() -- notify user
+            LOGGER:debug("Update series (client_id:" .. client_id .. ", token:" .. token .. "): " .. series:toString())
+        else
+            LOGGER:debug("Series not found when update: client_id:" .. client_id .. ", token:" .. token)
+        end
     else
         local function client_format()
             return "from client:[" .. client_id .. "-" .. client_name .. "]!"
@@ -359,13 +363,13 @@ local function progress_handler(err, msg, ctx)
         if value.kind ~= "end" then
             LOGGER:warn("Unknown message kind `" .. value.kind .. "` " .. client_format())
         end
-        if not client:hasSeries(token) then
-            LOGGER:warn("Received message kind `end` with no corressponding `begin` " .. client_format())
-        else
+        if client:hasSeries(token) then
             local series = client:getSeries(token)
             series:finish(value.message)
             emitEvent() -- notify user
             LOGGER:debug("Series done (client_id:" .. client_id .. ", token:" .. token .. "): " .. series:toString())
+        else
+            LOGGER:debug("Series not found when end: client_id:" .. client_id .. ", token:" .. token)
         end
     end
 end
