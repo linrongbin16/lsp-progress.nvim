@@ -473,7 +473,7 @@ local function setup(option)
     CONFIG = vim.tbl_deep_extend("force", DEFAULTS, option or {})
 
     LOGGER = new_logger({
-        level = CONFIG.debug and LogLevel.DEBUG or LogLevel.WARN,
+        level = CONFIG.debug and LogLevel.DEBUG.VALUE or LogLevel.WARN.VALUE,
         console = CONFIG.console_log,
         file = CONFIG.file_log,
         filename = CONFIG.file_log_name,
