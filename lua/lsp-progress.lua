@@ -51,7 +51,7 @@ local LogLevel = {
 }
 
 local LoggerCls = {
-    level = LogLevel.DEBUG,
+    level = LogLevel.DEBUG.VALUE,
     console = true,
     file = false,
     filename = nil,
@@ -105,6 +105,7 @@ end
 
 local function new_logger(option)
     local logger = vim.tbl_extend("force", vim.deepcopy(LoggerCls), option or {})
+    print(vim.inspect(logger))
     return logger
 end
 
