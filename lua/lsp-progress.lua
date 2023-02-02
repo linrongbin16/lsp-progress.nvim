@@ -37,15 +37,15 @@ local LogLevel = {
         ECHOHL = "ErrorMsg",
     },
     WARN = {
-        Value = 90,
+        VALUE = 90,
         ECHOHL = "WarningMsg",
     },
     INFO = {
-        Value = 70,
+        VALUE = 70,
         ECHOHL = "None",
     },
     DEBUG = {
-        Value = 50,
+        VALUE = 50,
         ECHOHL = "Comment",
     },
 }
@@ -59,7 +59,7 @@ local LoggerCls = {
 }
 
 function LoggerCls:log(level, msg)
-    print('level:', level, ', LogLevel[level].VALUE:', LogLevel[level].VALUE)
+    print("level:", level, ", LogLevel[level].VALUE:", LogLevel[level].VALUE)
     if LogLevel[level].VALUE < self.level then
         return
     end
@@ -274,19 +274,19 @@ end
 -- {
 -- CLIENTS
 
-function hasClient(client_id)
+local function hasClient(client_id)
     return CLIENTS[client_id] ~= nil
 end
 
-function getClient(client_id)
+local function getClient(client_id)
     return CLIENTS[client_id]
 end
 
-function removeClient(client_id)
+local function removeClient(client_id)
     CLIENTS[client_id] = nil
 end
 
-function registerClient(client_id, client_name)
+local function registerClient(client_id, client_name)
     if not hasClient(client_id) then
         CLIENTS[client_id] = new_client(client_id, client_name)
         LOGGER:debug("Register client (client_id:" .. client_id .. ", client_name:" .. client_name .. ") in CLIENTS")
@@ -332,8 +332,8 @@ local function spinStart(client_id, token)
                 )
                 return
             end
-            local client = getClient(client_id)
-            if not client:hasSeries(token) then
+            local client2 = getClient(client_id)
+            if not client2:hasSeries(token) then
                 LOGGER:debug(
                     "Series not found: token:"
                         .. token
@@ -343,9 +343,9 @@ local function spinStart(client_id, token)
                 )
                 return
             end
-            client:removeSeries(token)
+            client2:removeSeries(token)
             LOGGER:debug("Series removed (client_id:" .. client_id .. ",token:" .. token .. ")")
-            if client:empty() then
+            if client2:empty() then
                 -- if client is empty, also remove it from CLIENTS
                 removeClient(client_id)
             end
@@ -429,13 +429,8 @@ local function progress()
                         -- otherwise, series has a percentage, old_series don't has
                         -- keep old one
                     end
-                end
-                if not client_message_titles[series.title] then
-                    local msg = series:format()
-                    LOGGER:debug(
-                        "Get series msg (client_id:" .. client_id .. ", token:" .. token .. ") in progress: " .. msg
-                    )
-                    table.insert(client_messages, msg)
+                else
+                    deduped_serieses[key] = series
                 end
             end
             local client_messages = {}
