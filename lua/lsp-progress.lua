@@ -50,6 +50,21 @@ local LogLevel = {
     },
 }
 
+local function getLogLevelFromValue(value)
+    if value >= LogLevel.ERR.VALUE then
+        return "ERR"
+    elseif value >= LogLevel.WARN.VALUE then
+        return "WARN"
+    elseif value >= LogLevel.INFO.VALUE then
+        return "INFO"
+    elseif value >= LogLevel.DEBUG.VALUE then
+        return "DEBUG"
+    else
+        print("Unknown log level value `" .. value .. "` !")
+    end
+    return nil
+end
+
 local LoggerCls = {
     level = LogLevel.DEBUG.VALUE,
     console = true,
@@ -71,7 +86,7 @@ function LoggerCls:log(level, msg)
     end
 
     if self.console then
-        vim.cmd("echohl " .. LogLevel[self.level].ECHOHL)
+        vim.cmd("echohl " .. LogLevel[getLogLevelFromValue(self.level)].ECHOHL)
         for _, m in ipairs(split_msg) do
             vim.cmd(string.format([[echom "%s"]], vim.fn.escape(log_format(self.counter, m), '"')))
         end
