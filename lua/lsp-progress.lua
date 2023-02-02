@@ -59,6 +59,7 @@ local LoggerCls = {
 }
 
 function LoggerCls:log(level, msg)
+    print('level:', level, ', LogLevel[level].VALUE:', LogLevel[level].VALUE)
     if LogLevel[level].VALUE < self.level then
         return
     end
