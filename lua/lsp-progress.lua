@@ -50,23 +50,8 @@ local LogLevel = {
     },
 }
 
-local function getLogLevelFromValue(value)
-    if value >= LogLevel.ERR.VALUE then
-        return "ERR"
-    elseif value >= LogLevel.WARN.VALUE then
-        return "WARN"
-    elseif value >= LogLevel.INFO.VALUE then
-        return "INFO"
-    elseif value >= LogLevel.DEBUG.VALUE then
-        return "DEBUG"
-    else
-        print("Unknown log level value `" .. value .. "` !")
-    end
-    return nil
-end
-
 local LoggerCls = {
-    level = LogLevel.DEBUG.VALUE,
+    level = "DEBUG",
     console = true,
     file = false,
     filename = nil,
@@ -74,7 +59,7 @@ local LoggerCls = {
 }
 
 function LoggerCls:log(level, msg)
-    if LogLevel[level].VALUE < self.level then
+    if LogLevel[level].VALUE < LogLevel[self.level].VALUE then
         return
     end
     local traceinfo = debug.getinfo(2, "Sl")
@@ -83,11 +68,11 @@ function LoggerCls:log(level, msg)
 
     local function log_format(c, s)
         print("c:", c, ", s:", s)
-        return string.format("[lsp-progress] %s-%04d %s (%s): %s", os.date("%Y-%m-%d %H:%M:%S"), level, c, lineinfo, s)
+        return string.format( "[lsp-progress] %s-%d %s (%s): %s", os.date("%Y-%m-%d %H:%M:%S"), c, self.level, lineinfo, s)
     end
 
     if self.console then
-        vim.cmd("echohl " .. LogLevel[getLogLevelFromValue(self.level)].ECHOHL)
+        vim.cmd("echohl " .. LogLevel[self.level].ECHOHL)
         for _, m in ipairs(split_msg) do
             vim.cmd(string.format([[echom "%s"]], vim.fn.escape(log_format(self.counter, m), '"')))
         end
@@ -450,7 +435,7 @@ local function setup(option)
     CONFIG = vim.tbl_deep_extend("force", DEFAULTS, option or {})
 
     LOGGER = new_logger({
-        level = CONFIG.debug and LogLevel.DEBUG.VALUE or LogLevel.WARN.VALUE,
+        level = CONFIG.debug and "DEBUG" or "WARN",
         console = CONFIG.console_log,
         file = CONFIG.file_log,
         filename = CONFIG.file_log_name,
