@@ -67,7 +67,14 @@ function LoggerCls:log(level, msg)
     local split_msg = vim.split(msg, "\n")
 
     local function log_format(c, s)
-        return string.format( "[lsp-progress] %s-%d %s (%s): %s", os.date("%Y-%m-%d %H:%M:%S"), c, self.level, lineinfo, s)
+        return string.format(
+            "[lsp-progress] %s-%d %s (%s): %s",
+            os.date("%Y-%m-%d %H:%M:%S"),
+            c,
+            self.level,
+            lineinfo,
+            s
+        )
     end
 
     if self.console then
@@ -437,7 +444,7 @@ local function setup(option)
         level = CONFIG.debug and "DEBUG" or "WARN",
         console = CONFIG.console_log,
         file = CONFIG.file_log,
-        filename = CONFIG.file_log_name,
+        filename = string.format("%s/%s.log", vim.fn.stdpath("data"), CONFIG.file_log_name),
     })
 
     if not REGISTERED then
