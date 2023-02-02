@@ -87,7 +87,7 @@ function LoggerCls:log(level, msg)
     if self.file then
         local fp = io.open(self.filename, "a")
         for _, m in ipairs(split_msg) do
-            fp:write(log_format(self.counter, m))
+            fp:write(log_format(self.counter, m) .. '\n')
         end
         fp:close()
     end
@@ -444,7 +444,7 @@ local function setup(option)
         level = CONFIG.debug and "DEBUG" or "WARN",
         console = CONFIG.console_log,
         file = CONFIG.file_log,
-        filename = string.format("%s/%s.log", vim.fn.stdpath("data"), CONFIG.file_log_name),
+        filename = string.format("%s/%s", vim.fn.stdpath("data"), CONFIG.file_log_name),
     })
 
     if not REGISTERED then
