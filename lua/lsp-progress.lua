@@ -82,6 +82,7 @@ function LoggerCls:log(level, msg)
     local split_msg = vim.split(msg, "\n")
 
     local function log_format(c, s)
+        print("c:", c, ", s:", s)
         return string.format("[lsp-progress] %s-%04d %s (%s): %s", os.date("%Y-%m-%d %H:%M:%S"), level, c, lineinfo, s)
     end
 
@@ -120,7 +121,6 @@ end
 
 local function new_logger(option)
     local logger = vim.tbl_extend("force", vim.deepcopy(LoggerCls), option or {})
-    print(vim.inspect(logger))
     return logger
 end
 
