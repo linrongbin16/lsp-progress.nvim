@@ -428,10 +428,10 @@ local function progress()
         if vim.fn.strdisplaywidth(content) > CONFIG.max_size then
             content = vim.fn.strcharpart(content, 0, CONFIG.max_size - 1) .. "…"
         end
-        LOGGER:debug("progress messages(" .. #messages .. "):" .. content)
+        LOGGER:debug("Progress messages(" .. #messages .. "):" .. content)
         return CONFIG.sign .. " " .. content
     else
-        LOGGER:debug("progress messages(" .. #messages .. "): no message")
+        LOGGER:debug("Progress messages(" .. #messages .. "): no message")
         return CONFIG.sign
     end
 end
