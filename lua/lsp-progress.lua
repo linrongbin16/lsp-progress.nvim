@@ -87,7 +87,7 @@ function LoggerCls:log(level, msg)
     if self.file then
         local fp = io.open(self.filename, "a")
         for _, m in ipairs(split_msg) do
-            fp:write(log_format(self.counter, m) .. '\n')
+            fp:write(log_format(self.counter, m) .. "\n")
         end
         fp:close()
     end
@@ -393,15 +393,55 @@ local function progress()
                     local old_series = deduped_serieses[key]
                     if series.percentage == nil then
                         deduped_serieses[key] = series
+                        LOGGER:debug(
+                            "Series duplicated by formatKey `"
+                                .. key
+                                .. "` (client_id:"
+                                .. client_id
+                                .. ", token:"
+                                .. token
+                                .. "), choose new series for its percentage is nil"
+                        )
                     elseif old_series.percentage ~= nil then
                         -- two series have percentage
                         deduped_serieses[key] = series and series.percentage < old_series.percentage or old_series
+                        LOGGER:debug(
+                            "Series duplicated by formatKey `"
+                                .. key
+                                .. "` (client_id:"
+                                .. client_id
+                                .. ", token:"
+                                .. token
+                                .. "), both series has percentage, choose lower one ("
+                                .. series.percentage
+                                .. ":"
+                                .. old_series.percentage
+                                .. ")"
+                        )
                     else
                         -- otherwise, series has a percentage, old_series don't has
                         -- keep old one
+                        LOGGER:debug(
+                            "Series duplicated by formatKey `"
+                                .. key
+                                .. "` (client_id:"
+                                .. client_id
+                                .. ", token:"
+                                .. token
+                                .. "), keeps old series for its percentage is nil"
+                        )
                     end
                 else
                     deduped_serieses[key] = series
+                    LOGGER:debug(
+                        "Series formatKey `"
+                            .. key
+                            .. "` (client_id:"
+                            .. client_id
+                            .. ", token:"
+                            .. token
+                            .. ") first show up, add it to deduped_serieses"
+                    )
                 end
             end
             local client_messages = {}
