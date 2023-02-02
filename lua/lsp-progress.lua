@@ -59,7 +59,6 @@ local LoggerCls = {
 }
 
 function LoggerCls:log(level, msg)
-    print("level:", level, ", LogLevel[level].VALUE:", LogLevel[level].VALUE)
     if LogLevel[level].VALUE < self.level then
         return
     end
@@ -137,7 +136,7 @@ function SeriesCls:update(message, percentage)
     self.percentage = percentage
 end
 
-function SeriesCls:done(message)
+function SeriesCls:finish(message)
     self.message = message
     self.percentage = 100
     self.done = true
@@ -182,40 +181,6 @@ function SeriesCls:toString()
         .. ", done:"
         .. tostring(self.done)
 end
-
--- local function task_spin(task)
---     local old = task.index
---     task.index = (task.index + 1) % #CONFIG.spinner
---     LOGGER:debug("task spin:" .. old .. " => " .. task.index)
--- end
---
--- local function task_format(task, name)
---     local builder = { "[" .. name .. "]" }
---     local has_title = false
---     local has_message = false
---     if task.index then
---         table.insert(builder, CONFIG.spinner[task.index + 1])
---     end
---     if task.title and task.title ~= "" then
---         table.insert(builder, task.title)
---         has_title = true
---     end
---     if task.message and task.message ~= "" then
---         table.insert(builder, task.message)
---         has_message = true
---     end
---     if task.percentage then
---         if has_title or has_message then
---             table.insert(builder, string.format("(%.0f%%%%)", task.percentage))
---         end
---     end
---     if task.done then
---         if has_title or has_message then
---             table.insert(builder, "- done")
---         end
---     end
---     return table.concat(builder, " ")
--- end
 
 local function new_series(title, message, percentage)
     local series = vim.tbl_extend(
@@ -392,7 +357,7 @@ local function progress_handler(err, msg, ctx)
             LOGGER:warn("Received message kind `end` with no corressponding `begin` " .. client_format())
         else
             local series = client:getSeries(token)
-            series:done(value.message)
+            series:finish(value.message)
             emitEvent() -- notify user
             LOGGER:debug("Series done (client_id:" .. client_id .. ", token:" .. token .. "): " .. series:toString())
         end
