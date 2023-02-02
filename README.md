@@ -88,7 +88,7 @@ require('lsp-progress').setup({
     event = "LspProgressStatusUpdated",
 
     -- max progress string length
-    max_size = 35,
+    max_size = 120,
 
     -- if enable debug
     debug = false,
