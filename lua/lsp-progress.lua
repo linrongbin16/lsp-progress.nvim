@@ -479,7 +479,7 @@ local function setup(option)
         filename = CONFIG.file_log_name,
     })
 
-    if not STATE.registered then
+    if not REGISTERED then
         if vim.lsp.handlers["$/progress"] then
             local old_handler = vim.lsp.handlers["$/progress"]
             vim.lsp.handlers["$/progress"] = function(...)
@@ -489,7 +489,7 @@ local function setup(option)
         else
             vim.lsp.handlers["$/progress"] = progress_handler
         end
-        STATE.registered = true
+        REGISTERED = true
     end
 end
 
