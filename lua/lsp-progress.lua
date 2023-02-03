@@ -256,7 +256,7 @@ end
 -- CLIENTS
 
 local ClientMapCls = {
-    keep_cls = nil,
+    placeholder = "placeholder",
 }
 
 function ClientMapCls:hasClient(client_id)
