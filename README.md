@@ -28,6 +28,9 @@ Another lsp progress status for Neovim.
     'linrongbin16/lsp-progress.nvim',
     branch = 'main',
     event = { 'VimEnter' },
+    dependencies = {
+        'nvim-tree/nvim-web-devicons',
+    },
     config = function()
         require('lsp-progress').setup({})
     end
@@ -44,9 +47,9 @@ Another lsp progress status for Neovim.
 ```lua
 require("lualine").setup({
     sections = {
-		lualine_a = { "mode" },
-		lualine_b = { "filename" },
-		lualine_c = {
+        lualine_a = { "mode" },
+        lualine_b = { "filename" },
+        lualine_c = {
             -- invoke `progress` to get lsp progress status.
             require("lsp-progress").progress,
         },
