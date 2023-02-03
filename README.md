@@ -28,6 +28,9 @@ Another lsp progress status for Neovim.
     'linrongbin16/lsp-progress.nvim',
     branch = 'main',
     event = { 'VimEnter' },
+    dependencies = {
+        'nvim-tree/nvim-web-devicons',
+    },
     config = function()
         require('lsp-progress').setup({})
     end
@@ -37,17 +40,17 @@ Another lsp progress status for Neovim.
 # API
 
 - `require('lsp-progress).progress()`: get the progress status.
-- `LspProgressStatusUpdated`: user event to notify new status, listen and trigger statusline refresh.
+- `LspProgressStatusUpdated`: user event for notify new status, listen and trigger statusline refresh.
 
 ## Statusline Integration
 
 ```lua
 require("lualine").setup({
     sections = {
-		lualine_a = { "mode" },
-		lualine_b = { "filename" },
-		lualine_c = {
-            -- invoke `progress` to get lsp progress status.
+        lualine_a = { "mode" },
+        lualine_b = { "filename" },
+        lualine_c = {
+            -- lualine invoke `progress` to get lsp progress status.
             require("lsp-progress").progress,
         },
         ...
@@ -58,7 +61,7 @@ require("lualine").setup({
 vim.cmd([[
 augroup lualine_refresh_augroup
     autocmd!
-    autocmd User LspProgressStatusUpdate lua require("lualine").refresh()
+    autocmd User LspProgressStatusUpdated lua require("lualine").refresh()
 augroup END
 ]])
 ```
@@ -88,7 +91,9 @@ require('lsp-progress').setup({
     event = "LspProgressStatusUpdated",
 
     -- event update time limit in milliseconds
-    -- sometimes progress handler could emit many events, trigger statusline refresh too many
+    -- sometimes progress handler could emit many events
+    -- while trigger statusline refresh too many consumes heavy IO/CPU
+    -- limit the event emit rate to reduce the cost
     event_update_time_limit = 125,
 
     -- max progress string length, by default -1 is unlimit
