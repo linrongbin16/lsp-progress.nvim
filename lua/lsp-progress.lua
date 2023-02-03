@@ -255,34 +255,23 @@ end
 -- {
 -- CLIENTS
 
-local ClientMapCls = {
-    placeholder = "placeholder",
-}
-
-function ClientMapCls:hasClient(client_id)
-    return self[client_id] ~= nil
+local function hasClient(client_id)
+    return CLIENTS[client_id] ~= nil
 end
 
-function ClientMapCls:getClient(client_id)
-    return self[client_id]
+local function getClient(client_id)
+    return CLIENTS[client_id]
 end
 
-function ClientMapCls:removeClient(client_id)
-    self[client_id] = nil
+local function removeClient(client_id)
+    CLIENTS[client_id] = nil
 end
 
-function ClientMapCls:registerClient(client_id, client_name)
-    if not self:hasClient(client_id) then
-        self[client_id] = new_client(client_id, client_name)
-        LOGGER:debug(
-            "Register client (client_id:" .. client_id .. ", client_name:" .. client_name .. ") in ClientMapCls"
-        )
+local function registerClient(client_id, client_name)
+    if not hasClient(client_id) then
+        CLIENTS[client_id] = new_client(client_id, client_name)
+        LOGGER:debug("Register client (client_id:" .. client_id .. ", client_name:" .. client_name .. ") in CLIENTS")
     end
-end
-
-local function new_client_map()
-    local client_map = vim.tbl_extend("force", vim.deepcopy(ClientMapCls), {})
-    return client_map
 end
 
 -- }
@@ -294,11 +283,11 @@ local function spin(client_id, token)
         spin(client_id, token)
     end
 
-    if not CLIENTS:hasClient(client_id) then
+    if not hasClient(client_id) then
         LOGGER:debug("Series not found: client_id:" .. client_id .. " not exist (token:" .. token .. "), stop spin")
         return
     end
-    local client = CLIENTS:getClient(client_id)
+    local client = getClient(client_id)
     if not client:hasSeries(token) then
         LOGGER:debug(
             "Series not found: token:" .. token .. " not exist in CLIENTS[" .. client_id .. "].serieses, stop spin"
@@ -314,7 +303,7 @@ local function spin(client_id, token)
     -- if series done, remove this series from data in decay time
     if series.done then
         local function remove_series_later()
-            if not CLIENTS:hasClient(client_id) then
+            if not hasClient(client_id) then
                 LOGGER:debug(
                     "Series not found: client_id:"
                         .. client_id
@@ -324,7 +313,7 @@ local function spin(client_id, token)
                 )
                 return
             end
-            local client2 = CLIENTS:getClient(client_id)
+            local client2 = getClient(client_id)
             if not client2:hasSeries(token) then
                 LOGGER:debug(
                     "Series not found: token:"
@@ -339,7 +328,7 @@ local function spin(client_id, token)
             LOGGER:debug("Series removed (client_id:" .. client_id .. ",token:" .. token .. ")")
             if client2:empty() then
                 -- if client is empty, also remove it from CLIENTS
-                CLIENTS:removeClient(client_id)
+                removeClient(client_id)
             end
             emitEvent() -- notify user
         end
@@ -355,12 +344,12 @@ local function progress_handler(err, msg, ctx)
     local client_name = the_neovim_client and the_neovim_client.name or "unknown"
 
     -- register client id if not exist
-    CLIENTS:registerClient(client_id, client_name)
+    registerClient(client_id, client_name)
 
     local value = msg.value
     local token = msg.token
 
-    local client = CLIENTS:getClient(client_id)
+    local client = getClient(client_id)
     if value.kind == "begin" then
         -- add task
         local series = new_series(value.title, value.message, value.percentage)
@@ -405,7 +394,7 @@ local function progress()
     for client_id, client_data in pairs(CLIENTS) do
         if vim.lsp.client_is_stopped(client_id) then
             -- if this client is stopped, remove it from CLIENTS
-            CLIENTS:removeClient(client_id)
+            removeClient(client_id)
         else
             local deduped_serieses = {}
             for token, series in pairs(client_data.serieses) do
@@ -512,7 +501,6 @@ local function setup(option)
         file = CONFIG.file_log,
         filename = string.format("%s/%s", vim.fn.stdpath("data"), CONFIG.file_log_name),
     })
-    CLIENTS = new_client_map()
 
     if not REGISTERED then
         if vim.lsp.handlers["$/progress"] then
