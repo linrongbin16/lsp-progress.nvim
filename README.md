@@ -67,13 +67,13 @@ augroup END
 
 ```lua
 require('lsp-progress').setup({
-    -- spin icon array
+    -- spinning icon array
     spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" },
 
-    -- spin update rate in milliseconds
-    update_time = 200,
+    -- spinning update time in milliseconds
+    spin_update_time = 200,
 
-    -- if there's any lsp server active on current buffer
+    -- indicate if there's any lsp server active on current buffer
     -- icon: nf-fa-gear \uf013
     sign = " LSP",
 
@@ -81,11 +81,15 @@ require('lsp-progress').setup({
     seperator = " ",
 
     -- last message is cached in decay time in milliseconds
-    -- since some messages could appear and disappear in an instant
+    -- messages could be really fast, appear and disappear in an instant
     decay = 1000,
 
     -- user event name
     event = "LspProgressStatusUpdated",
+
+    -- event update time limit in milliseconds
+    -- sometimes progress handler could emit many events, trigger statusline refresh too many
+    event_update_time_limit = 125,
 
     -- max progress string length
     max_size = 120,

@@ -7,11 +7,12 @@
 
 local DEFAULTS = {
     spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" },
-    update_time = 200,
+    spin_update_time = 200,
     sign = " LSP", -- nf-fa-gear \uf013
     seperator = " ",
     decay = 1000,
     event = "LspProgressStatusUpdated",
+    event_update_time_limit = 125,
     max_size = 120,
     debug = false,
     console_log = true,
@@ -22,11 +23,25 @@ local CONFIG = {}
 local REGISTERED = false
 local CLIENTS = {}
 local LOGGER = nil
+local EMITED = false
 
 -- }
 
 -- {
 -- util
+
+local function resetEmited()
+    EMITED = false
+end
+
+local function emitEvent()
+    if not EMITED then
+        EMITED = true
+        vim.cmd("doautocmd User " .. CONFIG.event)
+        vim.defer_fn(resetEmited, CONFIG.event_update_time_limit)
+        LOGGER:debug("Emit user event:" .. CONFIG.event)
+    end
+end
 
 -- {
 -- LoggerCls
@@ -116,11 +131,6 @@ local function new_logger(option)
 end
 
 -- }
-
-local function emitEvent()
-    vim.cmd("doautocmd User " .. CONFIG.event)
-    LOGGER:debug("Emit user event:" .. CONFIG.event)
-end
 
 -- }
 
@@ -245,39 +255,48 @@ end
 -- {
 -- CLIENTS
 
-local function hasClient(client_id)
-    return CLIENTS[client_id] ~= nil
+local ClientMapCls = {}
+
+function ClientMapCls:hasClient(client_id)
+    return self[client_id] ~= nil
 end
 
-local function getClient(client_id)
-    return CLIENTS[client_id]
+function ClientMapCls:getClient(client_id)
+    return self[client_id]
 end
 
-local function removeClient(client_id)
-    CLIENTS[client_id] = nil
+function ClientMapCls:removeClient(client_id)
+    self[client_id] = nil
 end
 
-local function registerClient(client_id, client_name)
-    if not hasClient(client_id) then
-        CLIENTS[client_id] = new_client(client_id, client_name)
-        LOGGER:debug("Register client (client_id:" .. client_id .. ", client_name:" .. client_name .. ") in CLIENTS")
+function ClientMapCls:registerClient(client_id, client_name)
+    if not self:hasClient(client_id) then
+        self[client_id] = new_client(client_id, client_name)
+        LOGGER:debug(
+            "Register client (client_id:" .. client_id .. ", client_name:" .. client_name .. ") in ClientMapCls"
+        )
     end
 end
 
--- }
+local function new_client_map()
+    local client_map = vim.tbl_extend("force", vim.deepcopy(ClientMapCls), {})
+    return client_map
+end
 
 -- }
 
-local function spinStart(client_id, token)
+-- }
+
+local function spin(client_id, token)
     local function spinAgain()
-        spinStart(client_id, token)
+        spin(client_id, token)
     end
 
-    if not hasClient(client_id) then
+    if not CLIENTS:hasClient(client_id) then
         LOGGER:debug("Series not found: client_id:" .. client_id .. " not exist (token:" .. token .. "), stop spin")
         return
     end
-    local client = getClient(client_id)
+    local client = CLIENTS:getClient(client_id)
     if not client:hasSeries(token) then
         LOGGER:debug(
             "Series not found: token:" .. token .. " not exist in CLIENTS[" .. client_id .. "].serieses, stop spin"
@@ -288,12 +307,12 @@ local function spinStart(client_id, token)
 
     client:increaseSpinIndex() -- client increase spin_index
     emitEvent() -- notify user to update spinning animation
-    vim.defer_fn(spinAgain, CONFIG.update_time) -- no need to check if series is done or not, just keep spinning
+    vim.defer_fn(spinAgain, CONFIG.spin_update_time) -- no need to check if series is done or not, just keep spinning
 
     -- if series done, remove this series from data in decay time
     if series.done then
         local function remove_series_later()
-            if not hasClient(client_id) then
+            if not CLIENTS:hasClient(client_id) then
                 LOGGER:debug(
                     "Series not found: client_id:"
                         .. client_id
@@ -303,7 +322,7 @@ local function spinStart(client_id, token)
                 )
                 return
             end
-            local client2 = getClient(client_id)
+            local client2 = CLIENTS:getClient(client_id)
             if not client2:hasSeries(token) then
                 LOGGER:debug(
                     "Series not found: token:"
@@ -318,7 +337,7 @@ local function spinStart(client_id, token)
             LOGGER:debug("Series removed (client_id:" .. client_id .. ",token:" .. token .. ")")
             if client2:empty() then
                 -- if client is empty, also remove it from CLIENTS
-                removeClient(client_id)
+                CLIENTS:removeClient(client_id)
             end
             emitEvent() -- notify user
         end
@@ -334,17 +353,17 @@ local function progress_handler(err, msg, ctx)
     local client_name = the_neovim_client and the_neovim_client.name or "unknown"
 
     -- register client id if not exist
-    registerClient(client_id, client_name)
+    CLIENTS:registerClient(client_id, client_name)
 
     local value = msg.value
     local token = msg.token
 
-    local client = getClient(client_id)
+    local client = CLIENTS:getClient(client_id)
     if value.kind == "begin" then
         -- add task
         local series = new_series(value.title, value.message, value.percentage)
         client:addSeries(token, series)
-        spinStart(client_id, token) -- start spin, inside it will notify user
+        spin(client_id, token) -- start spin, inside it will notify user
         LOGGER:debug("Add new series to (client_id:" .. client_id .. ", token:" .. token .. "): " .. series:toString())
     elseif value.kind == "report" then
         local series = client:getSeries(token)
@@ -384,7 +403,7 @@ local function progress()
     for client_id, client_data in pairs(CLIENTS) do
         if vim.lsp.client_is_stopped(client_id) then
             -- if this client is stopped, remove it from CLIENTS
-            removeClient(client_id)
+            CLIENTS:removeClient(client_id)
         else
             local deduped_serieses = {}
             for token, series in pairs(client_data.serieses) do
@@ -483,13 +502,13 @@ end
 local function setup(option)
     -- override default config
     CONFIG = vim.tbl_deep_extend("force", DEFAULTS, option or {})
-
     LOGGER = new_logger({
         level = CONFIG.debug and "DEBUG" or "WARN",
         console = CONFIG.console_log,
         file = CONFIG.file_log,
         filename = string.format("%s/%s", vim.fn.stdpath("data"), CONFIG.file_log_name),
     })
+    CLIENTS = new_client_map()
 
     if not REGISTERED then
         if vim.lsp.handlers["$/progress"] then
