@@ -7,12 +7,13 @@
 
 local DEFAULTS = {
     spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" },
-    update_time = 200,
+    spin_update_time = 200,
     sign = " LSP", -- nf-fa-gear \uf013
     seperator = " ",
     decay = 1000,
     event = "LspProgressStatusUpdated",
-    max_size = 120,
+    event_update_time_limit = 125,
+    max_size = -1,
     debug = false,
     console_log = true,
     file_log = false,
@@ -22,11 +23,25 @@ local CONFIG = {}
 local REGISTERED = false
 local CLIENTS = {}
 local LOGGER = nil
+local EMITED = false
 
 -- }
 
 -- {
 -- util
+
+local function resetEmited()
+    EMITED = false
+end
+
+local function emitEvent()
+    if not EMITED then
+        EMITED = true
+        vim.cmd("doautocmd User " .. CONFIG.event)
+        vim.defer_fn(resetEmited, CONFIG.event_update_time_limit)
+        LOGGER:debug("Emit user event:" .. CONFIG.event)
+    end
+end
 
 -- {
 -- LoggerCls
@@ -116,11 +131,6 @@ local function new_logger(option)
 end
 
 -- }
-
-local function emitEvent()
-    vim.cmd("doautocmd User " .. CONFIG.event)
-    LOGGER:debug("Emit user event:" .. CONFIG.event)
-end
 
 -- }
 
@@ -268,9 +278,9 @@ end
 
 -- }
 
-local function spinStart(client_id, token)
+local function spin(client_id, token)
     local function spinAgain()
-        spinStart(client_id, token)
+        spin(client_id, token)
     end
 
     if not hasClient(client_id) then
@@ -288,7 +298,7 @@ local function spinStart(client_id, token)
 
     client:increaseSpinIndex() -- client increase spin_index
     emitEvent() -- notify user to update spinning animation
-    vim.defer_fn(spinAgain, CONFIG.update_time) -- no need to check if series is done or not, just keep spinning
+    vim.defer_fn(spinAgain, CONFIG.spin_update_time) -- no need to check if series is done or not, just keep spinning
 
     -- if series done, remove this series from data in decay time
     if series.done then
@@ -344,7 +354,7 @@ local function progress_handler(err, msg, ctx)
         -- add task
         local series = new_series(value.title, value.message, value.percentage)
         client:addSeries(token, series)
-        spinStart(client_id, token) -- start spin, inside it will notify user
+        spin(client_id, token) -- start spin, inside it will notify user
         LOGGER:debug("Add new series to (client_id:" .. client_id .. ", token:" .. token .. "): " .. series:toString())
     elseif value.kind == "report" then
         local series = client:getSeries(token)
@@ -469,8 +479,10 @@ local function progress()
     end
     if #messages > 0 then
         local content = table.concat(messages, CONFIG.seperator)
-        if vim.fn.strdisplaywidth(content) > CONFIG.max_size then
-            content = vim.fn.strcharpart(content, 0, CONFIG.max_size - 1) .. "…"
+        if CONFIG.max_size >= 0 then
+            if vim.fn.strdisplaywidth(content) > CONFIG.max_size then
+                content = vim.fn.strcharpart(content, 0, CONFIG.max_size - 1) .. "…"
+            end
         end
         LOGGER:debug("Progress messages(" .. #messages .. "):" .. content)
         return CONFIG.sign .. " " .. content
@@ -483,7 +495,6 @@ end
 local function setup(option)
     -- override default config
     CONFIG = vim.tbl_deep_extend("force", DEFAULTS, option or {})
-
     LOGGER = new_logger({
         level = CONFIG.debug and "DEBUG" or "WARN",
         console = CONFIG.console_log,
