@@ -91,8 +91,8 @@ require('lsp-progress').setup({
     -- sometimes progress handler could emit many events, trigger statusline refresh too many
     event_update_time_limit = 125,
 
-    -- max progress string length
-    max_size = 120,
+    -- max progress string length, by default -1 is unlimit
+    max_size = -1,
 
     -- if enable debug
     debug = false,

@@ -13,7 +13,7 @@ local DEFAULTS = {
     decay = 1000,
     event = "LspProgressStatusUpdated",
     event_update_time_limit = 125,
-    max_size = 120,
+    max_size = -1,
     debug = false,
     console_log = true,
     file_log = false,
@@ -317,10 +317,10 @@ local function spin(client_id, token)
             if not CLIENTS:hasClient(client_id) then
                 LOGGER:debug(
                     "Series not found: client_id:"
-                    .. client_id
-                    .. " not exist (token:"
-                    .. token
-                    .. "), stop remove series"
+                        .. client_id
+                        .. " not exist (token:"
+                        .. token
+                        .. "), stop remove series"
                 )
                 return
             end
@@ -328,10 +328,10 @@ local function spin(client_id, token)
             if not client2:hasSeries(token) then
                 LOGGER:debug(
                     "Series not found: token:"
-                    .. token
-                    .. " not exist in CLIENTS["
-                    .. client_id
-                    .. "].serieses, stop remove series"
+                        .. token
+                        .. " not exist in CLIENTS["
+                        .. client_id
+                        .. "].serieses, stop remove series"
                 )
                 return
             end
@@ -420,52 +420,52 @@ local function progress()
                         deduped_serieses[key] = series
                         LOGGER:debug(
                             "Series duplicated by formatKey `"
-                            .. key
-                            .. "` (client_id:"
-                            .. client_id
-                            .. ", token:"
-                            .. token
-                            .. "), choose new series for its percentage is nil"
+                                .. key
+                                .. "` (client_id:"
+                                .. client_id
+                                .. ", token:"
+                                .. token
+                                .. "), choose new series for its percentage is nil"
                         )
                     elseif old_series.percentage ~= nil then
                         -- two series have percentage
                         deduped_serieses[key] = series and series.percentage < old_series.percentage or old_series
                         LOGGER:debug(
                             "Series duplicated by formatKey `"
-                            .. key
-                            .. "` (client_id:"
-                            .. client_id
-                            .. ", token:"
-                            .. token
-                            .. "), both series has percentage, choose lower one ("
-                            .. series.percentage
-                            .. ":"
-                            .. old_series.percentage
-                            .. ")"
+                                .. key
+                                .. "` (client_id:"
+                                .. client_id
+                                .. ", token:"
+                                .. token
+                                .. "), both series has percentage, choose lower one ("
+                                .. series.percentage
+                                .. ":"
+                                .. old_series.percentage
+                                .. ")"
                         )
                     else
                         -- otherwise, series has a percentage, old_series don't has
                         -- keep old one
                         LOGGER:debug(
                             "Series duplicated by formatKey `"
-                            .. key
-                            .. "` (client_id:"
-                            .. client_id
-                            .. ", token:"
-                            .. token
-                            .. "), keeps old series for its percentage is nil"
+                                .. key
+                                .. "` (client_id:"
+                                .. client_id
+                                .. ", token:"
+                                .. token
+                                .. "), keeps old series for its percentage is nil"
                         )
                     end
                 else
                     deduped_serieses[key] = series
                     LOGGER:debug(
                         "Series formatKey `"
-                        .. key
-                        .. "` (client_id:"
-                        .. client_id
-                        .. ", token:"
-                        .. token
-                        .. ") first show up, add it to deduped_serieses"
+                            .. key
+                            .. "` (client_id:"
+                            .. client_id
+                            .. ", token:"
+                            .. token
+                            .. ") first show up, add it to deduped_serieses"
                     )
                 end
             end
@@ -479,19 +479,21 @@ local function progress()
                 table.insert(
                     messages,
                     "["
-                    .. client_data.client_name
-                    .. "] "
-                    .. CONFIG.spinner[client_data.spin_index + 1]
-                    .. " "
-                    .. table.concat(client_messages, ", ")
+                        .. client_data.client_name
+                        .. "] "
+                        .. CONFIG.spinner[client_data.spin_index + 1]
+                        .. " "
+                        .. table.concat(client_messages, ", ")
                 )
             end
         end
     end
     if #messages > 0 then
         local content = table.concat(messages, CONFIG.seperator)
-        if vim.fn.strdisplaywidth(content) > CONFIG.max_size then
-            content = vim.fn.strcharpart(content, 0, CONFIG.max_size - 1) .. "…"
+        if CONFIG.max_size >= 0 then
+            if vim.fn.strdisplaywidth(content) > CONFIG.max_size then
+                content = vim.fn.strcharpart(content, 0, CONFIG.max_size - 1) .. "…"
+            end
         end
         LOGGER:debug("Progress messages(" .. #messages .. "):" .. content)
         return CONFIG.sign .. " " .. content
