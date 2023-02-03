@@ -115,4 +115,4 @@ require('lsp-progress').setup({
 
 # Notes
 
-See: doc/notes.md
+See: [doc/notes.md](doc/notes.md)
