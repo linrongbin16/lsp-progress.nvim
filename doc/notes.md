@@ -2,35 +2,31 @@
 
 ## Design Pattern
 
-Implement with a producer/consumer pattern:
+Implement in producer/consumer pattern:
 
-- Producer: progress handler is registered to `$/progress`, callback when lsp status updated. Then update status data and emit event `LspProgressStatusUpdated`.
-- Consumer: statusline listens and consumes the event, get the latest status data, format and print to statusline.
+- Producer: progress handler is registered to `$/progress`, callback when lsp status updated. Then update progress data and emit event `LspProgressStatusUpdated`.
+- Consumer: statusline listens and consumes the event, get the latest progress data and print to statusline.
 
 ## Data Structure
 
-A buffer could have multiple active lsp clients. Each client could have multiple messages. Every message should be a data series over time, from beginning to end.
+A Neovim buffer can have multiple active lsp clients. Each client can have multiple messages. Every message is a data series over time, from beginning to end.
 
 There're two hash maps based on this situation:
 
 ```
-                    clients:
-                    /      \
-            (client_id1)  (client_id2)
-                  /          \
-                tasks        ...
-                /   \
-          (token1)  (token2)
-              /       \
-           task1      task2
+                clients (client_id => client)
+                /      \
+           client1    client2 (token => series)
+          /      \
+      series1    series2
 ```
 
-1. Clients: a hash map that mapping from lsp client id (`client_id`) to all its series messages, here we call them tasks.
-2. Tasks: a hash map that mapping from a message token (`token`) to a unique message.
+1. Clients: a hash map that mapping lsp client id (`client_id`) to all its messages (here we call them `serieses`).
+2. Serieses: a hash map that mapping message token (`token`) to a message (`series`).
 
-## Message State
+## Series(Message) State
 
-Every message should have 3 states (belong to same token):
+Every series(message) under same token have 3 states:
 
 - begin
 - report
@@ -49,3 +45,10 @@ This also means there's a new producer who emit event: whenever spins(background
 Lsp status could be really fast(appears and disappears in an instant) even user cannot see it clearly. A decay time should be added to cache the last message for a while.
 
 And still, in decay time, the animation still needs to keep spinning!
+
+## Message Duplication
+
+I have a super large project and when I open a jsx file and type `:w`, I can see 4 more `[null-ls] diagnostics` and `[null-ls] formatting` running!
+
+That duplicated messages seems quite noisy and progress should dedup these messages when formatting.
+
