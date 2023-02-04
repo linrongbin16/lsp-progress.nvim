@@ -2,7 +2,7 @@
 
 ## Design Pattern
 
-Implement in producer/consumer pattern:
+Implement with producer/consumer pattern:
 
 - Producer: progress handler is registered to `$/progress`, callback when lsp status updated. Then update progress data and emit event `LspProgressStatusUpdated`.
 - Consumer: statusline listens and consumes the event, get the latest progress data and print to statusline.
