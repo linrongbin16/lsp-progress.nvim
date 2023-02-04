@@ -16,7 +16,7 @@ There're two hash maps based on this situation:
 ```
                 clients (client_id => client)
                 /      \
-           client1    client2 (token => series)
+           client1    client2 (token => serieses)
           /      \
       series1    series2
 ```
