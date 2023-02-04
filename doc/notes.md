@@ -48,7 +48,7 @@ And still, in decay time, the animation still needs to keep spinning!
 
 ## Message Duplication
 
-I have a super large project and when I open a jsx file and type `:w`, I can see 4 more `[null-ls] diagnostics` and `[null-ls] formatting` running!
+A super large react project sometimes can 4 or more `[null-ls] diagnostics` and `[null-ls] formatting` running at same time!
 
-That duplicated messages seems quite noisy and progress should dedup these messages when formatting.
+That seems quite noisy and progress should dedup these messages when formatting.
 
