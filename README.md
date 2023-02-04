@@ -91,8 +91,8 @@ require('lsp-progress').setup({
     event = "LspProgressStatusUpdated",
 
     -- event update time limit in milliseconds
-    -- sometimes progress handler could emit many events in a short time
-    -- while trigger statusline refresh too many will consumes a lot of IO/CPU
+    -- sometimes progress handler could emit many events in an instant
+    -- while refreshing statusline cause too heavy synchronized IO
     -- limit the event emit rate to reduce the cost
     event_update_time_limit = 125,
 
