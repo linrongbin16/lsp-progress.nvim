@@ -9,7 +9,7 @@ Implement with producer/consumer pattern:
 
 ## Data Structure
 
-A Neovim buffer can have multiple active lsp clients. Each client can have multiple messages. Every message is a data series over time, from beginning to end.
+A buffer can have multiple active lsp clients. Each client can have multiple messages. Every message is a data series over time, from beginning to end.
 
 There're two hash maps based on this situation:
 
