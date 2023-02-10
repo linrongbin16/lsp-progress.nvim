@@ -10,6 +10,8 @@ local DEFAULTS = {
     spin_update_time = 200,
     sign = " LSP", -- nf-fa-gear \uf013
     seperator = " ",
+    show_client_name = true,
+    show_message_text = true,
     decay = 1000,
     event = "LspProgressStatusUpdated",
     event_update_time_limit = 125,
@@ -465,14 +467,19 @@ local function progress()
                 table.insert(client_messages, msg)
             end
             if #client_messages > 0 then
+                local client_name = ''
+                if CONFIG.show_client_name then
+                  client_name = "[" .. client_data.client_name .. "] "
+                end
+                local message_text = ''
+                if CONFIG.show_message_text then
+                  message_text = " " .. table.concat(client_messages, ", ")
+                end
                 table.insert(
                     messages,
-                    "["
-                        .. client_data.client_name
-                        .. "] "
+                        client_name
                         .. CONFIG.spinner[client_data.spin_index + 1]
-                        .. " "
-                        .. table.concat(client_messages, ", ")
+                        .. message_text
                 )
             end
         end
