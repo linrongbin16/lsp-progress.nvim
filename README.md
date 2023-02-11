@@ -9,7 +9,7 @@ Another lsp progress status for Neovim.
 
 # Requirement
 
-Neovim version &ge; 0.8.0.
+Neovim version &ge; 0.8.
 
 # Install
 
