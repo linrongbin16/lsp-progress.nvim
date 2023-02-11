@@ -13,7 +13,7 @@ local DEFAULTS = {
     decay = 1000,
     event = "LspProgressStatusUpdated",
     event_update_time_limit = 125,
-    max_size = -1, -- deprecated
+    max_size = -1,
     series_format = function(title, message, percentage, done)
         local builder = {}
         local has_title = false
@@ -35,27 +35,13 @@ local DEFAULTS = {
         return table.concat(builder, " ")
     end,
     client_format = function(client_name, spinner, series_messages)
-        if #series_messages > 0 then
-            local msg = table.concat(series_messages, ", ")
-            return "[" .. client_name .. "] " .. spinner .. " " .. " " .. msg
-        else
-            return nil
-        end
+        return #series_messages > 0
+                and ("[" .. client_name .. "] " .. spinner .. " " .. " " .. table.concat(series_messages, ", "))
+            or nil
     end,
     format = function(client_messages)
         local sign = " LSP" -- nf-fa-gear \uf013
-        local max_size = 500
-        if #client_messages > 0 then
-            local content = table.concat(client_messages, " ")
-            if max_size >= 0 then
-                if vim.fn.strdisplaywidth(content) > max_size then
-                    content = vim.fn.strcharpart(content, 0, max_size - 1) .. "…"
-                end
-            end
-            return sign .. " " .. content
-        else
-            return sign
-        end
+        return #client_messages > 0 and (sign .. " " .. table.concat(client_messages, " ")) or sign
     end,
     debug = false,
     console_log = true,
@@ -517,7 +503,13 @@ local function progress()
             end
         end
     end
-    return CONFIG.format(client_messages)
+    local content = CONFIG.format(client_messages)
+    if CONFIG.max_size >= 0 then
+        if vim.fn.strdisplaywidth(content) > CONFIG.max_size then
+            content = vim.fn.strcharpart(content, 0, CONFIG.max_size - 1) .. "…"
+        end
+    end
+    return content
 end
 
 local function setup(option)
