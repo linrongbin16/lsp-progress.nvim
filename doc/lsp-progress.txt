@@ -1,4 +1,4 @@
-*lsp-progress.txt*                              Another LSP progress status plugin for neovim.
+*lsp-progress.txt*                              Another lsp progress status for Neovim.
 *lsp-progress.nvim*
 
 Author: Lin Rongbin <linrongbin16@outlook.com>
