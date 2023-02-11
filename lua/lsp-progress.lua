@@ -8,12 +8,55 @@
 local DEFAULTS = {
     spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" },
     spin_update_time = 200,
-    sign = " LSP", -- nf-fa-gear \uf013
-    seperator = " ",
+    sign = " LSP", -- nf-fa-gear \uf013, deprecated
+    seperator = " ", -- deprecated
     decay = 1000,
     event = "LspProgressStatusUpdated",
     event_update_time_limit = 125,
-    max_size = -1,
+    max_size = -1, -- deprecated
+    series_format = function(title, message, percentage, done)
+        local builder = {}
+        local has_title = false
+        local has_message = false
+        if title and title ~= "" then
+            table.insert(builder, title)
+            has_title = true
+        end
+        if message and message ~= "" then
+            table.insert(builder, self.message)
+            has_message = true
+        end
+        if percentage and (has_title or has_message) then
+            table.insert(builder, string.format("(%.0f%%%%)", percentage))
+        end
+        if done and (has_title or has_message) then
+            table.insert(builder, "- done")
+        end
+        return table.concat(builder, " ")
+    end,
+    client_format = function(client_name, spinner, series_messages)
+        if #series_messages > 0 then
+            local msg = table.concat(series_messages, ", ")
+            return "[" .. client_name .. "] " .. spinner .. " " .. " " .. msg
+        else
+            return nil
+        end
+    end,
+    format = function(client_messages)
+        local sign = " LSP" -- nf-fa-gear \uf013
+        local max_size = 500
+        if #client_messages > 0 then
+            local content = table.concat(client_messages, " ")
+            if max_size >= 0 then
+                if vim.fn.strdisplaywidth(content) > max_size then
+                    content = vim.fn.strcharpart(content, 0, max_size - 1) .. "…"
+                end
+            end
+            return sign .. " " .. content
+        else
+            return sign
+        end
+    end,
     debug = false,
     console_log = true,
     file_log = false,
@@ -366,12 +409,12 @@ local function progress_handler(err, msg, ctx)
             LOGGER:debug("Series not found when update: client_id:" .. client_id .. ", token:" .. token)
         end
     else
-        local function client_format()
+        local function fmt_warn()
             return "from client:[" .. client_id .. "-" .. client_name .. "]!"
         end
 
         if value.kind ~= "end" then
-            LOGGER:warn("Unknown message kind `" .. value.kind .. "` " .. client_format())
+            LOGGER:warn("Unknown message kind `" .. value.kind .. "` " .. fmt_warn())
         end
         if client:hasSeries(token) then
             local series = client:getSeries(token)
@@ -390,7 +433,7 @@ local function progress()
         return ""
     end
 
-    local messages = {}
+    local client_messages = {}
     for client_id, client_data in pairs(CLIENTS) do
         if vim.lsp.client_is_stopped(client_id) then
             -- if this client is stopped, remove it from CLIENTS
@@ -458,38 +501,23 @@ local function progress()
                     )
                 end
             end
-            local client_messages = {}
+            local series_messages = {}
             for _, series in pairs(deduped_serieses) do
-                local msg = series:format()
+                local msg = CONFIG.series_format(series.title, series.message, series.percentage, series.done)
                 LOGGER:debug("Get series msg (client_id:" .. client_id .. ") in progress: " .. msg)
-                table.insert(client_messages, msg)
+                table.insert(series_messages, msg)
             end
-            if #client_messages > 0 then
-                table.insert(
-                    messages,
-                    "["
-                        .. client_data.client_name
-                        .. "] "
-                        .. CONFIG.spinner[client_data.spin_index + 1]
-                        .. " "
-                        .. table.concat(client_messages, ", ")
-                )
+            local clientmsg = CONFIG.client_format(
+                client_data.client_name,
+                CONFIG.spinner[client_data.spin_index + 1],
+                series_messages
+            )
+            if clientmsg and clientmsg ~= "" then
+                table.insert(client_messages, clientmsg)
             end
         end
     end
-    if #messages > 0 then
-        local content = table.concat(messages, CONFIG.seperator)
-        if CONFIG.max_size >= 0 then
-            if vim.fn.strdisplaywidth(content) > CONFIG.max_size then
-                content = vim.fn.strcharpart(content, 0, CONFIG.max_size - 1) .. "…"
-            end
-        end
-        LOGGER:debug("Progress messages(" .. #messages .. "):" .. content)
-        return CONFIG.sign .. " " .. content
-    else
-        LOGGER:debug("Progress messages(" .. #messages .. "): no message")
-        return CONFIG.sign
-    end
+    return CONFIG.format(client_messages)
 end
 
 local function setup(option)
