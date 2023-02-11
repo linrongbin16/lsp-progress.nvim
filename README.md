@@ -7,6 +7,10 @@ Another lsp progress status for Neovim.
 
 **Thanks to [lsp-status.nvim](https://github.com/nvim-lua/lsp-status.nvim) and [fidget.nvim](https://github.com/j-hui/fidget.nvim), everything about lsp progress I learned and copied source code is from them.**
 
+# Requirement
+
+Neovim version &ge; 0.8.0.
+
 # Install
 
 ## Lazy
@@ -76,10 +80,12 @@ require('lsp-progress').setup({
     -- spinning update time in milliseconds
     spin_update_time = 200,
 
+    -- @deprecated
     -- indicate if there's any lsp server active on current buffer
     -- icon: nf-fa-gear \uf013
     sign = " LSP",
 
+    -- @deprecated
     -- seperate multiple messages in one statusline
     seperator = " ",
 
@@ -96,8 +102,58 @@ require('lsp-progress').setup({
     -- limit the event emit rate to reduce the cost
     event_update_time_limit = 125,
 
+    -- @deprecated
     -- max progress string length, by default -1 is unlimit
     max_size = -1,
+
+    -- format series message
+    series_format = function(title, message, percentage, done)
+        local builder = {}
+        local has_title = false
+        local has_message = false
+        if title and title ~= "" then
+            table.insert(builder, title)
+            has_title = true
+        end
+        if message and message ~= "" then
+            table.insert(builder, self.message)
+            has_message = true
+        end
+        if percentage and (has_title or has_message) then
+            table.insert(builder, string.format("(%.0f%%%%)", percentage))
+        end
+        if done and (has_title or has_message) then
+            table.insert(builder, "- done")
+        end
+        return table.concat(builder, " ")
+    end,
+
+    -- format client message
+    client_format = function(client_name, spinner, series_messages)
+        if #series_messages > 0 then
+            local msg = table.concat(series_messages, ", ")
+            return "[" .. client_name .. "] " .. spinner .. " " .. " " .. msg
+        else
+            return nil
+        end
+    end,
+
+    -- format (final) message
+    format = function(client_messages)
+        local sign = " LSP" -- nf-fa-gear \uf013
+        local max_size = 500
+        if #client_messages > 0 then
+            local content = table.concat(client_messages, " ")
+            if max_size >= 0 then
+                if vim.fn.strdisplaywidth(content) > max_size then
+                    content = vim.fn.strcharpart(content, 0, max_size - 1) .. "…"
+                end
+            end
+            return sign .. " " .. content
+        else
+            return sign
+        end
+    end,
 
     -- if enable debug
     debug = false,
