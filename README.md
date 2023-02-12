@@ -138,16 +138,16 @@ require('lsp-progress').setup({
         return #client_messages > 0 and (sign .. " " .. table.concat(client_messages, " ")) or sign
     end,
 
-    -- if enable debug
+    -- enable debug
     debug = false,
 
-    -- if print log to console
+    -- print log to console
     console_log = true,
 
-    -- if print log to file
+    -- print log to file
     file_log = false,
 
-    -- logging file to write, only if file_log=true
+    -- file to write logs, work with file_log=true
     file_log_name = "lsp-progress.log",
 })
 ```
