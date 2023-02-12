@@ -23,7 +23,7 @@ local DEFAULTS = {
             has_title = true
         end
         if message and message ~= "" then
-            table.insert(builder, self.message)
+            table.insert(builder, message)
             has_message = true
         end
         if percentage and (has_title or has_message) then
@@ -108,6 +108,7 @@ function LoggerCls:log(level, msg)
     end
     local traceinfo = debug.getinfo(2, "Sl")
     local lineinfo = traceinfo.short_src .. ":" .. traceinfo.currentline
+  ---@diagnostic disable-next-line: missing-parameter
     local split_msg = vim.split(msg, "\n")
 
     local function log_format(c, s)
@@ -130,11 +131,13 @@ function LoggerCls:log(level, msg)
     end
     if self.file then
         local fp = io.open(self.filename, "a")
-        for _, m in ipairs(split_msg) do
-            fp:write(log_format(self.counter, m) .. "\n")
+        if fp ~= nil then
+            for _, m in ipairs(split_msg) do
+                fp:write(log_format(self.counter, m) .. "\n")
+            end
+            fp:close()
+          end
         end
-        fp:close()
-    end
     self.counter = self.counter + 1
 end
 
@@ -490,7 +493,7 @@ local function progress()
             local series_messages = {}
             for _, series in pairs(deduped_serieses) do
                 local msg = CONFIG.series_format(series.title, series.message, series.percentage, series.done)
-                LOGGER:debug("Get series msg (client_id:" .. client_id .. ") in progress: " .. msg)
+                LOGGER:debug("Get series msg (client_id:" .. client_id .. ") in progress: " .. vim.inspect(msg))
                 table.insert(series_messages, msg)
             end
             local clientmsg = CONFIG.client_format(
