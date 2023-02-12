@@ -36,7 +36,7 @@ local DEFAULTS = {
     end,
     client_format = function(client_name, spinner, series_messages)
         return #series_messages > 0
-                and ("[" .. client_name .. "] " .. spinner .. " " .. " " .. table.concat(series_messages, ", "))
+                and ("[" .. client_name .. "] " .. spinner .. " " .. table.concat(series_messages, ", "))
             or nil
     end,
     format = function(client_messages)
