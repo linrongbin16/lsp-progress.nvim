@@ -115,7 +115,7 @@ require('lsp-progress').setup({
             has_title = true
         end
         if message and message ~= "" then
-            table.insert(builder, self.message)
+            table.insert(builder, message)
             has_message = true
         end
         if percentage and (has_title or has_message) then
