@@ -108,7 +108,6 @@ function LoggerCls:log(level, msg)
     end
     local traceinfo = debug.getinfo(2, "Sl")
     local lineinfo = traceinfo.short_src .. ":" .. traceinfo.currentline
-  ---@diagnostic disable-next-line: missing-parameter
     local split_msg = vim.split(msg, "\n")
 
     local function log_format(c, s)
@@ -131,13 +130,11 @@ function LoggerCls:log(level, msg)
     end
     if self.file then
         local fp = io.open(self.filename, "a")
-        if fp ~= nil then
-            for _, m in ipairs(split_msg) do
-                fp:write(log_format(self.counter, m) .. "\n")
-            end
-            fp:close()
-          end
+        for _, m in ipairs(split_msg) do
+            fp:write(log_format(self.counter, m) .. "\n")
         end
+        fp:close()
+    end
     self.counter = self.counter + 1
 end
 
@@ -190,30 +187,30 @@ function SeriesCls:finish(message)
     self.done = true
 end
 
-function SeriesCls:format()
-    local builder = {}
-    local has_title = false
-    local has_message = false
-    if self.title and self.title ~= "" then
-        table.insert(builder, self.title)
-        has_title = true
-    end
-    if self.message and self.message ~= "" then
-        table.insert(builder, self.message)
-        has_message = true
-    end
-    if self.percentage then
-        if has_title or has_message then
-            table.insert(builder, string.format("(%.0f%%%%)", self.percentage))
-        end
-    end
-    if self.done then
-        if has_title or has_message then
-            table.insert(builder, "- done")
-        end
-    end
-    return table.concat(builder, " ")
-end
+-- function SeriesCls:format()
+--     local builder = {}
+--     local has_title = false
+--     local has_message = false
+--     if self.title and self.title ~= "" then
+--         table.insert(builder, self.title)
+--         has_title = true
+--     end
+--     if self.message and self.message ~= "" then
+--         table.insert(builder, self.message)
+--         has_message = true
+--     end
+--     if self.percentage then
+--         if has_title or has_message then
+--             table.insert(builder, string.format("(%.0f%%%%)", self.percentage))
+--         end
+--     end
+--     if self.done then
+--         if has_title or has_message then
+--             table.insert(builder, "- done")
+--         end
+--     end
+--     return table.concat(builder, " ")
+-- end
 
 function SeriesCls:formatKey()
     return tostring(self.title) .. "-" .. tostring(self.message)
@@ -518,11 +515,15 @@ end
 local function setup(option)
     -- override default config
     CONFIG = vim.tbl_deep_extend("force", DEFAULTS, option or {})
+
+    -- For Windows: $env:USERPROFILE\AppData\Local\nvim-data\lsp-progress.log
+    -- For *NIX: ~/.local/share/nvim/lsp-progress.log
+    local path_separator = package.config:sub(1, 1) -- Windows: '\\', *NIX: '/'
     LOGGER = new_logger({
         level = CONFIG.debug and "DEBUG" or "WARN",
         console = CONFIG.console_log,
         file = CONFIG.file_log,
-        filename = string.format("%s/%s", vim.fn.stdpath("data"), CONFIG.file_log_name),
+        filename = string.format("%s%s%s", vim.fn.stdpath("data"), path_separator, CONFIG.file_log_name),
     })
 
     if not REGISTERED then

@@ -74,38 +74,56 @@ augroup END
 
 ```lua
 require('lsp-progress').setup({
-    -- spinning icon array
+    -- @description
+    --   Spinning icon array.
     spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" },
 
-    -- spinning update time in milliseconds
+    -- @description
+    --   Spinning update time in milliseconds.
     spin_update_time = 200,
 
     -- @deprecated
-    -- indicate if there's any lsp server active on current buffer
-    -- icon: nf-fa-gear \uf013
+    -- @description
+    --   Indicate if there's any lsp server active on current buffer.
+    --   Icon: nf-fa-gear(\uf013).
     sign = " LSP",
 
     -- @deprecated
-    -- seperate multiple messages in one statusline
+    -- @description
+    --   Seperate multiple messages in one statusline
     seperator = " ",
 
-    -- last message is cached in decay time in milliseconds
-    -- messages could be really fast, appear and disappear in an instant
+    -- @description
+    --   Last message is cached in decay time in milliseconds.
+    --   Messages could be really fast, appear and disappear in an instant,
+    --   so here cache the last message for a while for user view.
     decay = 1000,
 
-    -- user event name
+    -- @description
+    --   User event name.
     event = "LspProgressStatusUpdated",
 
-    -- event update time limit in milliseconds
-    -- sometimes progress handler could emit many events in an instant
-    -- while refreshing statusline cause too heavy synchronized IO
-    -- limit the event emit rate to reduce the cost
+    -- @description
+    --   Event update time limit in milliseconds.
+    --   Sometimes progress handler could emit many events in an instant,
+    --   while refreshing statusline cause too heavy synchronized IO,
+    --   so limit the event emit rate to reduce the cost.
     event_update_time_limit = 125,
 
-    -- max progress string length, by default -1 is unlimit
+    -- @description
+    --   Max progress string length, by default -1 is unlimit.
     max_size = -1,
 
-    -- format series message
+    -- @description
+    --   Format series message.
+    -- @param title      Lsp progress message title
+    -- @param message    Lsp progress message body
+    -- @param percentage Lsp progress message in number 0%-100%
+    -- @param done       Indicate if this message is the last one in progress
+    -- @return           Return type: nil|string|table
+    --                   This message will be passed to `client_format` as
+    --                   one of the `series_messages` array. Or ignored if
+    --                   return nil.
     series_format = function(title, message, percentage, done)
         local builder = {}
         local has_title = false
@@ -127,27 +145,47 @@ require('lsp-progress').setup({
         return table.concat(builder, " ")
     end,
 
-    -- format client message
+    -- @description
+    --   Format client message.
+    -- @param client_name     Lsp client(server) name.
+    -- @param spinner         Lsp spinner icon.
+    -- @param series_messages Formatted series message array in this client.
+    -- @return                Return type: nil|string|table
+    --                        This message will be passed to `format` as one
+    --                        of the `client_messages` array. Or ignored if
+    --                        return nil.
     client_format = function(client_name, spinner, series_messages)
-        return #series_messages > 0 and ("[" .. client_name .. "] " .. spinner .. " " .. table.concat(series_messages, ", ")) or nil
+        return #series_messages > 0
+                and ("[" .. client_name .. "] " .. spinner .. " " .. table.concat(series_messages, ", "))
+            or nil
     end,
 
-    -- format (final) message
+    -- @description
+    --   Format (final) message.
+    -- @param client_messages Formatted client message array.
+    -- @return                Return type: nil|string
+    --                        This message will return to `progress` API.
     format = function(client_messages)
         local sign = " LSP" -- nf-fa-gear \uf013
         return #client_messages > 0 and (sign .. " " .. table.concat(client_messages, " ")) or sign
     end,
 
-    -- enable debug
+    -- @description
+    --   Enable debug.
     debug = false,
 
-    -- print log to console
+    -- @description
+    --   Print log to console.
     console_log = true,
 
-    -- print log to file
+    -- @description
+    --   Print log to file.
     file_log = false,
 
-    -- file to write logs, work with file_log=true
+    -- @description
+    --   Log file to write, work with `file_log=true`.
+    --   For Windows: `$env:USERPROFILE\AppData\Local\nvim-data\lsp-progress.log`.
+    --   For *NIX: `~/.local/share/nvim/lsp-progress.log`.
     file_log_name = "lsp-progress.log",
 })
 ```
