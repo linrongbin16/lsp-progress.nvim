@@ -6,14 +6,38 @@
 -- global
 
 local DEFAULTS = {
+    --- Spinning icon array.
     spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" },
+    --- Spinning update time in milliseconds.
     spin_update_time = 200,
+    --- Indicate if there's any lsp server active on current buffer.
+    -- Icon: nf-fa-gear(\uf013).
+    -- Notice: this config is deprecated.
     sign = " LSP", -- nf-fa-gear \uf013, deprecated
+    --- Seperate multiple messages in one statusline.
+    -- Notice: this config is deprecated.
     seperator = " ", -- deprecated
+    --- Last message is cached in decay time in milliseconds.
+    -- Messages could be really fast, appear and disappear in an instant, so
+    -- here cache the last message for a while for user view.
     decay = 1000,
+    --- User event name.
     event = "LspProgressStatusUpdated",
+    --- Event update time limit in milliseconds.
+    -- Sometimes progress handler could emit many events in an instant, while
+    -- refreshing statusline cause too heavy synchronized IO, so limit the
+    -- event emit rate to reduce the cost.
     event_update_time_limit = 125,
+    --- Max progress string length, by default -1 is unlimit.
     max_size = -1,
+    --- Format series message.
+    -- @param title      Lsp progress message title.
+    -- @param message    Lsp progress message body.
+    -- @param percentage Lsp progress in [0%-100%].
+    -- @param done       Indicate if this message is the last one in progress.
+    -- @return           A nil|string|table value. The returned value will be
+    --                   passed to `client_format` as one of the
+    --                   `series_messages` array, or ignored if return nil.
     series_format = function(title, message, percentage, done)
         local builder = {}
         local has_title = false
@@ -34,18 +58,35 @@ local DEFAULTS = {
         end
         return table.concat(builder, " ")
     end,
+    --- Format client message.
+    -- @param client_name     Lsp client name.
+    -- @param spinner         Lsp spinner icon.
+    -- @param series_messages Formatted series message array.
+    -- @return                A nil|string|table value. The returned value will
+    --                        be passed to `format` as one of the
+    --                        `client_messages` array, or ignored if return nil.
     client_format = function(client_name, spinner, series_messages)
         return #series_messages > 0
                 and ("[" .. client_name .. "] " .. spinner .. " " .. table.concat(series_messages, ", "))
             or nil
     end,
+    --- Format (final) message.
+    -- @param client_messages Formatted client message array.
+    -- @return                A nil|string value. The returned value will be
+    --                        passed to `progress` API.
     format = function(client_messages)
         local sign = " LSP" -- nf-fa-gear \uf013
         return #client_messages > 0 and (sign .. " " .. table.concat(client_messages, " ")) or sign
     end,
+    --- Enable debug.
     debug = false,
+    --- Print log to console.
     console_log = true,
+    --- Print log to file.
     file_log = false,
+    -- Log file to write, work with `file_log=true`.
+    -- For Windows: `$env:USERPROFILE\AppData\Local\nvim-data\lsp-progress.log`.
+    -- For *NIX: `~/.local/share/nvim/lsp-progress.log`.
     file_log_name = "lsp-progress.log",
 }
 local CONFIG = {}
