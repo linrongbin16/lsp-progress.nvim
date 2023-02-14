@@ -44,7 +44,7 @@ Neovim version &ge; 0.8.
 ## API
 
 - `require('lsp-progress).progress()`: get the progress status.
-- `LspProgressStatusUpdated`: user event to notify new status, listen and trigger statusline refresh.
+- `LspProgressStatusUpdated`: user event to notify new status, and trigger statusline refresh.
 
 ### Statusline Integration
 
@@ -107,7 +107,7 @@ require('lsp-progress').setup({
   max_size = -1,
 
   --- Format series message.
-  -- The default series message looks like: `formatting isort (100%) - done`
+  -- By default series message looks like: `formatting isort (100%) - done`
   -- @param title      Lsp progress message title.
   -- @param message    Lsp progress message body.
   -- @param percentage Lsp progress in [0%-100%].
@@ -137,7 +137,7 @@ require('lsp-progress').setup({
   end,
 
   --- Format client message.
-  -- The default client message looks like: `[null-ls] ⣷ formatting isort (100%) - done, formatting black (50%)`
+  -- By default client message looks like: `[null-ls] ⣷ formatting isort (100%) - done, formatting black (50%)`
   -- @param client_name     Lsp client name.
   -- @param spinner         Lsp spinner icon.
   -- @param series_messages Formatted series message array.
@@ -154,7 +154,7 @@ require('lsp-progress').setup({
   end,
 
   --- Format (final) message.
-  -- The default message looks like: ` LSP [null-ls] ⣷ formatting isort (100%) - done, formatting black (50%)`
+  -- By default message looks like: ` LSP [null-ls] ⣷ formatting isort (100%) - done, formatting black (50%)`
   -- @param client_messages Formatted client message array.
   -- @return                A nil|string value. The returned value will be
   --                        passed to `progress` API.
