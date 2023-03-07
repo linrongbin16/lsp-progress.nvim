@@ -80,15 +80,6 @@ require('lsp-progress').setup({
   --- Spinning update time in milliseconds.
   spin_update_time = 200,
 
-  --- Indicate if there's any lsp server active on current buffer.
-  -- Icon: nf-fa-gear(\uf013).
-  -- Notice: this config is deprecated.
-  sign = " LSP",
-
-  --- Seperate multiple messages in one statusline.
-  -- Notice: this config is deprecated.
-  seperator = " ",
-
   --- Last message is cached in decay time in milliseconds.
   -- Messages could be really fast, appear and disappear in an instant, so
   -- here cache the last message for a while for user view.
