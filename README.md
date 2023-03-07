@@ -5,7 +5,9 @@ Another lsp progress status for Neovim.
 ![demo](https://user-images.githubusercontent.com/6496887/215637132-65e27eac-df71-4d17-9365-b516d6536ece.jpg)
 ![demo-format](https://user-images.githubusercontent.com/6496887/215700315-9d205333-b0e8-4630-9afd-67e2a1c6e3ae.jpg)
 
-**Thanks to [lsp-status.nvim](https://github.com/nvim-lua/lsp-status.nvim) and [fidget.nvim](https://github.com/j-hui/fidget.nvim), everything about lsp progress I learned and copied source code is from them.**
+**Thanks to [lsp-status.nvim](https://github.com/nvim-lua/lsp-status.nvim) and
+[fidget.nvim](https://github.com/j-hui/fidget.nvim), everything about lsp
+progress I learned and copied source code is from them.**
 
 ## Requirement
 
@@ -44,7 +46,8 @@ Neovim version &ge; 0.8.
 ## API
 
 - `require('lsp-progress).progress()`: get the progress status.
-- `LspProgressStatusUpdated`: user event to notify new status, and trigger statusline refresh.
+- `LspProgressStatusUpdated`: user event to notify new status, and trigger
+  statusline refresh.
 
 ### Statusline Integration
 
@@ -70,7 +73,7 @@ augroup END
 ]])
 ```
 
-## Option
+## Configuration
 
 ```lua
 require('lsp-progress').setup({
@@ -128,7 +131,8 @@ require('lsp-progress').setup({
   end,
 
   --- Format client message.
-  -- By default client message looks like: `[null-ls] ⣷ formatting isort (100%) - done, formatting black (50%)`
+  -- By default client message looks like:
+  -- `[null-ls] ⣷ formatting isort (100%) - done, formatting black (50%)`
   -- @param client_name     Lsp client name.
   -- @param spinner         Lsp spinner icon.
   -- @param series_messages Formatted series message array.
@@ -145,7 +149,8 @@ require('lsp-progress').setup({
   end,
 
   --- Format (final) message.
-  -- By default message looks like: ` LSP [null-ls] ⣷ formatting isort (100%) - done, formatting black (50%)`
+  -- By default message looks like:
+  -- ` LSP [null-ls] ⣷ formatting isort (100%) - done, formatting black (50%)`
   -- @param client_messages Formatted client message array.
   -- @return                A nil|string value. The returned value will be
   --                        passed to `progress` API.
@@ -174,4 +179,4 @@ require('lsp-progress').setup({
 
 ## Notes
 
-See: [doc/notes.md](doc/notes.md)
+Please checkout [notes](/doc/notes.md).
