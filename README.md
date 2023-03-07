@@ -152,8 +152,8 @@ require('lsp-progress').setup({
   -- By default message looks like:
   -- ` LSP [null-ls] ⣷ formatting isort (100%) - done, formatting black (50%)`
   -- @param client_messages Formatted client message array.
-  -- @return                A nil|string value. The returned value will be
-  --                        passed to `progress` API.
+  -- @return                A nil|string|table value. The returned value will
+  --                        returned from `progress` API.
   format = function(client_messages)
     local sign = " LSP" -- nf-fa-gear \uf013
     return #client_messages > 0
