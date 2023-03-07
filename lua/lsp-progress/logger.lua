@@ -1,8 +1,8 @@
 local EchoHl = {
-        ["ERROR"] = "ErrorMsg",
-        ["WARN"] = "ErrorMsg",
-        ["INFO"] = "None",
-        ["DEBUG"] = "Comment",
+    ["ERROR"] = "ErrorMsg",
+    ["WARN"] = "ErrorMsg",
+    ["INFO"] = "None",
+    ["DEBUG"] = "Comment",
 }
 local LogLevel = "INFO"
 local UseConsole = true
