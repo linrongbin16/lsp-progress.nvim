@@ -9,7 +9,7 @@
 
 ## Data Structure
 
-In above configuration, there're several **format** functions that are related to internal
+In setup configuration, there're several **format** functions that are related to internal
 implementations and may confuse you.
 
 Basically, a vim buffer(the file you edit) can have multiple active lsp clients.
