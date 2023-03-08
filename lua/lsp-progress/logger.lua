@@ -5,11 +5,9 @@ local EchoHl = {
     ["DEBUG"] = "Comment",
 }
 local LogLevel = "INFO"
-local UseConsole = true
-local UseFile = false
--- For Windows: $env:USERPROFILE\AppData\Local\nvim-data\lsp-progress.log
--- For *NIX: ~/.local/share/nvim/lsp-progress.log
-local FileName = string.format("%s/lsp-progress.log", vim.fn.stdpath("data"))
+local UseConsole = nil
+local UseFile = nil
+local FileName = nil
 
 local function setup(debug, console_log, file_log, file_log_name)
     if debug then
@@ -17,6 +15,8 @@ local function setup(debug, console_log, file_log, file_log_name)
     end
     UseConsole = console_log
     UseFile = file_log
+    -- For Windows: $env:USERPROFILE\AppData\Local\nvim-data\lsp-progress.log
+    -- For *NIX: ~/.local/share/nvim/lsp-progress.log
     FileName = string.format("%s/%s", vim.fn.stdpath("data"), file_log_name)
 end
 
