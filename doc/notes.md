@@ -1,6 +1,6 @@
 # Notes
 
-## Produce/Consumer Pattern
+## Producer/Consumer Pattern
 
 - Producer: progress handler is registered to `$/progress`, being called back
   when lsp status updated. Then updates progress data and emits an event `LspProgressStatusUpdated`.
