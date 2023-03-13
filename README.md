@@ -11,7 +11,8 @@ progress I learned and copied source code is from them.**
 
 ## Requirement
 
-Neovim version &ge; 0.8.
+- Neovim version &ge; 0.8.
+- [Nerd fonts](https://www.nerdfonts.com/) for icons.
 
 ## Install
 
