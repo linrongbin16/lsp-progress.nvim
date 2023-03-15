@@ -48,20 +48,20 @@ local function spin(client_id, token)
     end
 
     if not has_client(client_id) then
-        -- logger.debug(
-        --     "Series not found (client_id:%d, token:%s), client id not found, stop spin",
-        --     client_id,
-        --     token
-        -- )
+        logger.debug(
+            "Series not found (client_id:%d, token:%s), client id not found, stop spin",
+            client_id,
+            token
+        )
         return
     end
     local client = get_client(client_id)
     if not client:has_series(token) then
-        -- logger.debug(
-        --     "Series not found (client_id:%d, token:%s), token not found, stop spin",
-        --     client_id,
-        --     token
-        -- )
+        logger.debug(
+            "Series not found (client_id:%d, token:%s), token not found, stop spin",
+            client_id,
+            token
+        )
         return
     end
     local series = client:get_series(token)
@@ -75,28 +75,28 @@ local function spin(client_id, token)
     if series.done then
         local function remove_series_later()
             if not has_client(client_id) then
-                -- logger.debug(
-                --     "Series not found (client_id:%d, token:%s), client id not found, stop remove series",
-                --     client_id,
-                --     token
-                -- )
+                logger.debug(
+                    "Series not found (client_id:%d, token:%s), client id not found, stop remove series",
+                    client_id,
+                    token
+                )
                 return
             end
             local client2 = get_client(client_id)
             if not client2:has_series(token) then
-                -- logger.debug(
-                --     "Series not found (client_id:%d, token:%s), token not found, stop remove series",
-                --     client_id,
-                --     token
-                -- )
+                logger.debug(
+                    "Series not found (client_id:%d, token:%s), token not found, stop remove series",
+                    client_id,
+                    token
+                )
                 return
             end
             client2:remove_series(token)
-            -- logger.debug(
-            --     "Series removed (client_id:%d, token:%s)",
-            --     client_id,
-            --     token
-            -- )
+            logger.debug(
+                "Series removed (client_id:%d, token:%s)",
+                client_id,
+                token
+            )
             if client2:empty() then
                 -- if client is empty, also remove it from Clients
                 remove_client(client_id)
@@ -105,11 +105,11 @@ local function spin(client_id, token)
         end
 
         vim.defer_fn(remove_series_later, Config.decay)
-        -- logger.debug(
-        --     "Series done (client_id:%d, token:%s), remove series later...",
-        --     client_id,
-        --     token
-        -- )
+        logger.debug(
+            "Series done (client_id:%d, token:%s), remove series later...",
+            client_id,
+            token
+        )
     end
 end
 
@@ -207,44 +207,44 @@ local function progress()
                     local old_series = deduped_serieses[key]
                     if series.percentage == nil then
                         deduped_serieses[key] = series
-                        -- logger.debug(
-                        --     "Series duplicated by key `%s` (client_id:%d, token:%s), choose new series because its percentage is nil",
-                        --     fmtkey,
-                        --     client_id,
-                        --     token
-                        -- )
+                        logger.debug(
+                            "Series duplicated by key `%s` (client_id:%d, token:%s), choose new series because its percentage is nil",
+                            fmtkey,
+                            client_id,
+                            token
+                        )
                     elseif old_series.percentage ~= nil then
                         -- two series have percentage
                         deduped_serieses[key] = series.percentage
                                     < old_series.percentage
                                 and series
                             or old_series
-                        -- logger.debug(
-                        --     "Series duplicated by key `%s` (client_id:%d, token:%s), both series has percentage, choose lower one (new: %d, old: %d)",
-                        --     dedup_key,
-                        --     client_id,
-                        --     token,
-                        --     series.percentage,
-                        --     old_series.percentage
-                        -- )
+                        logger.debug(
+                            "Series duplicated by key `%s` (client_id:%d, token:%s), both series has percentage, choose lower one (new: %d, old: %d)",
+                            dedup_key,
+                            client_id,
+                            token,
+                            series.percentage,
+                            old_series.percentage
+                        )
                     else
                         -- otherwise, series has a percentage, old_series don't has
                         -- keep old one
-                        -- logger.debug(
-                        --     "Series duplicated by key `%s` (client_id:%d, token:%s), keeps old series because its percentage is nil",
-                        --     dedup_key,
-                        --     client_id,
-                        --     token
-                        -- )
+                        logger.debug(
+                            "Series duplicated by key `%s` (client_id:%d, token:%s), keeps old series because its percentage is nil",
+                            dedup_key,
+                            client_id,
+                            token
+                        )
                     end
                 else
                     deduped_serieses[key] = series
-                    -- logger.debug(
-                    --     "Series key `%s` (client_id:%d, token:%s) first show up, add it to deduped_serieses",
-                    --     dedup_key,
-                    --     client_id,
-                    --     token
-                    -- )
+                    logger.debug(
+                        "Series key `%s` (client_id:%d, token:%s) first show up, add it to deduped_serieses",
+                        dedup_key,
+                        client_id,
+                        token
+                    )
                 end
             end
             local series_messages = {}
