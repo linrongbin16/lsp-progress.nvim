@@ -20,56 +20,52 @@ progress I learned and copied source code is from them.**
 
 ```lua
 {
-  -- integrate with lualine
-  'nvim-lualine/lualine.nvim',
-  event = { 'VimEnter' },
-  dependencies = {
-    'nvim-tree/nvim-web-devicons',
-    'linrongbin16/lsp-progress.nvim'
-  },
-  config = function()
-    ...
-  end
+    -- integrate with lualine
+    'nvim-lualine/lualine.nvim',
+    event = { 'VimEnter' },
+    dependencies = {
+        'nvim-tree/nvim-web-devicons',
+        'linrongbin16/lsp-progress.nvim',
+    },
+    config = function()
+        ...
+    end
 },
 {
-  'linrongbin16/lsp-progress.nvim',
-  branch = 'main',
-  event = { 'VimEnter' },
-  dependencies = {
-    'nvim-tree/nvim-web-devicons',
-  },
-  config = function()
-    require('lsp-progress').setup({})
-  end
+    'linrongbin16/lsp-progress.nvim',
+    event = { 'VimEnter' },
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = function()
+        require('lsp-progress').setup()
+    end
 }
 ```
 
 ## API
 
 - `require('lsp-progress).progress()`: get the progress status.
-- `LspProgressStatusUpdated`: user event to notify new status, and trigger
-  statusline refresh.
+- `LspProgressStatusUpdated`: user event to notify new status, and trigger statusline refresh.
 
 ### Statusline Integration
 
 ```lua
 require("lualine").setup({
-  sections = {
-    lualine_a = { "mode" },
-    lualine_b = { "filename" },
-    lualine_c = {
-      -- invoke `progress` to get lsp progress status.
-      require("lsp-progress").progress,
-    },
-    ...
-  }
+    sections = {
+        lualine_a = { "mode" },
+        lualine_b = { "filename" },
+        lualine_c = {
+            -- invoke `progress` to get lsp progress status.
+            require("lsp-progress").progress,
+        },
+        ...
+    }
 })
 
 -- listen to user event and trigger lualine refresh
 vim.cmd([[
 augroup lualine_augroup
-  autocmd!
-  autocmd User LspProgressStatusUpdated lua require("lualine").refresh()
+    autocmd!
+    autocmd User LspProgressStatusUpdated lua require("lualine").refresh()
 augroup END
 ]])
 ```
