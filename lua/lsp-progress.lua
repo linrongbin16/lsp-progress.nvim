@@ -54,9 +54,6 @@ local function spin(client_id, token)
     end
 
     client:increase_spin_index(#Config.spinner)
-    client:format()
-    event.emit()
-    -- no need to check if series is done or not, just keep spinning
     vim.defer_fn(spin_again, Config.spin_update_time)
 
     local series = client:get_series(token)
@@ -95,8 +92,6 @@ local function spin(client_id, token)
                     client2:tostring()
                 )
             end
-            client:format()
-            event.emit()
         end, Config.decay)
         logger.debug(
             "Token %s is done in client %s, remove series later...",
@@ -104,13 +99,15 @@ local function spin(client_id, token)
             client:tostring()
         )
     end
+
+    -- notify user to refresh UI
+    event.emit()
 end
 
 local function progress_handler(err, msg, ctx)
     local client_id = ctx.client_id
-    local the_neovim_client = vim.lsp.get_client_by_id(client_id)
-    local client_name = the_neovim_client and the_neovim_client.name
-        or "unknown"
+    local nvim_lsp_client = vim.lsp.get_client_by_id(client_id)
+    local client_name = nvim_lsp_client and nvim_lsp_client.name or "unknown"
 
     -- register client id if not exist
     register_client(client_id, client_name)
@@ -136,7 +133,6 @@ local function progress_handler(err, msg, ctx)
         if series then
             series:update(value.message, value.percentage)
             client:format()
-            event.emit()
             logger.debug(
                 "Update series (client_id:%d, token:%s): %s",
                 client_id,
@@ -163,7 +159,6 @@ local function progress_handler(err, msg, ctx)
             local series = client:get_series(token)
             series:finish(value.message)
             client:format()
-            event.emit()
             logger.debug(
                 "Series done (client_id:%d, token:%s): %s",
                 client_id,
@@ -178,6 +173,9 @@ local function progress_handler(err, msg, ctx)
             )
         end
     end
+
+    -- notify user to refresh UI
+    event.emit()
 end
 
 local function progress()
@@ -192,7 +190,7 @@ local function progress()
             -- if this client is stopped, remove it from Clients
             remove_client(client_id)
         else
-            local msg = client_obj.format_result
+            local msg = client_obj:format_result()
             if msg and msg ~= "" then
                 table.insert(client_messages, msg)
             end
@@ -212,10 +210,10 @@ local function progress()
 end
 
 local function setup(option)
-    -- init config
+    -- setup config
     Config = defaults.setup(option)
 
-    -- init logger
+    -- setup logger
     logger.setup(
         Config.debug,
         Config.console_log,
@@ -223,15 +221,14 @@ local function setup(option)
         Config.file_log_name
     )
 
-    -- init event
+    -- setup event
     event.setup(Config.event, Config.event_update_time_limit)
 
+    -- setup series
+    require("lsp-progress.series").setup(Config.series_format)
+
     -- init client
-    require("lsp-progress.client").setup(
-        Config.series_format,
-        Config.client_format,
-        Config.spinner
-    )
+    require("lsp-progress.client").setup(Config.client_format, Config.spinner)
 
     if not Registered then
         if vim.lsp.handlers["$/progress"] then

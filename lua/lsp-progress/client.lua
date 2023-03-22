@@ -1,6 +1,5 @@
 local logger = require("lsp-progress.logger")
 
-local SeriesFormatter = nil
 local ClientFormatter = nil
 local Spinner = nil
 
@@ -9,8 +8,9 @@ local ClientObject = {
     client_name = nil,
     spin_index = 0,
     serieses = {},
-    format_changed = false,
-    format_result = nil,
+
+    -- format cache
+    _format_cache = nil,
 }
 
 function ClientObject:has_series(token)
@@ -19,7 +19,7 @@ end
 
 function ClientObject:remove_series(token)
     self.serieses[token] = nil
-    self:_changed()
+    self:format()
 end
 
 function ClientObject:get_series(token)
@@ -28,7 +28,7 @@ end
 
 function ClientObject:add_series(token, series)
     self.serieses[token] = series
-    self:_changed()
+    self:format()
 end
 
 function ClientObject:empty()
@@ -44,15 +44,11 @@ function ClientObject:increase_spin_index(spinner_length)
         old,
         self.spin_index
     )
-    self:_changed()
+    self:format()
 end
 
 function ClientObject:tostring()
     return string.format("[%s-%d]", self.client_name, self.client_id)
-end
-
-function ClientObject:_changed()
-    self.format_changed = true
 end
 
 -- if s1 is higher priority than s2
@@ -72,10 +68,6 @@ local function higher_priority(s1, s2)
 end
 
 function ClientObject:format()
-    if not self.format_changed then
-        return self.format_result
-    end
-
     local deduped_serieses = {}
     for token, series in pairs(self.serieses) do
         -- dedup key: title+message
@@ -109,12 +101,7 @@ function ClientObject:format()
     end
     local series_messages = {}
     for _, series in pairs(deduped_serieses) do
-        local msg = SeriesFormatter(
-            series.title,
-            series.message,
-            series.percentage,
-            series.done
-        )
+        local msg = series:format_result()
         logger.debug(
             "Format series (client %s): %s",
             self.client_id,
@@ -122,13 +109,16 @@ function ClientObject:format()
         )
         table.insert(series_messages, msg)
     end
-    self.format_result = ClientFormatter(
+    self._format_cache = ClientFormatter(
         self.client_name,
         Spinner[self.spin_index + 1],
         series_messages
     )
-    self.format_changed = false
-    return self.format_result
+    return self._format_cache
+end
+
+function ClientObject:format_result()
+    return self._format_cache
 end
 
 local function new_client(client_id, client_name)
@@ -137,12 +127,11 @@ local function new_client(client_id, client_name)
         vim.deepcopy(ClientObject),
         { client_id = client_id, client_name = client_name }
     )
-    client:_changed()
+    client:format()
     return client
 end
 
-local function setup(series_formatter, client_formatter, spinner)
-    SeriesFormatter = series_formatter
+local function setup(client_formatter, spinner)
     ClientFormatter = client_formatter
     Spinner = spinner
 end
