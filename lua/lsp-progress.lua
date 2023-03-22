@@ -208,7 +208,7 @@ end
 local function progress()
     local active_clients_count = #vim.lsp.get_active_clients()
     if active_clients_count <= 0 then
-        return nil
+        return ""
     end
 
     local client_messages = {}
