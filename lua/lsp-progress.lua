@@ -27,7 +27,7 @@ end
 local function register_client(client_id, client_name)
     if not has_client(client_id) then
         LspClients[client_id] = new_client(client_id, client_name)
-        logger.debug("Register client %s", LspClients[client_id]:tostring())
+        logger.debug("Register client %s", get_client(client_id):tostring())
     end
 end
 
@@ -38,11 +38,28 @@ local function spin(client_id, token)
         spin(client_id, token)
     end
 
-    if not has_client(client_id) then
-        logger.debug("Client id %d not found, stop spin", client_id)
+    -- check client active
+    if vim.lsp.client_is_stopped(client_id) then
+        -- if this client is stopped, remove it from Clients
+        remove_client(client_id)
+        logger.debug(
+            "Client id %d is stopped, stop spin and remove from LspClients",
+            client_id
+        )
+        -- notify user to refresh UI
+        event.emit()
         return
     end
 
+    -- check client exist
+    if not has_client(client_id) then
+        logger.debug("Client id %d not found, stop spin", client_id)
+        -- notify user to refresh UI
+        event.emit()
+        return
+    end
+
+    -- check token exist
     local client = get_client(client_id)
     if not client:has_series(token) then
         logger.debug(
@@ -50,6 +67,8 @@ local function spin(client_id, token)
             token,
             client:tostring()
         )
+        -- notify user to refresh UI
+        event.emit()
         return
     end
 
@@ -66,6 +85,7 @@ local function spin(client_id, token)
                     "Client id %d not found, stop remove series",
                     client_id
                 )
+                event.emit()
                 return
             end
             local client2 = get_client(client_id)
@@ -76,6 +96,7 @@ local function spin(client_id, token)
                     token,
                     client2:tostring()
                 )
+                event.emit()
                 return
             end
             client2:remove_series(token)
@@ -92,6 +113,7 @@ local function spin(client_id, token)
                     client2:tostring()
                 )
             end
+            event.emit()
         end, Config.decay)
         logger.debug(
             "Token %s is done in client %s, remove series later...",
@@ -185,15 +207,10 @@ local function progress()
     end
 
     local client_messages = {}
-    for client_id, client_obj in pairs(LspClients) do
-        if vim.lsp.client_is_stopped(client_id) then
-            -- if this client is stopped, remove it from Clients
-            remove_client(client_id)
-        else
-            local msg = client_obj:format_result()
-            if msg and msg ~= "" then
-                table.insert(client_messages, msg)
-            end
+    for _, client_obj in pairs(LspClients) do
+        local msg = client_obj:format_result()
+        if msg and msg ~= "" then
+            table.insert(client_messages, msg)
         end
     end
     local content = Config.format(client_messages)
