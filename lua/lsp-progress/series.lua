@@ -1,4 +1,5 @@
 local SeriesObject = {
+    token = nil,
     title = nil,
     message = nil,
     percentage = nil,
@@ -6,6 +7,9 @@ local SeriesObject = {
 
     -- format cache
     _format_cache = nil,
+
+    -- key
+    key = nil,
 }
 
 local SeriesFormatter = nil
@@ -24,7 +28,30 @@ function SeriesObject:finish(message)
 end
 
 function SeriesObject:key()
-    return tostring(self.title) .. "-" .. tostring(self.message)
+    return self.key
+end
+
+function SeriesObject:less_than(other)
+    -- if self has no percentage, then self is lower
+    if self.percentage == nil then
+        return true
+    end
+
+    -- if other has no percentage, then other is lower
+    if other.percentage == nil then
+        return false
+    end
+
+    -- both self and other has percentage, then lower percentage is lower
+    return self.percentage < other.percentage
+end
+
+function SeriesObject:priority()
+    if self.percentage == nil then
+        return -1
+    else
+        return self.percentage
+    end
 end
 
 function SeriesObject:_format()
@@ -36,13 +63,15 @@ function SeriesObject:format_result()
     return self._format_cache
 end
 
-local function new_series(title, message, percentage)
+local function new_series(token, title, message, percentage)
     local series = vim.tbl_extend("force", vim.deepcopy(SeriesObject), {
+        token = token,
         title = title,
         message = message,
         percentage = percentage,
         done = false,
     })
+    series.key = tostring(title) .. "-" .. tostring(message)
     series:_format()
     return series
 end
