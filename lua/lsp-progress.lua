@@ -38,24 +38,9 @@ local function spin(client_id, token)
         spin(client_id, token)
     end
 
-    -- check client active
-    if vim.lsp.client_is_stopped(client_id) then
-        -- if this client is stopped, remove it from Clients
-        remove_client(client_id)
-        logger.debug(
-            "Client id %d is stopped, stop spin and remove from LspClients",
-            client_id
-        )
-        -- notify user to refresh UI
-        event.emit()
-        return
-    end
-
     -- check client exist
     if not has_client(client_id) then
         logger.debug("Client id %d not found, stop spin", client_id)
-        -- notify user to refresh UI
-        event.emit()
         return
     end
 
@@ -67,8 +52,6 @@ local function spin(client_id, token)
             token,
             client:tostring()
         )
-        -- notify user to refresh UI
-        event.emit()
         return
     end
 
@@ -120,6 +103,28 @@ local function spin(client_id, token)
             token,
             client:tostring()
         )
+    end
+    -- if client is stopped, remove this client later
+    if vim.lsp.client_is_stopped(client_id) then
+        vim.defer_fn(function()
+            -- check client id again
+            if not has_client(client_id) then
+                logger.debug(
+                    "Client id %d not found, stop remove series",
+                    client_id
+                )
+                event.emit()
+                return
+            end
+            -- if this client is stopped, remove it from Clients
+            remove_client(client_id)
+            logger.debug(
+                "Client id %d has been removed from since it's stopped",
+                client_id
+            )
+            event.emit()
+        end, Config.decay)
+        logger.debug("Client id %d is stopped, remove it later...", client_id)
     end
 
     -- notify user to refresh UI
