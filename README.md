@@ -20,56 +20,52 @@ progress I learned and copied source code is from them.**
 
 ```lua
 {
-  -- integrate with lualine
-  'nvim-lualine/lualine.nvim',
-  event = { 'VimEnter' },
-  dependencies = {
-    'nvim-tree/nvim-web-devicons',
-    'linrongbin16/lsp-progress.nvim'
-  },
-  config = function()
-    ...
-  end
+    -- integrate with lualine
+    'nvim-lualine/lualine.nvim',
+    event = { 'VimEnter' },
+    dependencies = {
+        'nvim-tree/nvim-web-devicons',
+        'linrongbin16/lsp-progress.nvim',
+    },
+    config = function()
+        ...
+    end
 },
 {
-  'linrongbin16/lsp-progress.nvim',
-  branch = 'main',
-  event = { 'VimEnter' },
-  dependencies = {
-    'nvim-tree/nvim-web-devicons',
-  },
-  config = function()
-    require('lsp-progress').setup({})
-  end
+    'linrongbin16/lsp-progress.nvim',
+    event = { 'VimEnter' },
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = function()
+        require('lsp-progress').setup()
+    end
 }
 ```
 
 ## API
 
 - `require('lsp-progress).progress()`: get the progress status.
-- `LspProgressStatusUpdated`: user event to notify new status, and trigger
-  statusline refresh.
+- `LspProgressStatusUpdated`: user event to notify new status, and trigger statusline refresh.
 
 ### Statusline Integration
 
 ```lua
 require("lualine").setup({
-  sections = {
-    lualine_a = { "mode" },
-    lualine_b = { "filename" },
-    lualine_c = {
-      -- invoke `progress` to get lsp progress status.
-      require("lsp-progress").progress,
-    },
-    ...
-  }
+    sections = {
+        lualine_a = { "mode" },
+        lualine_b = { "filename" },
+        lualine_c = {
+            -- invoke `progress` to get lsp progress status.
+            require("lsp-progress").progress,
+        },
+        ...
+    }
 })
 
 -- listen to user event and trigger lualine refresh
 vim.cmd([[
 augroup lualine_augroup
-  autocmd!
-  autocmd User LspProgressStatusUpdated lua require("lualine").refresh()
+    autocmd!
+    autocmd User LspProgressStatusUpdated lua require("lualine").refresh()
 augroup END
 ]])
 ```
@@ -99,7 +95,7 @@ require('lsp-progress').setup({
     -- Sometimes progress handler could emit many events in an instant, while
     -- refreshing statusline cause too heavy synchronized IO, so we limit the
     -- event rate to reduce this cost.
-    event_update_time_limit = 125,
+    event_update_time_limit = 100,
 
     --- Max progress string length, by default -1 is unlimit.
     max_size = -1,

@@ -16,7 +16,7 @@ local Defaults = {
     -- Sometimes progress handler could emit many events in an instant, while
     -- refreshing statusline cause too heavy synchronized IO, so we limit the
     -- event rate to reduce this cost.
-    event_update_time_limit = 125,
+    event_update_time_limit = 100,
     --- Max progress string length, by default -1 is unlimit.
     max_size = -1,
     -- Format series message.
