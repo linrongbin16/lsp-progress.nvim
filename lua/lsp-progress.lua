@@ -27,7 +27,10 @@ end
 local function register_client(client_id, client_name)
     if not has_client(client_id) then
         LspClients[client_id] = new_client(client_id, client_name)
-        logger.debug("Register client %s", get_client(client_id):tostring())
+        logger.debug(
+            "|lsp-progress.register_client| Register client %s",
+            get_client(client_id):tostring()
+        )
     end
 end
 
@@ -40,7 +43,10 @@ local function spin(client_id, token)
 
     -- check client exist
     if not has_client(client_id) then
-        logger.debug("Client id %d not found, stop spin", client_id)
+        logger.debug(
+            "|lsp-progress.spin| Client id %d not found, stop spin",
+            client_id
+        )
         return
     end
 
@@ -48,7 +54,7 @@ local function spin(client_id, token)
     local client = get_client(client_id)
     if not client:has_series(token) then
         logger.debug(
-            "Token %s not found in client %s, stop spin",
+            "|lsp-progress.spin| Token %s not found in client %s, stop spin",
             token,
             client:tostring()
         )
@@ -65,7 +71,7 @@ local function spin(client_id, token)
             -- check client id again
             if not has_client(client_id) then
                 logger.debug(
-                    "Client id %d not found, stop remove series",
+                    "|lsp-progress.spin| Client id %d not found, stop remove series",
                     client_id
                 )
                 event.emit()
@@ -75,7 +81,7 @@ local function spin(client_id, token)
             -- check token again
             if not client2:has_series(token) then
                 logger.debug(
-                    "Token %s not found in client %s, stop remove series",
+                    "|lsp-progress.spin| Token %s not found in client %s, stop remove series",
                     token,
                     client2:tostring()
                 )
@@ -84,7 +90,7 @@ local function spin(client_id, token)
             end
             client2:remove_series(token)
             logger.debug(
-                "Token %s has been removed from client %s since it's done",
+                "|lsp-progress.spin| Token %s has been removed from client %s since it's done",
                 token,
                 client2:tostring()
             )
@@ -92,14 +98,14 @@ local function spin(client_id, token)
                 -- if client2 is empty, also remove it from Clients
                 remove_client(client_id)
                 logger.debug(
-                    "Client %s has been removed from since it's empty",
+                    "|lsp-progress.spin| Client %s has been removed from since it's empty",
                     client2:tostring()
                 )
             end
             event.emit()
         end, Config.decay)
         logger.debug(
-            "Token %s is done in client %s, remove series later...",
+            "|lsp-progress.spin| Token %s is done in client %s, remove series later...",
             token,
             client:tostring()
         )
@@ -110,7 +116,7 @@ local function spin(client_id, token)
             -- check client id again
             if not has_client(client_id) then
                 logger.debug(
-                    "Client id %d not found, stop remove series",
+                    "|lsp-progress.spin| Client id %d not found, stop remove series",
                     client_id
                 )
                 event.emit()
@@ -119,12 +125,15 @@ local function spin(client_id, token)
             -- if this client is stopped, remove it from Clients
             remove_client(client_id)
             logger.debug(
-                "Client id %d has been removed from since it's stopped",
+                "|lsp-progress.spin| Client id %d has been removed from since it's stopped",
                 client_id
             )
             event.emit()
         end, Config.decay)
-        logger.debug("Client id %d is stopped, remove it later...", client_id)
+        logger.debug(
+            "|lsp-progress.spin| Client id %d is stopped, remove it later...",
+            client_id
+        )
     end
 
     -- notify user to refresh UI
@@ -145,16 +154,14 @@ local function progress_handler(err, msg, ctx)
     local client = get_client(client_id)
     if value.kind == "begin" then
         -- add task
-        local series =
-            new_series(token, value.title, value.message, value.percentage)
+        local series = new_series(value.title, value.message, value.percentage)
         client:add_series(token, series)
         -- start spin, it will also notify user at a fixed rate
         spin(client_id, token)
         logger.debug(
-            "Add new series to (client_id:%d, token:%s): %s",
-            client_id,
-            token,
-            vim.inspect(series)
+            "|lsp-progress.progress_handler| Add new series to client %s: %s",
+            client:tostring(),
+            series:tostring()
         )
     elseif value.kind == "report" then
         local series = client:get_series(token)
@@ -162,25 +169,23 @@ local function progress_handler(err, msg, ctx)
             series:update(value.message, value.percentage)
             client:format()
             logger.debug(
-                "Update series (client_id:%d, token:%s): %s",
-                client_id,
-                token,
-                vim.inspect(series)
+                "|lsp-progress.progress_handler| Update series in client %s: %s",
+                client:tostring(),
+                series:tostring()
             )
         else
             logger.debug(
-                "Series not found when updating (client_id:%d, token:%s)",
-                client_id,
-                token
+                "|lsp-progress.progress_handler| Series (token: %s) not found in client %s when updating",
+                token,
+                client:tostring()
             )
         end
     else
         if value.kind ~= "end" then
             logger.warn(
-                "Unknown message kind `%s` from client %d-%s",
+                "|lsp-progress.progress_handler| Unknown message kind `%s` from client %s",
                 value.kind,
-                client_id,
-                client_name
+                client:tostring()
             )
         end
         if client:has_series(token) then
@@ -188,16 +193,15 @@ local function progress_handler(err, msg, ctx)
             series:finish(value.message)
             client:format()
             logger.debug(
-                "Series done (client_id:%d, token:%s): %s",
-                client_id,
-                token,
-                vim.inspect(series)
+                "|lsp-progress.progress_handler| Series done in client %s: %s",
+                client:tostring(),
+                series:tostring()
             )
         else
             logger.debug(
-                "Series not found when ending (client_id:%d, token:%s)",
-                client_id,
-                token
+                "|lsp-progress.progress_handler| Series (token: %s) not found in client %s when ending",
+                token,
+                client:tostring()
             )
         end
     end
@@ -217,9 +221,18 @@ local function progress()
         local msg = client_obj:format_result()
         if msg and msg ~= "" then
             table.insert(client_messages, msg)
+            logger.debug(
+                "|lsp-progress.progress| Get client %s format result: %s",
+                client_obj:tostring(),
+                vim.inspect(client_messages)
+            )
         end
     end
     local content = Config.format(client_messages)
+    logger.debug(
+        "|lsp-progress.progress| Progress format: %s",
+        vim.inspect(content)
+    )
     if Config.max_size >= 0 then
         if vim.fn.strdisplaywidth(content) > Config.max_size then
             content = vim.fn.strcharpart(
