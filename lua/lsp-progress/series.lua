@@ -1,3 +1,5 @@
+local logger = require("lsp-progress.logger")
+
 local SeriesObject = {
     title = nil,
     message = nil,
@@ -10,10 +12,22 @@ local SeriesObject = {
 
 local SeriesFormatter = nil
 
+function SeriesObject:tostring()
+    return string.format(
+        "<Series title:%s, message:%s, percentage:%s, done:%s, _format_cache:%s>",
+        vim.inspect(self.title),
+        vim.inspect(self.message),
+        vim.inspect(self.percentage),
+        vim.inspect(self.done),
+        vim.inspect(self._format_cache)
+    )
+end
+
 function SeriesObject:update(message, percentage)
     self.message = message
     self.percentage = percentage
     self:_format()
+    logger.debug("|series.update| Update series: %s", self:tostring())
 end
 
 function SeriesObject:finish(message)
@@ -21,6 +35,7 @@ function SeriesObject:finish(message)
     self.percentage = 100
     self.done = true
     self:_format()
+    logger.debug("|series.finish| Finish series: %s", self:tostring())
 end
 
 function SeriesObject:key()
@@ -34,6 +49,8 @@ end
 function SeriesObject:_format()
     self._format_cache =
         SeriesFormatter(self.title, self.message, self.percentage, self.done)
+    logger.debug("|series._format| Format series: %s", self:tostring())
+    return self._format_cache
 end
 
 function SeriesObject:format_result()
@@ -48,6 +65,7 @@ local function new_series(title, message, percentage)
         done = false,
     })
     series:_format()
+    logger.debug("|series.new_series| New series: %s", series:tostring())
     return series
 end
 

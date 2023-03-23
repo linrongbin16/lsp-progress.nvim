@@ -39,7 +39,7 @@ function ClientObject:increase_spin_index(spinner_length)
     local old = self.spin_index
     self.spin_index = (self.spin_index + 1) % spinner_length
     logger.debug(
-        "Client %s spin index:%d => %d",
+        "|client.increase_spin_index| Client %s spin index:%d => %d",
         self:tostring(),
         old,
         self.spin_index
@@ -66,20 +66,21 @@ function ClientObject:format()
                 or old_series
             deduped_serieses[key] = new_series
             logger.debug(
-                "Token %s duplicate by key `%s` in client %s, use series with higher priority (new: %s, old: %s)",
+                "|client.format| Token %s duplicate by key `%s` in client %s, use series with higher priority (new: %s, old: %s)",
                 token,
                 key,
                 self:tostring(),
-                vim.inspect(series.percentage),
-                vim.inspect(old_series.percentage)
+                series:tostring(),
+                old_series:tostring()
             )
         else
             deduped_serieses[key] = series
             logger.debug(
-                "Token %s with key `%s` first show up in client %s, add it to deduped_serieses",
+                "|client.format| Token %s with key `%s` first show up in client %s, add it to deduped_serieses (new: %s)",
                 token,
                 key,
-                self:tostring()
+                self:tostring(),
+                series:tostring()
             )
         end
     end
@@ -87,9 +88,10 @@ function ClientObject:format()
     for _, series in pairs(deduped_serieses) do
         local msg = series:format_result()
         logger.debug(
-            "Format series (client %s): %s",
-            self.client_id,
-            vim.inspect(msg)
+            "|client.format| Get series %s format result in client %s: %s",
+            series:tostring(),
+            self:tostring(),
+            vim.inspect(series_messages)
         )
         table.insert(series_messages, msg)
     end
@@ -97,6 +99,11 @@ function ClientObject:format()
         self.client_name,
         Spinner[self.spin_index + 1],
         series_messages
+    )
+    logger.debug(
+        "|client.format| Format client %s: %s",
+        self:tostring(),
+        vim.inspect(self._format_cache)
     )
     return self._format_cache
 end
