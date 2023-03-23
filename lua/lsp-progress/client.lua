@@ -5,46 +5,87 @@ local Spinner = nil
 
 local DedupedSeriesCacheObject = {
     token = nil,
+    all_tokens = nil,
+    tokens_count = nil,
 }
 
 local function new_deduped_series_cache_object()
-    local cache =
-        vim.tbl_extend("force", vim.deepcopy(DedupedSeriesCacheObject), {})
+    local cache = vim.tbl_extend(
+        "force",
+        vim.deepcopy(DedupedSeriesCacheObject),
+        { all_tokens = {}, tokens_count = 0 }
+    )
     return cache
 end
 
-function DedupedSeriesCacheObject:assign_dedup(client, series)
-    local token = series.token
-    if not client:has_series(token) then
-        self.token = token
-        logger.debug(
-            "Add new series (token: %s) to deduped series cache on client %s",
-            token,
-            client:tostring()
-        )
-    else
-        local old_series = client:get_series(token)
+function DedupedSeriesCacheObject:tostring()
+    return string.format(
+        "<DedupedSeries token:%s, all_tokens:%s, tokens_count:%s>",
+        vim.inspect(self.token),
+        vim.inspect(vim.all_tokens),
+        vim.inspect(self.tokens_count)
+    )
+end
+
+function DedupedSeriesCacheObject:add_dedup(client, series)
+    -- add token if not exist
+    if self.all_tokens[series.token] == nil then
+        self.all_tokens[series.token] = true
+        self.tokens_count = self.tokens_count + 1
+    end
+    -- update token to the deduped one series if it's lower priority
+    if self.token and client:has_series(self.token) then
+        local old_series = client:get_series(self.token)
         if series:priority() < old_series:priority() then
             logger.debug(
-                "Use new series (token: %s) instead of old series (token: %s) in deduped series cache on client %s",
-                token,
+                "Use new series (token: %s, key: %s) to replace old series (token: %s) in deduped series cache on client %s: %s",
+                series.token,
+                series.key,
                 old_series.token,
-                client:tostring()
+                client:tostring(),
+                self:tostring()
             )
-            self.token = token
+            self.token = series.token
         end
+    else
+        logger.debug(
+            "Add new series (token: %s, key: %s) in deduped series cache on client %s: %s",
+            series.token,
+            series.key,
+            client:tostring(),
+            self:tostring()
+        )
+        self.token = series.token
     end
     logger.debug(
-        "After add new series (token: %s) in deduped series cache on client %s",
-        token,
-        client:tostring()
+        "After add new series (token: %s, key: %s) in deduped series cache on client %s: %s",
+        series.token,
+        series.key,
+        client:tostring(),
+        self:tostring()
     )
 end
 
 function DedupedSeriesCacheObject:remove_dedup(client, series)
-    if self.token == series.token then
-        self.token = nil
+    -- remove token if it's exist
+    if self.all_tokens[series.token] then
+        table.remove(self.all_tokens, series.token)
+        self.tokens_count = vim.fn.max({ self.tokens_count - 1, 0 })
     end
+
+    -- update the lowest priority to the deduped one series
+    local min_priority = nil
+    local min_series = nil
+    for t, _ in pairs(self.all_tokens) do
+        if client:has_series(t) then
+            local s = client:get_series(t)
+            if min_priority == nil or s:priority() < min_priority then
+                min_priority = s:priority()
+                min_series = s
+            end
+        end
+    end
+    self.token = min_series
 end
 
 local ClientObject = {
@@ -59,20 +100,20 @@ local ClientObject = {
     _deduped_serieses_cache = {},
 }
 
-function ClientObject:_has_deduped_series(key)
+function ClientObject:_has_deduped_series_cache(key)
     return self._deduped_serieses_cache[key] ~= nil
 end
 
-function ClientObject:_get_deduped_series(key)
+function ClientObject:_get_deduped_series_cache(key)
     return self._deduped_serieses_cache[key]
 end
 
-function ClientObject:_add_deduped_series(key)
+function ClientObject:_add_deduped_series_cache(key)
     self._deduped_serieses_cache[key] = new_deduped_series_cache_object()
 end
 
 function ClientObject:_remove_deduped_series(key)
-    self._deduped_serieses_cache[key] = nil
+    table.remove(self._deduped_serieses_cache, key)
 end
 
 function ClientObject:has_series(token)
@@ -87,34 +128,37 @@ function ClientObject:remove_series(token)
     if self:has_series(token) then
         local series = self:get_series(token)
         local key = series.key
-        if self:_has_deduped_series(key) then
-            local deduped_series = self:_get_deduped_series(key)
-            deduped_series:remove_dedup(self, series)
-            self:_remove_deduped_series(key)
-            logger.debug(
-                "Remove series (token %s) from deduped series cache (key %s) on client %s",
-                token,
-                key,
-                self:tostring()
-            )
+        if self:_has_deduped_series_cache(key) then
+            local deduped_series_cache = self:_get_deduped_series_cache(key)
+            deduped_series_cache:remove_dedup(self, series)
+            if deduped_series_cache.tokens_count <= 0 then
+                self:_remove_deduped_series(key)
+                logger.debug(
+                    "Remove series (token %s) from deduped series cache (key %s) on client %s",
+                    token,
+                    key,
+                    self:tostring()
+                )
+            end
         end
     end
-    self.serieses[token] = nil
+    table.remove(self.serieses, token)
     self:format()
 end
 
 function ClientObject:add_series(series)
     local key = series.key
-    if not self:_has_deduped_series(key) then
-        self:_add_deduped_series(key)
+    if not self:_has_deduped_series_cache(key) then
+        self:_add_deduped_series_cache(key)
         logger.debug(
-            "Add deduped series cache (key %s) to client %s",
+            "Add deduped series cache (key %s) to client %s: %s",
             key,
-            self:tostring()
+            self:tostring(),
+            self:_get_deduped_series_cache(key):tostring()
         )
     end
-    local deduped_series = self:_get_deduped_series(key)
-    deduped_series:assign_dedup(self, series)
+    local deduped_series_cache = self:_get_deduped_series_cache(key)
+    deduped_series_cache:add_dedup(self, series)
     logger.debug(
         "Add series (token %s) to deduped series cache (key %s) on client %s",
         self.token,

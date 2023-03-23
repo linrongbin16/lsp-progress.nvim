@@ -27,10 +27,6 @@ function SeriesObject:finish(message)
     self:_format()
 end
 
-function SeriesObject:key()
-    return self.key
-end
-
 function SeriesObject:priority()
     if self.percentage == nil then
         return -1

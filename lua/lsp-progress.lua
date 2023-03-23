@@ -21,7 +21,7 @@ local function get_client(client_id)
 end
 
 local function remove_client(client_id)
-    LspClients[client_id] = nil
+    table.remove(LspClients, client_id)
 end
 
 local function register_client(client_id, client_name)
@@ -160,7 +160,7 @@ local function progress_handler(err, msg, ctx)
         local series = client:get_series(token)
         if series then
             series:update(value.message, value.percentage)
-            client:format()
+            client:add_series(series)
             logger.debug(
                 "Update series (client_id:%d, token:%s): %s",
                 client_id,
