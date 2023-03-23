@@ -21,7 +21,7 @@ local function get_client(client_id)
 end
 
 local function remove_client(client_id)
-    table.remove(LspClients, client_id)
+    LspClients[client_id] = nil
 end
 
 local function register_client(client_id, client_name)

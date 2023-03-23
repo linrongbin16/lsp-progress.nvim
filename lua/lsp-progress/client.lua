@@ -69,7 +69,7 @@ end
 function DedupedSeriesCacheObject:remove_dedup(client, series)
     -- remove token if it's exist
     if self.all_tokens[series.token] then
-        table.remove(self.all_tokens, series.token)
+        self.all_tokens[series.token] = nil
         self.tokens_count = vim.fn.max({ self.tokens_count - 1, 0 })
     end
 
@@ -113,7 +113,7 @@ function ClientObject:_add_deduped_series_cache(key)
 end
 
 function ClientObject:_remove_deduped_series(key)
-    table.remove(self._deduped_serieses_cache, key)
+    self._deduped_serieses_cache[key] = nil
 end
 
 function ClientObject:has_series(token)
@@ -142,7 +142,7 @@ function ClientObject:remove_series(token)
             end
         end
     end
-    table.remove(self.serieses, token)
+    self.serieses[token] = nil
     self:format()
 end
 
