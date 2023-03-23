@@ -90,20 +90,13 @@ function ClientObject:remove_series(token)
         if self:_has_deduped_series(key) then
             local deduped_series = self:_get_deduped_series(key)
             deduped_series:remove_dedup(self, series)
+            self:_remove_deduped_series(key)
             logger.debug(
                 "Remove series (token %s) from deduped series cache (key %s) on client %s",
                 token,
                 key,
                 self:tostring()
             )
-            if deduped_series.count <= 0 then
-                self:_remove_deduped_series(key)
-                logger.debug(
-                    "Remove deduped series cache (key %s) from client %s",
-                    key,
-                    self:tostring()
-                )
-            end
         end
     end
     self.serieses[token] = nil
