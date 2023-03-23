@@ -27,6 +27,10 @@ function SeriesObject:key()
     return tostring(self.title) .. "-" .. tostring(self.message)
 end
 
+function SeriesObject:priority()
+    return self.percentage and self.percentage or -1
+end
+
 function SeriesObject:_format()
     self._format_cache =
         SeriesFormatter(self.title, self.message, self.percentage, self.done)

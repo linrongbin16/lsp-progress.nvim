@@ -51,22 +51,6 @@ function ClientObject:tostring()
     return string.format("[%s-%d]", self.client_name, self.client_id)
 end
 
--- if s1 is higher priority than s2
-local function higher_priority(s1, s2)
-    -- s1 has no percentage, so it's higher priority
-    if s1.percentage == nil then
-        return true
-    end
-
-    -- s2 has no percentage, so it's higher priority
-    if s2.percentage == nil then
-        return false
-    end
-
-    -- both s1 and s2 has percentage, lower percentage has higher priority
-    return s1.percentage < s2.percentage
-end
-
 function ClientObject:format()
     local deduped_serieses = {}
     for token, series in pairs(self.serieses) do
@@ -77,10 +61,10 @@ function ClientObject:format()
             -- remove it, choose the one has nil or lower percentage.
             -- since we believe it need more time to complete.
             local old_series = deduped_serieses[key]
-            local higher_priority_series = higher_priority(series, old_series)
+            local new_series = series:priority() < old_series:priority()
                     and series
                 or old_series
-            deduped_serieses[key] = higher_priority_series
+            deduped_serieses[key] = new_series
             logger.debug(
                 "Token %s duplicate by key `%s` in client %s, use series with higher priority (new: %s, old: %s)",
                 token,
