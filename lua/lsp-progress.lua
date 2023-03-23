@@ -145,7 +145,8 @@ local function progress_handler(err, msg, ctx)
     local client = get_client(client_id)
     if value.kind == "begin" then
         -- add task
-        local series = new_series(value.title, value.message, value.percentage)
+        local series =
+            new_series(token, value.title, value.message, value.percentage)
         client:add_series(token, series)
         -- start spin, it will also notify user at a fixed rate
         spin(client_id, token)
