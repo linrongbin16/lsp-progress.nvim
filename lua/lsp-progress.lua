@@ -147,7 +147,7 @@ local function progress_handler(err, msg, ctx)
         -- add task
         local series =
             new_series(token, value.title, value.message, value.percentage)
-        client:add_series(token, series)
+        client:add_series(series)
         -- start spin, it will also notify user at a fixed rate
         spin(client_id, token)
         logger.debug(
