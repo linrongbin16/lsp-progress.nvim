@@ -31,21 +31,6 @@ function SeriesObject:key()
     return self.key
 end
 
-function SeriesObject:less_than(other)
-    -- if self has no percentage, then self is lower
-    if self.percentage == nil then
-        return true
-    end
-
-    -- if other has no percentage, then other is lower
-    if other.percentage == nil then
-        return false
-    end
-
-    -- both self and other has percentage, then lower percentage is lower
-    return self.percentage < other.percentage
-end
-
 function SeriesObject:priority()
     if self.percentage == nil then
         return -1

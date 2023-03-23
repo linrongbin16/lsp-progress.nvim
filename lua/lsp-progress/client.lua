@@ -24,21 +24,38 @@ function DedupedSeriesCacheObject:add_dedup(client, series)
         self.token = token
         self.all_tokens[token] = true
         self.count = self.count + 1
+        logger.debug(
+            "Add new series (token: %s) to deduped series cache on client %s",
+            token,
+            client:tostring()
+        )
     else
         local old_series = client:get_series(token)
-        if series:less_than(old_series) then
+        if series:priority() < old_series:priority() then
+            logger.debug(
+                "Use new series (token: %s) instead of old series (token: %s) in deduped series cache on client %s",
+                token,
+                old_series.token,
+                client:tostring()
+            )
             self.token = token
         end
         self.all_tokens[token] = true
         self.count = self.count + 1
     end
+    logger.debug(
+        "After add new series (token: %s) in deduped series cache on client %s, count:%d",
+        token,
+        client:tostring(),
+        self.count
+    )
 end
 
 function DedupedSeriesCacheObject:remove_dedup(client, series)
     local token = series.token
     if self.all_tokens[token] then
         self.all_tokens[token] = nil
-        self.count = vim.fn.max(self.count - 1, 0)
+        self.count = vim.fn.max({self.count - 1, 0})
         local min_priority = nil
         local min_token = nil
         for t, v in pairs(self.all_tokens) do
@@ -50,11 +67,25 @@ function DedupedSeriesCacheObject:remove_dedup(client, series)
                 then
                     min_priority = next_series:priority()
                     min_token = t
+                    logger.debug(
+                        "Iterate on minimal series (token: %s) when remove series in deduped series cache on client %s",
+                        vim.inspect(min_token),
+                        client:tostring()
+                    )
                 end
             end
         end
         self.token = min_token
+        logger.debug(
+            "The next minimal series (token: %s) when remove series in deduped series cache on client %s",
+            vim.inspect(min_token),
+            client:tostring()
+        )
     end
+end
+
+function DedupedSeriesCacheObject:tostring()
+    return string.format("<DedupedSeriesCache %s-%d>", self.token, self.count)
 end
 
 local ClientObject = {
@@ -96,8 +127,19 @@ function ClientObject:remove_series(token)
         if self:_has_deduped_series(key) then
             local deduped_series = self:_get_deduped_series(key)
             deduped_series:remove_dedup(self, series)
+            logger.debug(
+                "Remove series (token %s) from deduped series cache (key %s) on client %s",
+                token,
+                key,
+                self:tostring()
+            )
             if deduped_series.count <= 0 then
                 self:_remove_deduped_series(key)
+                logger.debug(
+                    "Remove deduped series cache (key %s) from client %s",
+                    key,
+                    self:tostring()
+                )
             end
         end
     end
@@ -113,12 +155,21 @@ function ClientObject:add_series(token, series)
     if not self:has_series(token) then
         local key = series.key
         if not self:_has_deduped_series(key) then
-            local deduped_series = self:_get_deduped_series(key)
-            deduped_series:remove_dedup(self, series)
-            if deduped_series.count <= 0 then
-                self:_remove_deduped_series(key)
-            end
+            self:_add_deduped_series(key)
+            logger.debug(
+                "Add deduped series cache (key %s) to client %s",
+                key,
+                self:tostring()
+            )
         end
+        local deduped_series = self:_get_deduped_series(key)
+        deduped_series:add_dedup(self, series)
+        logger.debug(
+            "Add series (token %s) to deduped series cache (key %s) on client %s",
+            token,
+            key,
+            self:tostring()
+        )
     end
     self.serieses[token] = series
     self:format()
@@ -145,46 +196,20 @@ function ClientObject:tostring()
 end
 
 function ClientObject:format()
-    local deduped_serieses = {}
-    for token, series in pairs(self.serieses) do
-        -- dedup key: title+message
-        local key = series:key()
-        if deduped_serieses[key] then
-            -- if already has a message with same key,
-            -- remove it, choose the one has nil or lower percentage.
-            -- since we believe it need more time to complete.
-            local old_series = deduped_serieses[key]
-            local higher_priority_series = higher_priority(series, old_series)
-                    and series
-                or old_series
-            deduped_serieses[key] = higher_priority_series
-            logger.debug(
-                "Token %s duplicate by key `%s` in client %s, use series with higher priority (new: %s, old: %s)",
-                token,
-                key,
-                self:tostring(),
-                vim.inspect(series.percentage),
-                vim.inspect(old_series.percentage)
-            )
-        else
-            deduped_serieses[key] = series
-            logger.debug(
-                "Token %s with key `%s` first show up in client %s, add it to deduped_serieses",
-                token,
-                key,
-                self:tostring()
-            )
-        end
-    end
     local series_messages = {}
-    for _, series in pairs(deduped_serieses) do
-        local msg = series:format_result()
-        logger.debug(
-            "Format series (client %s): %s",
-            self.client_id,
-            vim.inspect(msg)
-        )
-        table.insert(series_messages, msg)
+    for _, deduped_series in pairs(self._deduped_serieses_cache) do
+        local token = deduped_series.token
+        if self:has_series(token) then
+            local series = self:get_series(token)
+            local msg = series:format_result()
+            logger.debug(
+                "Format series (client %s, token %s): %s",
+                self:tostring(),
+                token,
+                vim.inspect(msg)
+            )
+            table.insert(series_messages, msg)
+        end
     end
     self._format_cache = ClientFormatter(
         self.client_name,
