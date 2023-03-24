@@ -11,7 +11,7 @@ local ClientObject = {
 
     -- format cache
     _format_cache = nil,
-    -- deduped tokens, key -> token
+    -- deduped tokens, title -> message -> token
     _deduped_tokens = {},
 }
 
@@ -22,11 +22,21 @@ end
 function ClientObject:remove_series(token)
     if self:has_series(token) then
         local series = self:get_series(token)
-        if
-            self._deduped_tokens[series:key()]
-            and self._deduped_tokens[series:key()] == token
-        then
-            self._deduped_tokens[series:key()] = nil
+        if self._deduped_tokens[tostring(series.title)] then
+            if
+                self._deduped_tokens[tostring(series.title)][tostring(
+                    series.message
+                )]
+                and self._deduped_tokens[tostring(series.title)][tostring(
+                        series.message
+                    )]
+                    == token
+            then
+                self._deduped_tokens[tostring(series.title)][tostring(
+                    series.message
+                )] =
+                    nil
+            end
         end
     end
     self.serieses[token] = nil
@@ -38,8 +48,16 @@ function ClientObject:get_series(token)
 end
 
 function ClientObject:add_series(token, series)
-    if not self._deduped_tokens[series:key()] then
-        self._deduped_tokens[series:key()] = token
+    if not self._deduped_tokens[tostring(series.title)] then
+        self._deduped_tokens[tostring(series.title)] = {}
+    end
+    if
+        not self._deduped_tokens[tostring(series.title)][tostring(
+            series.message
+        )]
+    then
+        self._deduped_tokens[tostring(series.title)][tostring(series.message)] =
+            token
     end
     self.serieses[token] = series
     self:format()
@@ -67,18 +85,25 @@ end
 
 function ClientObject:format()
     local series_messages = {}
-    for key, token in pairs(self._deduped_tokens) do
-        if self:has_series(token) then
-            local series = self:get_series(token)
-            local msg = series:format_result()
-            logger.debug(
-                "|client.format| Get series %s (deduped key: %s) format result in client %s: %s",
-                series:tostring(),
-                key,
-                self:tostring(),
-                vim.inspect(series_messages)
-            )
-            table.insert(series_messages, msg)
+    local visited_tokens = {}
+    for tl, message_tokens in pairs(self._deduped_tokens) do
+        for ms, token in pairs(message_tokens) do
+            if not visited_tokens[token] then
+                if self:has_series(token) then
+                    local series = self:get_series(token)
+                    local result = series:format_result()
+                    logger.debug(
+                        "|client.format| Get series %s (deduped key: %s-%s) format result in client %s: %s",
+                        series:tostring(),
+                        tl,
+                        ms,
+                        self:tostring(),
+                        vim.inspect(series_messages)
+                    )
+                    table.insert(series_messages, result)
+                end
+                visited_tokens[token] = true
+            end
         end
     end
     self._format_cache = ClientFormatter(
