@@ -3,6 +3,8 @@ local logger = require("lsp-progress.logger")
 local ClientFormatter = nil
 local Spinner = nil
 
+local DedupCacheObject = {}
+
 local ClientObject = {
     client_id = nil,
     client_name = nil,
@@ -11,7 +13,8 @@ local ClientObject = {
 
     -- format cache
     _format_cache = nil,
-    -- deduped tokens, title -> message -> token
+    -- deduped tokens
+    -- title -> message -> token
     _deduped_tokens = {},
 }
 
@@ -19,24 +22,50 @@ function ClientObject:has_series(token)
     return self.serieses[token] ~= nil
 end
 
+function ClientObject:_has_dedup_token(title, message)
+    title = tostring(title)
+    message = tostring(message)
+    if not self._deduped_tokens[title] then
+        return false
+    end
+    if not self._deduped_tokens[title][message] then
+        return false
+    end
+    return true
+end
+
+function ClientObject:_set_dedup_token(title, message, token)
+    title = tostring(title)
+    message = tostring(message)
+    if not self._deduped_tokens[title] then
+        self._deduped_tokens[title] = {}
+    end
+    self._deduped_tokens[title][message] = token
+end
+
+function ClientObject:_remove_dedup_token(title, message)
+    title = tostring(title)
+    message = tostring(message)
+    if not self._deduped_tokens[title] then
+        return
+    end
+    self._deduped_tokens[title][message] = nil
+end
+
+function ClientObject:_get_dedup_token(title, message)
+    title = tostring(title)
+    message = tostring(message)
+    return self._deduped_tokens[title][message]
+end
+
 function ClientObject:remove_series(token)
     if self:has_series(token) then
         local series = self:get_series(token)
-        if self._deduped_tokens[tostring(series.title)] then
-            if
-                self._deduped_tokens[tostring(series.title)][tostring(
-                    series.message
-                )]
-                and self._deduped_tokens[tostring(series.title)][tostring(
-                        series.message
-                    )]
-                    == token
-            then
-                self._deduped_tokens[tostring(series.title)][tostring(
-                    series.message
-                )] =
-                    nil
-            end
+        if
+            self:_has_dedup_token(series.title, series.message)
+            and self:_get_dedup_token(series.title, series.message) == token
+        then
+            self:_remove_dedup_token(series.title, series.message)
         end
     end
     self.serieses[token] = nil
@@ -48,17 +77,7 @@ function ClientObject:get_series(token)
 end
 
 function ClientObject:add_series(token, series)
-    if not self._deduped_tokens[tostring(series.title)] then
-        self._deduped_tokens[tostring(series.title)] = {}
-    end
-    if
-        not self._deduped_tokens[tostring(series.title)][tostring(
-            series.message
-        )]
-    then
-        self._deduped_tokens[tostring(series.title)][tostring(series.message)] =
-            token
-    end
+    self:_set_dedup_token(series.title, series.message, token)
     self.serieses[token] = series
     self:format()
 end
@@ -86,7 +105,7 @@ end
 function ClientObject:format()
     local series_messages = {}
     local visited_tokens = {}
-    for tl, message_tokens in pairs(self._deduped_tokens) do
+    for tt, message_tokens in pairs(self._deduped_tokens) do
         for ms, token in pairs(message_tokens) do
             if not visited_tokens[token] then
                 if self:has_series(token) then
@@ -95,7 +114,7 @@ function ClientObject:format()
                     logger.debug(
                         "|client.format| Get series %s (deduped key: %s-%s) format result in client %s: %s",
                         series:tostring(),
-                        tl,
+                        tt,
                         ms,
                         self:tostring(),
                         vim.inspect(series_messages)
