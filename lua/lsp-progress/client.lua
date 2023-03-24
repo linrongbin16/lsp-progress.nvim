@@ -3,8 +3,6 @@ local logger = require("lsp-progress.logger")
 local ClientFormatter = nil
 local Spinner = nil
 
-local DedupCacheObject = {}
-
 local ClientObject = {
     client_id = nil,
     client_name = nil,
