@@ -23,10 +23,10 @@ function ClientObject:remove_series(token)
     if self:has_series(token) then
         local series = self:get_series(token)
         if
-            self._deduped_tokens[series.key]
-            and self._deduped_tokens[series.key] == token
+            self._deduped_tokens[series:key()]
+            and self._deduped_tokens[series:key()] == token
         then
-            self._deduped_tokens[series.key] = nil
+            self._deduped_tokens[series:key()] = nil
         end
     end
     self.serieses[token] = nil
@@ -38,8 +38,8 @@ function ClientObject:get_series(token)
 end
 
 function ClientObject:add_series(token, series)
-    if not self._deduped_tokens[series.key] then
-        self._deduped_tokens[series.key] = token
+    if not self._deduped_tokens[series:key()] then
+        self._deduped_tokens[series:key()] = token
     end
     self.serieses[token] = series
     self:format()
