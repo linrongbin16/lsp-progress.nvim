@@ -167,7 +167,7 @@ local function progress_handler(err, msg, ctx)
         local series = client:get_series(token)
         if series then
             series:update(value.message, value.percentage)
-            client:format()
+            client:add_series(token, series)
             logger.debug(
                 "|lsp-progress.progress_handler| Update series in client %s: %s",
                 client:tostring(),
