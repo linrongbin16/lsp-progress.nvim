@@ -238,7 +238,7 @@ local function progress()
             content = vim.fn.strcharpart(
                 content,
                 0,
-                vim.fn.max(Config.max_size - 1, 0)
+                vim.fn.max({ Config.max_size - 1, 0 })
             ) .. "…"
         end
     end
