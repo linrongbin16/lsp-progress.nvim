@@ -210,7 +210,9 @@ local function progress_handler(err, msg, ctx)
     event.emit()
 end
 
-local function progress()
+local function progress(option)
+    option = vim.tbl_deep_extend("force", vim.deepcopy(Config), option or {})
+
     local active_clients_count = #vim.lsp.get_active_clients()
     if active_clients_count <= 0 then
         return ""
@@ -228,17 +230,17 @@ local function progress()
             )
         end
     end
-    local content = Config.format(client_messages)
+    local content = option.format(client_messages)
     logger.debug(
         "|lsp-progress.progress| Progress format: %s",
         vim.inspect(content)
     )
-    if Config.max_size >= 0 then
-        if vim.fn.strdisplaywidth(content) > Config.max_size then
+    if option.max_size >= 0 then
+        if vim.fn.strdisplaywidth(content) > option.max_size then
             content = vim.fn.strcharpart(
                 content,
                 0,
-                vim.fn.max({ Config.max_size - 1, 0 })
+                vim.fn.max({ option.max_size - 1, 0 })
             ) .. "…"
         end
     end
