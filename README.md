@@ -43,8 +43,10 @@ progress I learned and copied source code is from them.**
 
 ## API
 
-- `LspProgressStatusUpdated`: user event to notify new status, and trigger statusline refresh.
-- `require('lsp-progress').progress(option)`: get lsp progress status, parameter `option` is an optional lua table:
+- `LspProgressStatusUpdated`: user event to notify new status, and trigger statusline
+  refresh.
+- `require('lsp-progress').progress(option)`: get lsp progress status, parameter
+  `option` is an optional lua table:
 
 ```lua
 require('lsp-progress').progress({
@@ -53,7 +55,8 @@ require('lsp-progress').progress({
 })
 ```
 
-They share the same fields with `setup(option)` (see [Configuration](#configuration)) to provide more dynamic abilities.
+They share the same fields with `setup(option)` (see [Configuration](#configuration))
+to provide more dynamic abilities.
 
 ### Statusline Integration
 
@@ -63,14 +66,14 @@ require("lualine").setup({
         lualine_a = { "mode" },
         lualine_b = { "filename" },
         lualine_c = {
-            -- invoke `progress` to get lsp progress status.
+            -- invoke `progress` here.
             require("lsp-progress").progress,
         },
         ...
     }
 })
 
--- listen to user event and trigger lualine refresh
+-- refresh lualine
 vim.cmd([[
 augroup lualine_augroup
     autocmd!
@@ -189,6 +192,42 @@ require('lsp-progress').setup({
     -- For Windows: `$env:USERPROFILE\AppData\Local\nvim-data\lsp-progress.log`.
     -- For *NIX: `~/.local/share/nvim/lsp-progress.log`.
     file_log_name = "lsp-progress.log",
+})
+```
+
+### Advanced Configurations
+
+1. Split the sign ` LSP` and messages:
+
+```lua
+-- lualine
+
+local function LspSign()
+    return require("lsp-progress").progress({
+        format = function(messages)
+            return " LSP"
+        end,
+    })
+end
+
+local function LspStatus()
+    return require("lsp-progress").progress({
+        format = function(messages)
+            return #messages > 0 and table.concat(messages, " ") or ""
+        end,
+    })
+end
+
+require("lualine").setup({
+    sections = {
+        lualine_a = { "mode" },
+        lualine_b = { "filename" },
+        lualine_c = {
+            LspSign, -- signs: ` LSP`
+            LspStatus, -- messages: `[null-ls] ⣷ formatting isort (100%) - done`
+        },
+        ...
+    }
 })
 ```
 
