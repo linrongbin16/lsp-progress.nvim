@@ -14,6 +14,7 @@ local record M
   input: function(string, string): string
   has: function(string): number
   stdpath: function(string): string
+  escape: function(...:string): string
 
   ['repeat#set']: function(string, integer)
 
