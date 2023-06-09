@@ -1,7 +1,6 @@
 local logger = require("lsp-progress.logger")
-local SeriesRecord = require("lsp-progress.series").SeriesRecord
 
-local type ClientRecord = record
+global type ClientRecord = record
     id: number|nil
     name: string|nil
     spin_index: integer
@@ -75,18 +74,6 @@ function ClientRecord:format():string|any|nil
     return self._formatted
 end
 
-function ClientRecord.new(id:number, name:string):ClientRecord
-    local self: ClientRecord = setmetatable({}, { __index = ClientRecord })
-    self.id = id
-    self.name = name
-    self.spin_index = 0
-    self.serieses = {}
-    self._formatted = nil
-    self._deduped_tokens = {}
-    self:format()
-    return self
-end
-
 function ClientRecord:_has_deduped_token(title:string|nil, message:string|nil):boolean
     title = tostring(title)
     message = tostring(message)
@@ -99,7 +86,7 @@ function ClientRecord:_has_deduped_token(title:string|nil, message:string|nil):b
     return true
 end
 
-function ClientRecord:_set_deduped_token(title:string|nil, message:string|nil, token:string|nil)
+function ClientRecord:_set_deduped_token(title:string|nil, message:string|nil, token:string|nil):nil
     title = tostring(title)
     message = tostring(message)
     if not self._deduped_tokens[title] then
@@ -108,7 +95,7 @@ function ClientRecord:_set_deduped_token(title:string|nil, message:string|nil, t
     self._deduped_tokens[title][message] = token
 end
 
-function ClientRecord:_remove_deduped_token(title:string|nil, message:string|nil)
+function ClientRecord:_remove_deduped_token(title:string|nil, message:string|nil):nil
     title = tostring(title)
     message = tostring(message)
     if not self._deduped_tokens[title] then
@@ -164,9 +151,21 @@ local function setup(client_formatter:ClientRecordFormatterType, spinner:{string
     Spinner = spinner
 end
 
+local function new_client(id:number, name:string):ClientRecord
+    local self: ClientRecord = setmetatable({}, { __index = ClientRecord })
+    self.id = id
+    self.name = name
+    self.spin_index = 0
+    self.serieses = {}
+    self._formatted = nil
+    self._deduped_tokens = {}
+    self:format()
+    return self
+end
+
 local M:table = {
     setup = setup,
-    ClientRecord = ClientRecord,
+    new_client = new_client,
 }
 
 return M

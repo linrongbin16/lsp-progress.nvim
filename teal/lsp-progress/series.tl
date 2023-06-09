@@ -1,6 +1,6 @@
 local logger = require("lsp-progress.logger")
 
-local type SeriesRecord = record
+global type SeriesRecord = record
     title: string|nil
     message: string|nil
     percentage: number|nil
@@ -33,18 +33,6 @@ function SeriesRecord:format():string|any|nil
     return self._formatted
 end
 
-function SeriesRecord.new(title:string|nil, message:string|nil, percentage:number|nil):SeriesRecord
-    local self: SeriesRecord = setmetatable({}, { __index = SeriesRecord })
-    self.title = title
-    self.message = message
-    self.percentage = percentage
-    self.done = false
-    self._formatted = nil
-    self:format()
-    logger.debug("|series.SeriesRecord.new| new series: %s", self:tostring())
-    return self
-end
-
 function SeriesRecord:formatted_result():string|any|nil
     return self._formatted
 end
@@ -64,17 +52,25 @@ function SeriesRecord:finish(message:string|nil):nil
     logger.debug("|series.SeriesRecord.finish| finish series: %s", self:tostring())
 end
 
-function SeriesRecord:key():string
-    return tostring(self.title) .. "-" .. tostring(self.message)
-end
-
 local function setup(series_formatter:SeriesRecordFormatterType):nil
     SeriesRecordFormatter = series_formatter
 end
 
+local function new_series(title:string|nil, message:string|nil, percentage:number|nil):SeriesRecord
+    local self: SeriesRecord = setmetatable({}, { __index = SeriesRecord })
+    self.title = title
+    self.message = message
+    self.percentage = percentage
+    self.done = false
+    self._formatted = nil
+    self:format()
+    logger.debug("|series.SeriesRecord.new| new series: %s", self:tostring())
+    return self
+end
+
 local M:table = {
     setup = setup,
-    SeriesRecord = SeriesRecord,
+    new_series = new_series
 }
 
 return M

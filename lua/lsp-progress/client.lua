@@ -1,5 +1,4 @@
-local _tl_compat; if (tonumber((_VERSION or ''):match('[%d.]*$')) or 0) < 5.3 then local p, m = pcall(require, 'compat53.module'); if p then _tl_compat = m end end; local pairs = _tl_compat and _tl_compat.pairs or pairs; local string = _tl_compat and _tl_compat.string or string; local table = _tl_compat and _tl_compat.table or table
-local logger = require("lsp-progress.logger")
+local _tl_compat; if (tonumber((_VERSION or ''):match('[%d.]*$')) or 0) < 5.3 then local p, m = pcall(require, 'compat53.module'); if p then _tl_compat = m end end; local pairs = _tl_compat and _tl_compat.pairs or pairs; local string = _tl_compat and _tl_compat.string or string; local table = _tl_compat and _tl_compat.table or table; local logger = require("lsp-progress.logger")
 
 ClientRecord = {}
 
@@ -73,18 +72,6 @@ function ClientRecord:format()
    vim.inspect(self._formatted))
 
    return self._formatted
-end
-
-function ClientRecord.new(id, name)
-   local self = setmetatable({}, { __index = ClientRecord })
-   self.id = id
-   self.name = name
-   self.spin_index = 0
-   self.serieses = {}
-   self._formatted = nil
-   self._deduped_tokens = {}
-   self:format()
-   return self
 end
 
 function ClientRecord:_has_deduped_token(title, message)
@@ -164,8 +151,21 @@ local function setup(client_formatter, spinner)
    Spinner = spinner
 end
 
+local function new_client(id, name)
+   local self = setmetatable({}, { __index = ClientRecord })
+   self.id = id
+   self.name = name
+   self.spin_index = 0
+   self.serieses = {}
+   self._formatted = nil
+   self._deduped_tokens = {}
+   self:format()
+   return self
+end
+
 local M = {
    setup = setup,
+   new_client = new_client,
 }
 
 return M

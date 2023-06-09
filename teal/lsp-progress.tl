@@ -1,7 +1,45 @@
 local logger = require("lsp-progress.logger")
 local defaults = require("lsp-progress.defaults")
-local SeriesRecord = require('lsp-progress.series').SeriesRecord
-local ClientRecord = require('lsp-progress.client').ClientRecord
+local new_series = require("lsp-progress.series").new_series
+local new_client = require("lsp-progress.client").new_client
+
+global record SeriesRecord
+    title: string|nil
+    message: string|nil
+    percentage: number|nil
+    done: boolean
+    _formatted: string|any|nil
+
+    tostring: function(SeriesRecord):string
+    format: function(SeriesRecord):string|any|nil
+    formatted_result: function(SeriesRecord):string|any|nil
+    update: function(SeriesRecord, string|nil, number|nil):nil
+    finish: function(SeriesRecord, string|nil):nil
+end
+
+global record ClientRecord
+    id: number|nil
+    name: string|nil
+    spin_index: integer
+    serieses: {string:SeriesRecord}
+    _formatted: string|any|nil
+    _deduped_tokens: {string:{string:string}}
+
+    formatted_result: function(ClientRecord):string|any|nil
+    tostring: function(ClientRecord):string
+    has_series: function(ClientRecord, string):boolean
+    get_series: function(ClientRecord, string):SeriesRecord
+    format: function(ClientRecord):string|any|nil
+    _has_deduped_token: function(ClientRecord, string|nil, string|nil):boolean
+    _set_deduped_token: function(ClientRecord, string|nil, string|nil, token:string|nil):nil
+    _remove_deduped_token: function(ClientRecord, string|nil, string|nil):nil
+    _get_deduped_token: function(ClientRecord, string|nil, string|nil):string
+    remove_series: function(ClientRecord, string|nil):nil
+    add_series: function(ClientRecord, string|nil, SeriesRecord):nil
+    empty: function(ClientRecord):boolean
+    increase_spin_index: function(ClientRecord):nil
+end
+
 
 local Config:table = {}
 local Registered = false
@@ -19,8 +57,8 @@ end
 local function emit_event():nil
     if not EventEmitted then
         EventEmitted = true
-        vim.cmd("doautocmd User " .. Config.event)
-        vim.defer_fn(reset_event, Config.event_update_time_limit)
+        vim.cmd("doautocmd User " .. Config.event as string)
+        vim.defer_fn(reset_event, Config.event_update_time_limit as integer)
         logger.debug("|lsp-progress.emit_event| emit user event:%s", Config.event)
     end
 end
@@ -44,7 +82,7 @@ end
 
 local function register_client(id:number, name:string):nil
     if not has_client(id) then
-        LspClients[id] = ClientRecord.new(id, name)
+        LspClients[id] = new_client(id, name)
         logger.debug(
             "|lsp-progress.register_client| register client %s",
             get_client(id):tostring()
@@ -172,7 +210,7 @@ local function progress_handler(err:table, msg:table, ctx:table):nil
     local client = get_client(client_id)
     if value.kind == "begin" then
         -- add task
-        local series = SeriesRecord.new(value.title, value.message, value.percentage)
+        local series = new_series(value.title, value.message, value.percentage)
         client:add_series(token, series)
         -- start spin, it will also notify user at a fixed rate
         spin(client_id, token)
