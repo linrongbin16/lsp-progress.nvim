@@ -1,19 +1,18 @@
 local logger = require("lsp-progress.logger")
 
-global type ClientRecord = record
+local record ClientRecord
     id: number|nil
     name: string|nil
     spin_index: integer
-    -- map: token => series
     serieses: {string:SeriesRecord}
 
-    -- cached format result
+    -- cached formatted result
     _formatted: string|any|nil
     -- deduped serieses (2-level map: title => message => token)
     _deduped_tokens: {string:{string:string}}
 end
+local type ClientRecordFormatterType = function(string|nil,string|nil,{string|any}):string|any|nil
 
-global type ClientRecordFormatterType = function(string|nil,string|nil,{string|any}):string|any|nil
 local ClientRecordFormatter:ClientRecordFormatterType|nil = nil
 local Spinner:{string} = {}
 

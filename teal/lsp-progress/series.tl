@@ -1,6 +1,6 @@
 local logger = require("lsp-progress.logger")
 
-global type SeriesRecord = record
+local record SeriesRecord
     title: string|nil
     message: string|nil
     percentage: number|nil
@@ -9,8 +9,8 @@ global type SeriesRecord = record
     -- cached format result
     _formatted: string|any|nil
 end
+local type SeriesRecordFormatterType = function(string|nil,string|nil,number|nil,boolean|nil):string|any|nil
 
-global type SeriesRecordFormatterType = function(string|nil,string|nil,number|nil,boolean|nil):string|any|nil
 local SeriesRecordFormatter:SeriesRecordFormatterType|nil = nil
 
 function SeriesRecord:tostring():string

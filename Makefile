@@ -1,3 +1,3 @@
 build: tlconfig.lua
 	rm -rf lua
-	tl build
+	tl build --gen-compat=off

@@ -1,8 +1,6 @@
-local _tl_compat; if (tonumber((_VERSION or ''):match('[%d.]*$')) or 0) < 5.3 then local p, m = pcall(require, 'compat53.module'); if p then _tl_compat = m end end; local pairs = _tl_compat and _tl_compat.pairs or pairs; local string = _tl_compat and _tl_compat.string or string; local table = _tl_compat and _tl_compat.table or table; local logger = require("lsp-progress.logger")
+local logger = require("lsp-progress.logger")
 
-ClientRecord = {}
-
-
+local ClientRecord = {}
 
 
 
@@ -13,7 +11,8 @@ ClientRecord = {}
 
 
 
-ClientRecordFormatterType = {}
+
+
 local ClientRecordFormatter = nil
 local Spinner = {}
 
