@@ -57,7 +57,7 @@ local function setup(series_formatter:SeriesRecordFormatterType):nil
 end
 
 local function new_series(title:string|nil, message:string|nil, percentage:number|nil):SeriesRecord
-    local self: SeriesRecord = setmetatable({}, { __index = SeriesRecord })
+    local self:SeriesRecord = vim.tbl_extend("force", vim.deepcopy(SeriesRecord) as table, {}) as SeriesRecord
     self.title = title
     self.message = message
     self.percentage = percentage

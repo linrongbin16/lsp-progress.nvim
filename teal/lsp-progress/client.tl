@@ -151,7 +151,7 @@ local function setup(client_formatter:ClientRecordFormatterType, spinner:{string
 end
 
 local function new_client(id:number, name:string):ClientRecord
-    local self: ClientRecord = setmetatable({}, { __index = ClientRecord })
+    local self:ClientRecord = vim.tbl_extend( "force", vim.deepcopy(ClientRecord) as table, {}) as ClientRecord
     self.id = id
     self.name = name
     self.spin_index = 0
