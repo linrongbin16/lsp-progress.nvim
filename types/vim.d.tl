@@ -116,6 +116,10 @@ local record M
     record util
       close_preview_autocmd: function ({string}, number)
     end
+    client_is_stopped: function(number): boolean
+    get_active_clients: function(): {any}
+    get_client_by_id: function(integer): table
+    handlers: table
   end
 
   loop: uv

@@ -1,6 +1,6 @@
 local logger = require("lsp-progress.logger")
 
-local type SeriesRecord = record
+global type SeriesRecord = record
     title: string|nil
     message: string|nil
     percentage: number|nil
@@ -10,7 +10,7 @@ local type SeriesRecord = record
     _formatted: string|any|nil
 end
 
-local type SeriesRecordFormatterType = function(string|nil,string|nil,number|nil,boolean|nil):string|any|nil
+global type SeriesRecordFormatterType = function(string|nil,string|nil,number|nil,boolean|nil):string|any|nil
 local SeriesRecordFormatter:SeriesRecordFormatterType|nil = nil
 
 function SeriesRecord:tostring():string
@@ -68,17 +68,12 @@ function SeriesRecord:key():string
     return tostring(self.title) .. "-" .. tostring(self.message)
 end
 
-function SeriesRecord:priority():number
-    return self.percentage and self.percentage or -1
-end
-
 local function setup(series_formatter:SeriesRecordFormatterType):nil
     SeriesRecordFormatter = series_formatter
 end
 
 local M:table = {
     setup = setup,
-    SeriesRecord = SeriesRecord,
 }
 
 return M

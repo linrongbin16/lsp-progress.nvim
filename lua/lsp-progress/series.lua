@@ -1,6 +1,6 @@
 local _tl_compat; if (tonumber((_VERSION or ''):match('[%d.]*$')) or 0) < 5.3 then local p, m = pcall(require, 'compat53.module'); if p then _tl_compat = m end end; local string = _tl_compat and _tl_compat.string or string; local logger = require("lsp-progress.logger")
 
-local SeriesRecord = {}
+SeriesRecord = {}
 
 
 
@@ -10,7 +10,7 @@ local SeriesRecord = {}
 
 
 
-
+SeriesRecordFormatterType = {}
 local SeriesRecordFormatter = nil
 
 function SeriesRecord:tostring()
@@ -68,17 +68,12 @@ function SeriesRecord:key()
    return tostring(self.title) .. "-" .. tostring(self.message)
 end
 
-function SeriesRecord:priority()
-   return self.percentage and self.percentage or -1
-end
-
 local function setup(series_formatter)
    SeriesRecordFormatter = series_formatter
 end
 
 local M = {
    setup = setup,
-   SeriesRecord = SeriesRecord,
 }
 
 return M

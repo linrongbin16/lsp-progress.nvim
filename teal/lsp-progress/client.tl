@@ -1,7 +1,7 @@
+global type SeriesRecord
 local logger = require("lsp-progress.logger")
-local SeriesRecord = require('lsp-progress.series').SeriesRecord
 
-local type ClientRecord = record
+global type ClientRecord = record
     id: number|nil
     name: string|nil
     spin_index: integer
@@ -14,7 +14,7 @@ local type ClientRecord = record
     _deduped_tokens: {string:{string:string}}
 end
 
-local type ClientRecordFormatterType = function(string|nil,string|nil,{string|any}):string|any|nil
+global type ClientRecordFormatterType = function(string|nil,string|nil,{string|any}):string|any|nil
 local ClientRecordFormatter:nil|ClientRecordFormatterType = nil
 local Spinner:{string} = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" }
 
@@ -149,13 +149,12 @@ end
 
 function ClientRecord:increase_spin_index():nil
     local old = self.spin_index
-    local spinner_length = #Spinner
-    self.spin_index = (self.spin_index + 1) % spinner_length
+    self.spin_index = (self.spin_index + 1) % #Spinner
     logger.debug(
         "|client.ClientRecord.increase_spin_index| client %s spin index:%d => %d",
         self:tostring(),
         old,
-        self.spin_index
+        self.spin_index as integer
     )
     self:format()
 end
@@ -167,7 +166,6 @@ end
 
 local M:table = {
     setup = setup,
-    ClientRecord = ClientRecord,
 }
 
 return M

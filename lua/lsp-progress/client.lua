@@ -1,163 +1,171 @@
+local _tl_compat; if (tonumber((_VERSION or ''):match('[%d.]*$')) or 0) < 5.3 then local p, m = pcall(require, 'compat53.module'); if p then _tl_compat = m end end; local pairs = _tl_compat and _tl_compat.pairs or pairs; local string = _tl_compat and _tl_compat.string or string; local table = _tl_compat and _tl_compat.table or table
 local logger = require("lsp-progress.logger")
 
-local ClientFormatter = nil
-local Spinner = nil
+ClientRecord = {}
 
-local ClientObject = {
-    client_id = nil,
-    client_name = nil,
-    spin_index = 0,
-    serieses = {},
 
-    -- format cache
-    _format_cache = nil,
-    -- deduped tokens
-    -- title -> message -> token
-    _deduped_tokens = {},
-}
 
-function ClientObject:has_series(token)
-    return self.serieses[token] ~= nil
+
+
+
+
+
+
+
+
+
+ClientRecordFormatterType = {}
+local ClientRecordFormatter = nil
+local Spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" }
+
+function ClientRecord:formatted_result()
+   return self._formatted
 end
 
-function ClientObject:_has_dedup_token(title, message)
-    title = tostring(title)
-    message = tostring(message)
-    if not self._deduped_tokens[title] then
-        return false
-    end
-    if not self._deduped_tokens[title][message] then
-        return false
-    end
-    return true
+function ClientRecord:tostring()
+   return string.format("[%s-%s]", tostring(self.name), tostring(self.id))
 end
 
-function ClientObject:_set_dedup_token(title, message, token)
-    title = tostring(title)
-    message = tostring(message)
-    if not self._deduped_tokens[title] then
-        self._deduped_tokens[title] = {}
-    end
-    self._deduped_tokens[title][message] = token
+function ClientRecord:has_series(token)
+   return self.serieses[token] ~= nil
 end
 
-function ClientObject:_remove_dedup_token(title, message)
-    title = tostring(title)
-    message = tostring(message)
-    if not self._deduped_tokens[title] then
-        return
-    end
-    self._deduped_tokens[title][message] = nil
+function ClientRecord:get_series(token)
+   return self.serieses[token]
 end
 
-function ClientObject:_get_dedup_token(title, message)
-    title = tostring(title)
-    message = tostring(message)
-    return self._deduped_tokens[title][message]
-end
+function ClientRecord:format()
+   local series_messages = {}
+   local visited_tokens = {}
+   for tt, message_tokens in pairs(self._deduped_tokens) do
+      message_tokens = message_tokens
+      for ms, token in pairs(message_tokens) do
+         if not visited_tokens[token] then
+            if self:has_series(token) then
+               local series = self:get_series(token)
+               local result = series:formatted_result()
+               logger.debug(
+               "|client.ClientRecord.format| get series %s (deduped key: %s-%s) format result in client %s: %s",
+               series:tostring(),
+               tt,
+               ms,
+               self:tostring(),
+               vim.inspect(series_messages))
 
-function ClientObject:remove_series(token)
-    if self:has_series(token) then
-        local series = self:get_series(token)
-        if
-            self:_has_dedup_token(series.title, series.message)
-            and self:_get_dedup_token(series.title, series.message) == token
-        then
-            self:_remove_dedup_token(series.title, series.message)
-        end
-    end
-    self.serieses[token] = nil
-    self:format()
-end
-
-function ClientObject:get_series(token)
-    return self.serieses[token]
-end
-
-function ClientObject:add_series(token, series)
-    self:_set_dedup_token(series.title, series.message, token)
-    self.serieses[token] = series
-    self:format()
-end
-
-function ClientObject:empty()
-    return next(self.serieses)
-end
-
-function ClientObject:increase_spin_index(spinner_length)
-    local old = self.spin_index
-    self.spin_index = (self.spin_index + 1) % spinner_length
-    logger.debug(
-        "|client.increase_spin_index| Client %s spin index:%d => %d",
-        self:tostring(),
-        old,
-        self.spin_index
-    )
-    self:format()
-end
-
-function ClientObject:tostring()
-    return string.format("[%s-%d]", self.client_name, self.client_id)
-end
-
-function ClientObject:format()
-    local series_messages = {}
-    local visited_tokens = {}
-    for tt, message_tokens in pairs(self._deduped_tokens) do
-        for ms, token in pairs(message_tokens) do
-            if not visited_tokens[token] then
-                if self:has_series(token) then
-                    local series = self:get_series(token)
-                    local result = series:format_result()
-                    logger.debug(
-                        "|client.format| Get series %s (deduped key: %s-%s) format result in client %s: %s",
-                        series:tostring(),
-                        tt,
-                        ms,
-                        self:tostring(),
-                        vim.inspect(series_messages)
-                    )
-                    table.insert(series_messages, result)
-                end
-                visited_tokens[token] = true
+               if result then
+                  table.insert(series_messages, result)
+               end
             end
-        end
-    end
-    self._format_cache = ClientFormatter(
-        self.client_name,
-        Spinner[self.spin_index + 1],
-        series_messages
-    )
-    logger.debug(
-        "|client.format| Format client %s: %s",
-        self:tostring(),
-        vim.inspect(self._format_cache)
-    )
-    return self._format_cache
+            visited_tokens[token] = true
+         end
+      end
+   end
+   if type(ClientRecordFormatter) == "function" then
+      self._formatted = ClientRecordFormatter(
+      self.name,
+      Spinner[self.spin_index + 1],
+      series_messages)
+
+   end
+   logger.debug(
+   "|client.ClientRecord.format| format client %s: %s",
+   self:tostring(),
+   vim.inspect(self._formatted))
+
+   return self._formatted
 end
 
-function ClientObject:format_result()
-    return self._format_cache
+function ClientRecord.new(id, name)
+   local self = setmetatable({}, { __index = ClientRecord })
+   self.id = id
+   self.name = name
+   self.spin_index = 0
+   self.serieses = {}
+   self._formatted = nil
+   self._deduped_tokens = {}
+   self:format()
+   return self
 end
 
-local function new_client(client_id, client_name)
-    local client = vim.tbl_extend(
-        "force",
-        vim.deepcopy(ClientObject),
-        { client_id = client_id, client_name = client_name }
-    )
-    client:format()
-    return client
+function ClientRecord:_has_deduped_token(title, message)
+   title = tostring(title)
+   message = tostring(message)
+   if not self._deduped_tokens[title] then
+      return false
+   end
+   if not self._deduped_tokens[title][message] then
+      return false
+   end
+   return true
+end
+
+function ClientRecord:_set_deduped_token(title, message, token)
+   title = tostring(title)
+   message = tostring(message)
+   if not self._deduped_tokens[title] then
+      self._deduped_tokens[title] = {}
+   end
+   self._deduped_tokens[title][message] = token
+end
+
+function ClientRecord:_remove_deduped_token(title, message)
+   title = tostring(title)
+   message = tostring(message)
+   if not self._deduped_tokens[title] then
+      return
+   end
+   self._deduped_tokens[title][message] = nil
+end
+
+function ClientRecord:_get_deduped_token(title, message)
+   title = tostring(title)
+   message = tostring(message)
+   return self._deduped_tokens[title][message]
+end
+
+function ClientRecord:remove_series(token)
+   if self:has_series(token) then
+      local series = self:get_series(token)
+      if
+self:_has_deduped_token(series.title, series.message) and
+         self:_get_deduped_token(series.title, series.message) == token then
+
+         self:_remove_deduped_token(series.title, series.message)
+      end
+   end
+   self.serieses[token] = nil
+   self:format()
+end
+
+function ClientRecord:add_series(token, series)
+   self:_set_deduped_token(series.title, series.message, token)
+   self.serieses[token] = series
+   self:format()
+end
+
+function ClientRecord:empty()
+   return next(self.serieses)
+end
+
+function ClientRecord:increase_spin_index()
+   local old = self.spin_index
+   self.spin_index = (self.spin_index + 1) % #Spinner
+   logger.debug(
+   "|client.ClientRecord.increase_spin_index| client %s spin index:%d => %d",
+   self:tostring(),
+   old,
+   self.spin_index)
+
+   self:format()
 end
 
 local function setup(client_formatter, spinner)
-    ClientFormatter = client_formatter
-    Spinner = spinner
+   ClientRecordFormatter = client_formatter
+   Spinner = spinner
 end
 
 local M = {
-    setup = setup,
-    new_client = new_client,
+   setup = setup,
 }
 
 return M

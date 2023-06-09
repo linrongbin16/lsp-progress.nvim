@@ -15,6 +15,8 @@ local record M
   has: function(string): number
   stdpath: function(string): string
   escape: function(...:string): string
+  max: function({number}): number
+  strcharpart: function(string,number,number): string
 
   ['repeat#set']: function(string, integer)
 
