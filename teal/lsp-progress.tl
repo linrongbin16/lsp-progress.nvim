@@ -1,8 +1,7 @@
-global type SeriesRecord
-global type ClientRecord
 local logger = require("lsp-progress.logger")
-local event = require("lsp-progress.event")
 local defaults = require("lsp-progress.defaults")
+local SeriesRecord = require('lsp-progress.series').SeriesRecord
+local ClientRecord = require('lsp-progress.client').ClientRecord
 
 local Config:table = {}
 local Registered = false

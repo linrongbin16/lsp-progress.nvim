@@ -1,7 +1,7 @@
-global type SeriesRecord
 local logger = require("lsp-progress.logger")
+local SeriesRecord = require("lsp-progress.series").SeriesRecord
 
-global type ClientRecord = record
+local type ClientRecord = record
     id: number|nil
     name: string|nil
     spin_index: integer
@@ -166,6 +166,7 @@ end
 
 local M:table = {
     setup = setup,
+    ClientRecord = ClientRecord,
 }
 
 return M

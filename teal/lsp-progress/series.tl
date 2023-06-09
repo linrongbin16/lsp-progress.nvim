@@ -1,6 +1,6 @@
 local logger = require("lsp-progress.logger")
 
-global type SeriesRecord = record
+local type SeriesRecord = record
     title: string|nil
     message: string|nil
     percentage: number|nil
@@ -74,6 +74,7 @@ end
 
 local M:table = {
     setup = setup,
+    SeriesRecord = SeriesRecord,
 }
 
 return M
