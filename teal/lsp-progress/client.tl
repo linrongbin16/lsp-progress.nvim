@@ -14,8 +14,8 @@ global type ClientRecord = record
 end
 
 global type ClientRecordFormatterType = function(string|nil,string|nil,{string|any}):string|any|nil
-local ClientRecordFormatter:nil|ClientRecordFormatterType = nil
-local Spinner:{string} = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" }
+local ClientRecordFormatter:ClientRecordFormatterType|nil = nil
+local Spinner:{string} = {}
 
 function ClientRecord:formatted_result():string|any|nil
     return self._formatted

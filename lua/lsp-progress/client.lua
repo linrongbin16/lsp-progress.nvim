@@ -15,7 +15,7 @@ ClientRecord = {}
 
 ClientRecordFormatterType = {}
 local ClientRecordFormatter = nil
-local Spinner = { "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷" }
+local Spinner = {}
 
 function ClientRecord:formatted_result()
    return self._formatted
