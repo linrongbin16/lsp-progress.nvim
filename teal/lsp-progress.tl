@@ -35,14 +35,13 @@ global record ClientRecord
     increase_spin_index: function(ClientRecord):nil
 end
 
+global type SeriesRecordFormatterType = function(string|nil,string|nil,number|nil,boolean|nil):string|any|nil
+global type ClientRecordFormatterType = function(string|nil,string|nil,{string|any}):string|any|nil
+
 local logger = require("lsp-progress.logger")
-local defaults = require("lsp-progress.defaults")
 local new_series = require("lsp-progress.series").new_series as function(string|nil, string|nil, number|nil):SeriesRecord
 local new_client = require("lsp-progress.client").new_client as function(number,string):ClientRecord
 
-local type ConfigType = record
-    format: function({string|any}):string|nil
-end
 local Config:table = {}
 local Registered = false
 -- map: id => client
@@ -285,7 +284,7 @@ local function progress(option:table):string|nil
 
     local client_messages = {}
     for _, client in pairs(LspClients) do
-        local msg = client:formatted_result()
+        local msg = client:formatted_result() as string|any
         if msg and msg ~= "" then
             table.insert(client_messages, msg)
             logger.debug(
@@ -295,7 +294,8 @@ local function progress(option:table):string|nil
             )
         end
     end
-    local content = option.format(client_messages)
+    local option_format = option.format as function({string|any}):string|nil
+    local content = option_format(client_messages)
     logger.debug(
         "|lsp-progress.progress| progress format: %s",
         vim.inspect(content)
@@ -312,9 +312,10 @@ local function progress(option:table):string|nil
     return content
 end
 
-local function setup(option)
+local function setup(option:table):nil
     -- setup config
-    Config = defaults.setup(option)
+    local defaults_setup = require("lsp-progress.defaults").setup as function(table):table
+    Config = defaults_setup(option) as table
 
     -- setup logger
     logger.setup(
@@ -325,15 +326,17 @@ local function setup(option)
     )
 
     -- setup series
-    require("lsp-progress.series").setup(Config.series_format)
+    local series_setup = require("lsp-progress.series").setup as function(SeriesRecordFormatterType):SeriesRecord
+    series_setup(Config.series_format as SeriesRecordFormatterType)
 
     -- init client
-    require("lsp-progress.client").setup(Config.client_format, Config.spinner)
+    local client_setup = require("lsp-progress.client").setup as function(ClientRecordFormatterType,{string}):ClientRecord
+    client_setup(Config.client_format as ClientRecordFormatterType, Config.spinner as {string})
 
     if not Registered then
         if vim.lsp.handlers["$/progress"] then
-            local old_handler = vim.lsp.handlers["$/progress"]
-            vim.lsp.handlers["$/progress"] = function(...:table)
+            local old_handler = vim.lsp.handlers["$/progress"] as function(...:table):nil
+            vim.lsp.handlers["$/progress"] = function(...:table):nil
                 old_handler(...)
                 progress_handler(...)
             end
