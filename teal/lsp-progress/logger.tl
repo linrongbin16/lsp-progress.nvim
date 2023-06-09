@@ -73,19 +73,19 @@ local function log(level:LogLevelEnum, message:string):nil
     end
 end
 
-local function debug(fmt:string, ...):nil
+local function debug(fmt:string, ...:any):nil
     log("DEBUG", string.format(fmt, ...))
 end
 
-local function info(fmt:string, ...):nil
+local function info(fmt:string, ...:any):nil
     log("INFO", string.format(fmt, ...))
 end
 
-local function warn(fmt:string, ...):nil
+local function warn(fmt:string, ...:any):nil
     log("WARN", string.format(fmt, ...))
 end
 
-local function err(fmt:string, ...):nil
+local function err(fmt:string, ...:any):nil
     log("ERROR", string.format(fmt, ...))
 end
 
