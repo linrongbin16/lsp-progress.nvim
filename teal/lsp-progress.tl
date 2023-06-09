@@ -1,8 +1,3 @@
-local logger = require("lsp-progress.logger")
-local defaults = require("lsp-progress.defaults")
-local new_series = require("lsp-progress.series").new_series
-local new_client = require("lsp-progress.client").new_client
-
 global record SeriesRecord
     title: string|nil
     message: string|nil
@@ -40,7 +35,14 @@ global record ClientRecord
     increase_spin_index: function(ClientRecord):nil
 end
 
+local logger = require("lsp-progress.logger")
+local defaults = require("lsp-progress.defaults")
+local new_series = require("lsp-progress.series").new_series as function(string|nil, string|nil, number|nil):SeriesRecord
+local new_client = require("lsp-progress.client").new_client as function(number,string):ClientRecord
 
+local type ConfigType = record
+    format: function({string|any}):string|nil
+end
 local Config:table = {}
 local Registered = false
 -- map: id => client
@@ -80,7 +82,7 @@ local function remove_client(id:number):nil
     LspClients[id] = nil
 end
 
-local function register_client(id:number, name:string):nil
+local function register_client(id:integer, name:string):nil
     if not has_client(id) then
         LspClients[id] = new_client(id, name)
         logger.debug(
@@ -196,16 +198,23 @@ local function spin(id:number, token:string):nil
     emit_event()
 end
 
+local type MessageValueRecord = record
+    kind: string
+    title: string|nil
+    message: string|nil
+    percentage: number|nil
+end
+
 local function progress_handler(err:table, msg:table, ctx:table):nil
-    local client_id = ctx.client_id
+    local client_id = ctx.client_id as integer
     local nvim_lsp_client = vim.lsp.get_client_by_id(client_id)
-    local client_name = nvim_lsp_client and nvim_lsp_client.name or "unknown"
+    local client_name = nvim_lsp_client and nvim_lsp_client.name as string or "unknown"
 
     -- register client id if not exist
     register_client(client_id, client_name)
 
-    local value = msg.value
-    local token = msg.token
+    local value = msg.value as MessageValueRecord
+    local token = msg.token as string
 
     local client = get_client(client_id)
     if value.kind == "begin" then
