@@ -1,6 +1,6 @@
 .PHONY: check
 check:
-	tl check teal/*.tl teal/**/*.tl
+	tl check teal/**/*.tl teal/*.tl
 
 .PHONY: build
 build: tlconfig.lua

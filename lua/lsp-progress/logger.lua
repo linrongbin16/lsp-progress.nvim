@@ -1,83 +1,100 @@
-local EchoHl = {
-    ["ERROR"] = "ErrorMsg",
-    ["WARN"] = "ErrorMsg",
-    ["INFO"] = "None",
-    ["DEBUG"] = "Comment",
-}
-local LogLevel = "INFO"
-local UseConsole = nil
-local UseFile = nil
-local FileName = nil
+local _tl_compat; if (tonumber((_VERSION or ''):match('[%d.]*$')) or 0) < 5.3 then local p, m = pcall(require, 'compat53.module'); if p then _tl_compat = m end end; local debug = _tl_compat and _tl_compat.debug or debug; local io = _tl_compat and _tl_compat.io or io; local ipairs = _tl_compat and _tl_compat.ipairs or ipairs; local os = _tl_compat and _tl_compat.os or os; local string = _tl_compat and _tl_compat.string or string
 
-local function setup(debug, console_log, file_log, file_log_name)
-    if debug then
-        LogLevel = "DEBUG"
-    end
-    UseConsole = console_log
-    UseFile = file_log
-    -- For Windows: $env:USERPROFILE\AppData\Local\nvim-data\lsp-progress.log
-    -- For *NIX: ~/.local/share/nvim/lsp-progress.log
-    FileName = string.format("%s/%s", vim.fn.stdpath("data"), file_log_name)
+
+
+
+
+
+
+
+
+
+
+local EchoHl = {
+   ["ERROR"] = "ErrorMsg",
+   ["WARN"] = "WarningMsg",
+   ["INFO"] = "None",
+   ["DEBUG"] = "Comment",
+}
+local PathSeparator = vim.fn.has('win32') > 0 and "\\" or "/"
+local LogLevel = "INFO"
+local ConsoleLog = true
+local FileLog = false
+local FileLogName = "lsp-progress.log"
+local FileLogPath = nil
+
+local function setup(enable_debug, console_log, file_log, file_log_name)
+   if enable_debug then
+      LogLevel = "DEBUG"
+   end
+   ConsoleLog = console_log
+   FileLog = file_log
+   if file_log_name and string.len(file_log_name) > 0 then
+      FileLogName = file_log_name
+   end
+   if FileLog then
+      FileLogPath = vim.fn.stdpath("data") .. PathSeparator .. FileLogName
+   end
 end
 
-local function log(level, msg)
-    if vim.log.levels[level] < vim.log.levels[LogLevel] then
-        return
-    end
+local function log(level, message)
+   if vim.log.levels[level] < vim.log.levels[LogLevel] then
+      return
+   end
 
-    local msg_lines = vim.split(msg, "\n")
-    if UseConsole then
-        vim.cmd("echohl " .. EchoHl[level])
-        for _, line in ipairs(msg_lines) do
-            vim.cmd(
-                string.format(
-                    'echom "%s"',
-                    vim.fn.escape(string.format("[lsp-progress] %s", line), '"')
-                )
-            )
-        end
-        vim.cmd("echohl None")
-    end
-    if UseFile then
-        local fp = io.open(FileName, "a")
-        if fp then
-            for _, line in ipairs(msg_lines) do
-                fp:write(
-                    string.format(
-                        "[lsp-progress] %s [%s]: %s\n",
-                        os.date("%Y-%m-%d %H:%M:%S"),
-                        level,
-                        line
-                    )
-                )
-            end
-            fp:close()
-        end
-    end
+   local split_messages = vim.split(message, "\n")
+   if ConsoleLog then
+      vim.cmd("echohl " .. EchoHl[level])
+      for _, line in ipairs(split_messages) do
+         vim.cmd(
+         string.format(
+         'echom "%s"',
+         vim.fn.escape(string.format("lsp-progress: %s", line), '"')))
+
+
+      end
+      vim.cmd("echohl None")
+   end
+   if FileLog then
+      local fp = io.open(FileLogPath, "a")
+      if fp then
+         for _, line in ipairs(split_messages) do
+            fp:write(
+            string.format(
+            "lsp-progress: %s [%s]: %s\n",
+            os.date("%Y-%m-%d %H:%M:%S"),
+            level,
+            line))
+
+
+         end
+         fp:close()
+      end
+   end
 end
 
 local function debug(fmt, ...)
-    log("DEBUG", string.format(fmt, ...))
+   log("DEBUG", string.format(fmt, ...))
 end
 
 local function info(fmt, ...)
-    log("INFO", string.format(fmt, ...))
+   log("INFO", string.format(fmt, ...))
 end
 
 local function warn(fmt, ...)
-    log("WARN", string.format(fmt, ...))
+   log("WARN", string.format(fmt, ...))
 end
 
-local function error(fmt, ...)
-    log("ERROR", string.format(fmt, ...))
+local function err(fmt, ...)
+   log("ERROR", string.format(fmt, ...))
 end
 
 local M = {
-    setup = setup,
-    debug = debug,
-    info = info,
-    warn = warn,
-    error = error,
+   setup = setup,
+   debug = debug,
+   info = info,
+   warn = warn,
+   err = err,
 }
 
 return M
