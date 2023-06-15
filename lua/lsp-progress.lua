@@ -1,29 +1,46 @@
+--- @type table<string, function>
 local logger = require("lsp-progress.logger")
+--- @type table<string, function>
 local defaults = require("lsp-progress.defaults")
+--- @type table<string, function>
 local event = require("lsp-progress.event")
+--- @overload fun(title:string, message:string, percentage:integer):SeriesObject
 local new_series = require("lsp-progress.series").new_series
+--- @overload fun(client_id:integer, client_name:string):ClientObject
 local new_client = require("lsp-progress.client").new_client
 
 -- global variable
+
+--- @type table<string, any>
 local Config = {}
+--- @type boolean
 local Registered = false
+--- @type table<integer, ClientObject>
 local LspClients = {}
 
--- {
--- Clients
+-- client utils
 
+--- @param client_id integer
+--- @return boolean
 local function has_client(client_id)
     return LspClients[client_id] ~= nil
 end
 
+--- @param client_id integer
+--- @return ClientObject
 local function get_client(client_id)
     return LspClients[client_id]
 end
 
+--- @param client_id integer
+--- @return nil
 local function remove_client(client_id)
     LspClients[client_id] = nil
 end
 
+--- @param client_id integer
+--- @param client_name string
+--- @return nil
 local function register_client(client_id, client_name)
     if not has_client(client_id) then
         LspClients[client_id] = new_client(client_id, client_name)
@@ -34,9 +51,11 @@ local function register_client(client_id, client_name)
     end
 end
 
--- }
-
+--- @param client_id integer
+--- @param token string
+--- @return nil
 local function spin(client_id, token)
+    --- @return nil
     local function spin_again()
         spin(client_id, token)
     end
@@ -61,7 +80,7 @@ local function spin(client_id, token)
         return
     end
 
-    client:increase_spin_index(#Config.spinner)
+    client:increase_spin_index()
     vim.defer_fn(spin_again, Config.spin_update_time)
 
     local series = client:get_series(token)
@@ -140,6 +159,10 @@ local function spin(client_id, token)
     event.emit()
 end
 
+--- @param err any
+--- @param msg table<string, any>
+--- @param ctx table<string, any>
+--- @return nil
 local function progress_handler(err, msg, ctx)
     local client_id = ctx.client_id
     local nvim_lsp_client = vim.lsp.get_client_by_id(client_id)
@@ -210,6 +233,8 @@ local function progress_handler(err, msg, ctx)
     event.emit()
 end
 
+--- @param option table<string, any>
+--- @return string|nil
 local function progress(option)
     option = vim.tbl_deep_extend("force", vim.deepcopy(Config), option or {})
 
@@ -247,6 +272,8 @@ local function progress(option)
     return content
 end
 
+--- @param option table<string, any>
+--- @return nil
 local function setup(option)
     -- setup config
     Config = defaults.setup(option)
@@ -282,6 +309,7 @@ local function setup(option)
     end
 end
 
+--- @type table<string, function>
 local M = {
     setup = setup,
     progress = progress,
