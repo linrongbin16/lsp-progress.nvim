@@ -1,5 +1,12 @@
+--- @type table<string, function>
 local logger = require("lsp-progress.logger")
 
+--- @class SeriesObject
+--- @field title string|nil
+--- @field message string|nil
+--- @field percentage integer|nil
+--- @field done boolean
+--- @field private _format_cache string|table|nil
 local SeriesObject = {
     title = nil,
     message = nil,
@@ -10,8 +17,11 @@ local SeriesObject = {
     _format_cache = nil,
 }
 
+--- @alias SeriesFormatterType fun(title:string|nil,message:string|nil,percentage:integer|nil,done:boolean):string|table|nil
+--- @type SeriesFormatterType
 local SeriesFormatter = nil
 
+--- @return string
 function SeriesObject:tostring()
     return string.format(
         "<Series title:%s, message:%s, percentage:%s, done:%s, _format_cache:%s>",
@@ -23,6 +33,9 @@ function SeriesObject:tostring()
     )
 end
 
+--- @param message string
+--- @param percentage integer
+--- @return nil
 function SeriesObject:update(message, percentage)
     self.message = message
     self.percentage = percentage
@@ -30,6 +43,8 @@ function SeriesObject:update(message, percentage)
     logger.debug("|series.update| Update series: %s", self:tostring())
 end
 
+--- @param message string
+--- @return nil
 function SeriesObject:finish(message)
     self.message = message
     self.percentage = 100
@@ -38,14 +53,8 @@ function SeriesObject:finish(message)
     logger.debug("|series.finish| Finish series: %s", self:tostring())
 end
 
-function SeriesObject:key()
-    return tostring(self.title) .. "-" .. tostring(self.message)
-end
-
-function SeriesObject:priority()
-    return self.percentage and self.percentage or -1
-end
-
+--- @package
+--- @return string|table|nil
 function SeriesObject:_format()
     self._format_cache =
         SeriesFormatter(self.title, self.message, self.percentage, self.done)
@@ -53,10 +62,15 @@ function SeriesObject:_format()
     return self._format_cache
 end
 
+--- @return string|table|nil
 function SeriesObject:format_result()
     return self._format_cache
 end
 
+--- @param title string
+--- @param message string
+--- @param percentage integer
+--- @return SeriesObject
 local function new_series(title, message, percentage)
     local series = vim.tbl_extend("force", vim.deepcopy(SeriesObject), {
         title = title,
@@ -69,12 +83,17 @@ local function new_series(title, message, percentage)
     return series
 end
 
+--- @param formatter fun(title:string|nil,message:string|nil,percentage:integer|nil,done:boolean):string|table|nil
+--- @return nil
 local function setup(formatter)
     SeriesFormatter = formatter
 end
 
+--- @type table<string, function>
 local M = {
+    --- @overload fun(formatter:SeriesFormatterType):nil
     setup = setup,
+    --- @overload fun(title:string, message:string, percentage:integer):SeriesObject
     new_series = new_series,
 }
 

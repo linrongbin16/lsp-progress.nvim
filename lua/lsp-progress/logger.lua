@@ -1,14 +1,24 @@
+--- @type table<string, string>
 local EchoHl = {
     ["ERROR"] = "ErrorMsg",
     ["WARN"] = "ErrorMsg",
     ["INFO"] = "None",
     ["DEBUG"] = "Comment",
 }
+--- @type string
 local LogLevel = "INFO"
+--- @type boolean|nil
 local UseConsole = nil
+--- @type boolean|nil
 local UseFile = nil
+--- @type string|nil
 local FileName = nil
 
+--- @param debug boolean
+--- @param console_log boolean
+--- @param file_log boolean
+--- @param file_log_name string
+--- @return nil
 local function setup(debug, console_log, file_log, file_log_name)
     if debug then
         LogLevel = "DEBUG"
@@ -20,6 +30,9 @@ local function setup(debug, console_log, file_log, file_log_name)
     FileName = string.format("%s/%s", vim.fn.stdpath("data"), file_log_name)
 end
 
+--- @param level string
+--- @param msg string
+--- @return nil
 local function log(level, msg)
     if vim.log.levels[level] < vim.log.levels[LogLevel] then
         return
@@ -39,7 +52,7 @@ local function log(level, msg)
         vim.cmd("echohl None")
     end
     if UseFile then
-        local fp = io.open(FileName, "a")
+        local fp = io.open(FileName --[[@as string]], "a")
         if fp then
             for _, line in ipairs(msg_lines) do
                 fp:write(
@@ -56,22 +69,35 @@ local function log(level, msg)
     end
 end
 
+--- @param fmt string
+--- @param ... any
+--- @return nil
 local function debug(fmt, ...)
     log("DEBUG", string.format(fmt, ...))
 end
 
+--- @param fmt string
+--- @param ... any
+--- @return nil
 local function info(fmt, ...)
     log("INFO", string.format(fmt, ...))
 end
 
+--- @param fmt string
+--- @param ... any
+--- @return nil
 local function warn(fmt, ...)
     log("WARN", string.format(fmt, ...))
 end
 
+--- @param fmt string
+--- @param ... any
+--- @return nil
 local function error(fmt, ...)
     log("ERROR", string.format(fmt, ...))
 end
 
+--- @type table<string, function>
 local M = {
     setup = setup,
     debug = debug,

@@ -1,8 +1,21 @@
+--- @type table<string, function>
 local logger = require("lsp-progress.logger")
 
+--- @alias ClientFormatterType fun(client_name:string,spinner:string,series_messages:string[]|table[]):string|table|nil
+--- @type ClientFormatterType
 local ClientFormatter = nil
+--- @type string[]|nil
 local Spinner = nil
 
+--- @class ClientObject
+--- @field client_id integer|nil
+--- @field client_name string|nil
+--- @field spin_index integer
+--- @field serieses table<string, SeriesObject>
+---     map: key => SeriesObject.
+--- @field private _format_cache string|table|nil
+--- @field private _deduped_tokens table<string, table<string, string>>
+---     map: title => message => token.
 local ClientObject = {
     client_id = nil,
     client_name = nil,
@@ -12,14 +25,19 @@ local ClientObject = {
     -- format cache
     _format_cache = nil,
     -- deduped tokens
-    -- title -> message -> token
     _deduped_tokens = {},
 }
 
+--- @param token string
+--- @return boolean
 function ClientObject:has_series(token)
     return self.serieses[token] ~= nil
 end
 
+--- @package
+--- @param title string
+--- @param message string
+--- @return boolean
 function ClientObject:_has_dedup_token(title, message)
     title = tostring(title)
     message = tostring(message)
@@ -32,6 +50,11 @@ function ClientObject:_has_dedup_token(title, message)
     return true
 end
 
+--- @package
+--- @param title string
+--- @param message string
+--- @param token string
+--- @return nil
 function ClientObject:_set_dedup_token(title, message, token)
     title = tostring(title)
     message = tostring(message)
@@ -41,6 +64,10 @@ function ClientObject:_set_dedup_token(title, message, token)
     self._deduped_tokens[title][message] = token
 end
 
+--- @package
+--- @param title string
+--- @param message string
+--- @return nil
 function ClientObject:_remove_dedup_token(title, message)
     title = tostring(title)
     message = tostring(message)
@@ -50,12 +77,18 @@ function ClientObject:_remove_dedup_token(title, message)
     self._deduped_tokens[title][message] = nil
 end
 
+--- @package
+--- @param title string
+--- @param message string
+--- @return string token
 function ClientObject:_get_dedup_token(title, message)
     title = tostring(title)
     message = tostring(message)
     return self._deduped_tokens[title][message]
 end
 
+--- @param token string
+--- @return nil
 function ClientObject:remove_series(token)
     if self:has_series(token) then
         local series = self:get_series(token)
@@ -70,23 +103,32 @@ function ClientObject:remove_series(token)
     self:format()
 end
 
+--- @param token string
+--- @return SeriesObject
 function ClientObject:get_series(token)
     return self.serieses[token]
 end
 
+--- @param token string
+--- @param series SeriesObject
+--- @return nil
 function ClientObject:add_series(token, series)
     self:_set_dedup_token(series.title, series.message, token)
     self.serieses[token] = series
     self:format()
 end
 
+--- @return boolean
 function ClientObject:empty()
-    return next(self.serieses)
+    return next(self.serieses) --[[@as boolean]]
 end
 
-function ClientObject:increase_spin_index(spinner_length)
+--- @return nil
+function ClientObject:increase_spin_index()
     local old = self.spin_index
-    self.spin_index = (self.spin_index + 1) % spinner_length
+    assert(Spinner ~= nil, "Spinner cannot be nil")
+    assert(#Spinner > 0, "Spinner length cannot be 0")
+    self.spin_index = (self.spin_index + 1) % #Spinner
     logger.debug(
         "|client.increase_spin_index| Client %s spin index:%d => %d",
         self:tostring(),
@@ -96,10 +138,12 @@ function ClientObject:increase_spin_index(spinner_length)
     self:format()
 end
 
+--- @return string
 function ClientObject:tostring()
     return string.format("[%s-%d]", self.client_name, self.client_id)
 end
 
+--- @return string|table|nil
 function ClientObject:format()
     local series_messages = {}
     local visited_tokens = {}
@@ -123,6 +167,8 @@ function ClientObject:format()
             end
         end
     end
+    assert(Spinner ~= nil, "Spinner cannot be nil")
+    assert(#Spinner > 0, "Spinner length cannot be 0")
     self._format_cache = ClientFormatter(
         self.client_name,
         Spinner[self.spin_index + 1],
@@ -136,10 +182,14 @@ function ClientObject:format()
     return self._format_cache
 end
 
+--- @return string|table|nil
 function ClientObject:format_result()
     return self._format_cache
 end
 
+--- @param client_id integer
+--- @param client_name string
+--- @return ClientObject
 local function new_client(client_id, client_name)
     local client = vim.tbl_extend(
         "force",
@@ -150,13 +200,19 @@ local function new_client(client_id, client_name)
     return client
 end
 
+--- @param client_formatter fun(client_name:string,spinner:string,series_messages:string[]|table[]):string|table|nil
+--- @param spinner string[]
+--- @return nil
 local function setup(client_formatter, spinner)
     ClientFormatter = client_formatter
     Spinner = spinner
 end
 
+--- @type table<string, function>
 local M = {
+    --- @overload fun(client_formatter:ClientFormatterType, spinner:string[]):nil
     setup = setup,
+    --- @overload fun(client_id:integer, client_name:string):ClientObject
     new_client = new_client,
 }
 
