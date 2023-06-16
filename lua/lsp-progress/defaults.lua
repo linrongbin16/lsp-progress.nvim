@@ -50,7 +50,7 @@ local Defaults = {
     ---     Progress in percentage numbers: 0-100.
     --- @param done boolean
     ---     Indicate whether this series is the last one in progress.
-    --- @return nil|string|table messages
+    --- @return SeriesFormatResult messages
     ---     The returned value will be passed to function `client_format` as
     ---     one of the `series_messages` array, or ignored if return nil.
     series_format = function(title, message, percentage, done)
@@ -85,7 +85,7 @@ local Defaults = {
     ---     Spinner icon.
     --- @param series_messages string[]|table[]
     ---     Messages array.
-    --- @return nil|string|table messages
+    --- @return ClientFormatResult messages
     ---     The returned value will be passed to function `format` as one of the
     ---     `client_messages` array, or ignored if return nil.
     client_format = function(client_name, spinner, series_messages)
@@ -104,7 +104,7 @@ local Defaults = {
     --
     --- @param client_messages string[]|table[]
     ---     Client messages array.
-    --- @return nil|string|table message
+    --- @return nil|string message
     ---     The returned value will be returned from `progress` API.
     format = function(client_messages)
         local sign = " LSP" -- nf-fa-gear \uf013

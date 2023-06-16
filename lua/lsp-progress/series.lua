@@ -1,24 +1,28 @@
 --- @type table<string, function>
 local logger = require("lsp-progress.logger")
 
+--- @alias SeriesFormatResult string|table|nil
+
 --- @class SeriesObject
 --- @field title string|nil
 --- @field message string|nil
 --- @field percentage integer|nil
 --- @field done boolean
---- @field private _format_cache string|table|nil
+--- @field private _format_cache SeriesFormatResult
+---     formatted cache
 local SeriesObject = {
     title = nil,
     message = nil,
     percentage = nil,
     done = false,
 
-    -- format cache
+    -- formatted cache
     _format_cache = nil,
 }
 
 --- @alias SeriesFormatterType fun(title:string|nil,message:string|nil,percentage:integer|nil,done:boolean):string|table|nil
---- @type SeriesFormatterType
+
+--- @type SeriesFormatterType|nil
 local SeriesFormatter = nil
 
 --- @return string
@@ -54,15 +58,16 @@ function SeriesObject:finish(message)
 end
 
 --- @package
---- @return string|table|nil
+--- @return SeriesFormatResult
 function SeriesObject:_format()
+    assert(SeriesFormatter ~= nil, "SeriesFormatter cannot be null")
     self._format_cache =
         SeriesFormatter(self.title, self.message, self.percentage, self.done)
     logger.debug("|series._format| Format series: %s", self:tostring())
     return self._format_cache
 end
 
---- @return string|table|nil
+--- @return SeriesFormatResult
 function SeriesObject:format_result()
     return self._format_cache
 end
@@ -72,6 +77,7 @@ end
 --- @param percentage integer
 --- @return SeriesObject
 local function new_series(title, message, percentage)
+    --- @type SeriesObject
     local series = vim.tbl_extend("force", vim.deepcopy(SeriesObject), {
         title = title,
         message = message,
@@ -83,7 +89,7 @@ local function new_series(title, message, percentage)
     return series
 end
 
---- @param formatter fun(title:string|nil,message:string|nil,percentage:integer|nil,done:boolean):string|table|nil
+--- @param formatter SeriesFormatterType
 --- @return nil
 local function setup(formatter)
     SeriesFormatter = formatter
