@@ -48,15 +48,15 @@ progress I learned and copied source code is from them.**
 - `require('lsp-progress').progress(option)`: get lsp progress status, parameter
   `option` is an optional lua table:
 
-```lua
-require('lsp-progress').progress({
-    format = ...,
-    max_size = ...,
-})
-```
+   ```lua
+   require('lsp-progress').progress({
+       format = ...,
+       max_size = ...,
+   })
+   ```
 
-They share the same fields with `setup(option)` (see [Configuration](#configuration))
-to provide more dynamic abilities.
+   They share the same fields with `setup(option)` (see [Configuration](#configuration))
+   to provide more dynamic abilities.
 
 ### Statusline Integration
 
