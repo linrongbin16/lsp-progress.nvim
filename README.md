@@ -9,6 +9,13 @@ A performant lsp progress status for Neovim.
 [fidget.nvim](https://github.com/j-hui/fidget.nvim), everything about lsp
 progress I learned and copied source code is from them.**
 
+## Performance
+
+I use a 2-layer map to cache all lsp progress messages, to transform the O(n * m) time complexity calculation to less than O(n).
+Compared with [neovim#23958](https://github.com/neovim/neovim/pull/23958), it's much more performant.
+
+For more details, please see: [notes](/doc/notes.md).
+
 ## Requirement
 
 - Neovim version &ge; 0.8.
@@ -259,7 +266,3 @@ require("lualine").setup({
     }
 })
 ```
-
-## Notes
-
-Please checkout [notes](/doc/notes.md).
