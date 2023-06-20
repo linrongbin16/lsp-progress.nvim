@@ -7,7 +7,7 @@ A performant lsp progress status for Neovim.
 
 **Thanks to [lsp-status.nvim](https://github.com/nvim-lua/lsp-status.nvim) and
 [fidget.nvim](https://github.com/j-hui/fidget.nvim), everything about lsp
-progress I learned and copied source code is from them.**
+progress I learned and copied is from them.**
 
 ## Performance
 
