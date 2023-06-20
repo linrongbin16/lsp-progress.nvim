@@ -11,8 +11,8 @@ progress I learned and copied source code is from them.**
 
 ## Performance
 
-I use a 2-layer map to cache all lsp progress messages, to transform the O(n * m) time complexity calculation to less than O(n).
-Where n is active lsp clients count, m is token count of each lsp client.
+I use a 2-layer map to cache all lsp progress messages, to transform the **O(n \* m)** time complexity calculation to less than **O(n)**.
+Where **n** is active lsp clients count, **m** is token count of each lsp client.
 Compared with [neovim#23958](https://github.com/neovim/neovim/pull/23958), it's much more performant.
 
 For more details, please see: [notes](/doc/notes.md).
