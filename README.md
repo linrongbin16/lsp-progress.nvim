@@ -14,6 +14,7 @@ Table of contents:
 - [API](#api)
   - [Statusline Integration](#statusline-integration)
 - [Configuration](#configuration)
+- [Credit](#credit)
 
 ## Performance
 
