@@ -5,17 +5,22 @@ A performant lsp progress status for Neovim.
 ![demo](https://user-images.githubusercontent.com/6496887/215637132-65e27eac-df71-4d17-9365-b516d6536ece.jpg)
 ![demo-format](https://user-images.githubusercontent.com/6496887/215700315-9d205333-b0e8-4630-9afd-67e2a1c6e3ae.jpg)
 
-**Thanks to [lsp-status.nvim](https://github.com/nvim-lua/lsp-status.nvim) and
-[fidget.nvim](https://github.com/j-hui/fidget.nvim), everything about lsp
-progress I learned and copied is from them.**
+- [Performance](#performance)
+- [Requirement](#requirement)
+- [Install](#install)
+  - [Lazy](#lazy)
+- [API](#api)
+  - [Statusline Integration](#statusline-integration)
+- [Configuration](#configuration)
 
 ## Performance
 
-I use a 2-layer map to cache all lsp progress messages, to transform the **O(n \* m)** time complexity calculation to less than **O(n)**.
-Where **n** is active lsp clients count, **m** is token count of each lsp client.
-Compared with [neovim#23958](https://github.com/neovim/neovim/pull/23958), it's much more performant.
+I use a 2-layer map to cache all lsp progress messages, thus transforming the
+**O(n \* m)** time complexity calculation to almost **O(1)**.
 
-For more details, please see: [notes](/doc/notes.md).
+> **n** is active lsp clients count, **m** is token count of each lsp client.
+
+For more details, please see [Design & Technics](https://github.com/linrongbin16/lsp-progress.nvim/wiki/Design-&-Technics).
 
 ## Requirement
 
@@ -56,15 +61,15 @@ For more details, please see: [notes](/doc/notes.md).
 - `require('lsp-progress').progress(option)`: get lsp progress status, parameter
   `option` is an optional lua table:
 
-   ```lua
-   require('lsp-progress').progress({
-       format = ...,
-       max_size = ...,
-   })
-   ```
+  ```lua
+  require('lsp-progress').progress({
+      format = ...,
+      max_size = ...,
+  })
+  ```
 
-   They share the same fields with `setup(option)` (see [Configuration](#configuration))
-   to provide more dynamic abilities.
+  They share the same fields with `setup(option)` (see [Configuration](#configuration))
+  to provide more dynamic abilities.
 
 ### Statusline Integration
 
@@ -232,38 +237,12 @@ require('lsp-progress').setup({
 })
 ```
 
-### Advanced Configurations
+For more advanced configurations, please see [Advanced Configuration](https://github.com/linrongbin16/lsp-progress.nvim/wiki/Advanced-Configuration).
 
-1. Split the sign ` LSP` and messages:
+## Credit
 
-```lua
--- lualine
-
-local function LspSign()
-    return require("lsp-progress").progress({
-        format = function(messages)
-            return " LSP"
-        end,
-    })
-end
-
-local function LspStatus()
-    return require("lsp-progress").progress({
-        format = function(messages)
-            return #messages > 0 and table.concat(messages, " ") or ""
-        end,
-    })
-end
-
-require("lualine").setup({
-    sections = {
-        lualine_a = { "mode" },
-        lualine_b = { "filename" },
-        lualine_c = {
-            LspSign, -- signs: ` LSP`
-            LspStatus, -- messages: `[null-ls] ⣷ formatting isort (100%) - done`
-        },
-        ...
-    }
-})
-```
+- [lsp-status.nvim](https://github.com/nvim-lua/lsp-status.nvim): Utility
+  functions for getting diagnostic status and progress messages from LSP servers,
+  for use in the Neovim statusline.
+- [fidget.nvim](https://github.com/j-hui/fidget.nvim): Standalone UI for
+  nvim-lsp progress.
