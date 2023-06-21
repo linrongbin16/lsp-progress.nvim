@@ -1,9 +1,11 @@
 # lsp-progress.nvim
 
+A performant lsp progress status for Neovim.
+
 ![demo](https://user-images.githubusercontent.com/6496887/215637132-65e27eac-df71-4d17-9365-b516d6536ece.jpg)
 ![demo-format](https://user-images.githubusercontent.com/6496887/215700315-9d205333-b0e8-4630-9afd-67e2a1c6e3ae.jpg)
 
-A performant lsp progress status for Neovim.
+Table of contents:
 
 - [Performance](#performance)
 - [Requirement](#requirement)
