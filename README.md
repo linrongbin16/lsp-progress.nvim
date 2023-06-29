@@ -13,7 +13,7 @@ Table of contents:
   - [packer](#packer)
   - [lazy](#lazy)
   - [vim-plug](#vim-plug)
-- [API](#api)
+- [Usage](#usage)
   - [Statusline Integration](#statusline-integration)
 - [Configuration](#configuration)
 - [Credit](#credit)
@@ -94,7 +94,7 @@ call plug#end()
 lua require('lsp-progress').setup()
 ```
 
-## API
+## Usage
 
 - `LspProgressStatusUpdated`: user event to notify new status, and trigger statusline
   refresh.
