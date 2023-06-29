@@ -32,29 +32,64 @@ For more details, please see [Design & Technics](https://github.com/linrongbin16
 
 ## Install
 
-### Lazy
+### [packer](https://github.com/wbthomason/packer.nvim)
 
 ```lua
+-- lua
+-- integrate with lualine
+use {
+  'nvim-lualine/lualine.nvim',
+  requires = {
+    'nvim-tree/nvim-web-devicons'
+    'linrongbin16/lsp-progress.nvim',
+  },
+  config = ...,
+}
+use {
+  'linrongbin16/lsp-progress.nvim',
+  requires = {'nvim-tree/nvim-web-devicons'},
+  config = function()
+    require('lsp-progress').setup()
+  end
+}
+```
+
+### [lazy](https://github.com/folke/lazy.nvim)
+
+```lua
+-- lua
 {
-    -- integrate with lualine
-    'nvim-lualine/lualine.nvim',
-    event = { 'VimEnter' },
-    dependencies = {
-        'nvim-tree/nvim-web-devicons',
-        'linrongbin16/lsp-progress.nvim',
-    },
-    config = function()
-        ...
-    end
+  -- integrate with lualine
+  'nvim-lualine/lualine.nvim',
+  dependencies = {
+    'nvim-tree/nvim-web-devicons',
+    'linrongbin16/lsp-progress.nvim',
+  },
+  config = ...
 },
 {
-    'linrongbin16/lsp-progress.nvim',
-    event = { 'VimEnter' },
-    dependencies = { 'nvim-tree/nvim-web-devicons' },
-    config = function()
-        require('lsp-progress').setup()
-    end
+  'linrongbin16/lsp-progress.nvim',
+  dependencies = { 'nvim-tree/nvim-web-devicons' },
+  config = function()
+    require('lsp-progress').setup()
+  end
 }
+```
+
+### [vim-plug](https://github.com/junegunn/vim-plug) (via vimscript)
+
+```vim
+" vim
+
+call plug#begin()
+
+Plug 'nvim-tree/nvim-web-devicons'
+Plug 'nvim-lualine/lualine.nvim'
+Plug 'linrongbin16/lsp-progress.nvim'
+
+call plug#end()
+
+lua require('lsp-progress').setup()
 ```
 
 ## API
@@ -71,7 +106,7 @@ For more details, please see [Design & Technics](https://github.com/linrongbin16
   })
   ```
 
-  They share the same fields with `setup(option)` (see [Configuration](#configuration))
+  The fields share the same schema with `setup(option)` (see [Configuration](#configuration))
   to provide more dynamic abilities.
 
 ### Statusline Integration
