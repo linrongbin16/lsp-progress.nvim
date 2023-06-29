@@ -10,7 +10,9 @@ Table of contents:
 - [Performance](#performance)
 - [Requirement](#requirement)
 - [Install](#install)
-  - [Lazy](#lazy)
+  - [packer](#packer)
+  - [lazy](#lazy)
+  - [vim-plug](#vim-plug)
 - [API](#api)
   - [Statusline Integration](#statusline-integration)
 - [Configuration](#configuration)
@@ -76,7 +78,7 @@ use {
 }
 ```
 
-### [vim-plug](https://github.com/junegunn/vim-plug) (via vimscript)
+### [vim-plug](https://github.com/junegunn/vim-plug)
 
 ```vim
 " vim
