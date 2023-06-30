@@ -120,7 +120,7 @@ require("lualine").setup({
         lualine_b = { "filename" },
         lualine_c = {
             -- invoke `progress` here.
-            require("lsp-progress").progress,
+            "require('lsp-progress').progress()",
         },
         ...
     }
