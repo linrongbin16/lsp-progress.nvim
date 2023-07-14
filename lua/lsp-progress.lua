@@ -9,6 +9,10 @@ local new_series = require("lsp-progress.series").new_series
 --- @overload fun(client_id:integer, client_name:string):ClientObject
 local new_client = require("lsp-progress.client").new_client
 
+local PROGRESS_PROTOCOL = "$/progress"
+local WINDOW_SHOW_MESSAGE_PROTOCOL = "window/showMessage"
+local WINDOW_SHOW_MESSAGE_TOKEN = "window/showMessage:token"
+
 -- global variable
 
 --- @type table<string, any>
@@ -233,6 +237,80 @@ local function progress_handler(err, msg, ctx)
     event.emit()
 end
 
+--- @param err any
+--- @param msg table<string, any>
+--- @param ctx table<string, any>
+--- @return nil
+local function window_show_message_handler(err, msg, ctx)
+    local client_id = ctx.client_id
+    local nvim_lsp_client = vim.lsp.get_client_by_id(client_id)
+    local client_name = nvim_lsp_client and nvim_lsp_client.name or "unknown"
+
+    -- register client id if not exist
+    register_client(client_id, client_name)
+
+    local value = msg.message
+    local type = msg.type
+
+    local client = get_client(client_id)
+    if type == "begin" then
+        -- add task
+        local series = new_series(value.title, value.message, value.percentage)
+        client:add_series(type, series)
+        -- start spin, it will also notify user at a fixed rate
+        spin(client_id, type)
+        logger.debug(
+            "|lsp-progress.progress_handler| Add new series to client %s: %s",
+            client:tostring(),
+            series:tostring()
+        )
+    elseif value.kind == "report" then
+        local series = client:get_series(type)
+        if series then
+            series:update(value.message, value.percentage)
+            client:add_series(type, series)
+            logger.debug(
+                "|lsp-progress.progress_handler| Update series in client %s: %s",
+                client:tostring(),
+                series:tostring()
+            )
+        else
+            logger.debug(
+                "|lsp-progress.progress_handler| Series (token: %s) not found in client %s when updating",
+                type,
+                client:tostring()
+            )
+        end
+    else
+        if value.kind ~= "end" then
+            logger.warn(
+                "|lsp-progress.progress_handler| Unknown message kind `%s` from client %s",
+                value.kind,
+                client:tostring()
+            )
+        end
+        if client:has_series(type) then
+            local series = client:get_series(type)
+            series:finish(value.message)
+            client:format()
+            logger.debug(
+                "|lsp-progress.progress_handler| Series done in client %s: %s",
+                client:tostring(),
+                series:tostring()
+            )
+        else
+            logger.debug(
+                "|lsp-progress.progress_handler| Series (token: %s) not found in client %s when ending",
+                type,
+                client:tostring()
+            )
+        end
+    end
+
+    -- notify user to refresh UI
+    event.emit()
+end
+
 --- @param option table<string, any>
 --- @return string|nil
 local function progress(option)
@@ -296,14 +374,28 @@ local function setup(option)
     require("lsp-progress.client").setup(Config.client_format, Config.spinner)
 
     if not Registered then
-        if vim.lsp.handlers["$/progress"] then
-            local old_handler = vim.lsp.handlers["$/progress"]
-            vim.lsp.handlers["$/progress"] = function(...)
+        if vim.lsp.handlers[PROGRESS_PROTOCOL] then
+            local old_handler = vim.lsp.handlers[PROGRESS_PROTOCOL]
+            vim.lsp.handlers[PROGRESS_PROTOCOL] = function(...)
                 old_handler(...)
                 progress_handler(...)
             end
         else
-            vim.lsp.handlers["$/progress"] = progress_handler
+            vim.lsp.handlers[PROGRESS_PROTOCOL] = progress_handler
+        end
+
+        if Config.enable_window_show_message_protocol then
+            if vim.lsp.handlers[WINDOW_SHOW_MESSAGE_PROTOCOL] then
+                local old_handler =
+                    vim.lsp.handlers[WINDOW_SHOW_MESSAGE_PROTOCOL]
+                vim.lsp.handlers[WINDOW_SHOW_MESSAGE_PROTOCOL] = function(...)
+                    old_handler(...)
+                    window_show_message_handler(...)
+                end
+            else
+                vim.lsp.handlers[WINDOW_SHOW_MESSAGE_PROTOCOL] =
+                    window_show_message_handler
+            end
         end
         Registered = true
     end

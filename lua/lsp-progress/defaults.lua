@@ -1,5 +1,10 @@
 --- @type table<string, any>
 local Defaults = {
+    -- If handle 'window/showMessage' protocol as well.
+    --
+    --- @type boolean
+    enable_window_show_message_protocol = true,
+
     -- Spinning icons.
     --
     --- @type string[]
