@@ -17,6 +17,7 @@ Table of contents:
   - [Statusline Integration](#statusline-integration)
 - [Configuration](#configuration)
 - [Credit](#credit)
+- [Contribute](#contribute)
 
 ## Performance
 
@@ -286,3 +287,13 @@ For more advanced configurations, please see [Advanced Configuration](https://gi
   for use in the Neovim statusline.
 - [fidget.nvim](https://github.com/j-hui/fidget.nvim): Standalone UI for
   nvim-lsp progress.
+
+## Contribute
+
+Please open [issue](https://github.com/linrongbin16/lsp-progress.nvim/issues)/[PR](https://github.com/linrongbin16/lsp-progress.nvim/pulls) for anything about lsp-progress.nvim.
+
+Like lsp-progress.nvim? Consider
+
+[![buymeacoffee](https://img.shields.io/badge/-Buy%20Me%20a%20Coffee-ff5f5f?logo=ko-fi&logoColor=white)](https://www.buymeacoffee.com/linrongbin16)
+[![Wechat Pay](https://img.shields.io/badge/-Tip%20Me%20on%20WeChat-brightgreen?logo=wechat&logoColor=white)](https://github.com/linrongbin16/lin.nvim/wiki/Sponsor)
+[![Alipay](https://img.shields.io/badge/-Tip%20Me%20on%20Alipay-blue?logo=alipay&logoColor=white)](https://github.com/linrongbin16/lin.nvim/wiki/Sponsor)
