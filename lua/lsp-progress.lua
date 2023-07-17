@@ -189,14 +189,6 @@ local function progress_handler(err, msg, ctx)
     elseif value.kind == "report" then
         local series = client:get_series(token)
         if series then
-            -- if new message is nil, usually means the lifecycle of this message series is going to end.
-            -- here we don't have to update it to nil value, so users still can see it.
-            if
-                (value.message == nil or string.len(value.message) == 0)
-                and string.len(series.message) > 0
-            then
-                value.message = series.message
-            end
             series:update(value.message, value.percentage)
             client:add_series(token, series)
             logger.debug(

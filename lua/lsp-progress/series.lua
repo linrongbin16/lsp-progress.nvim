@@ -37,11 +37,24 @@ function SeriesObject:tostring()
     )
 end
 
+--- @param old_message string|nil
+--- @param new_message string|nil
+--- @return string|nil
+local function updated_message(old_message, new_message)
+    -- if the 'new' message is nil, it usually means the lifecycle of this message series is going to end.
+    -- thus we can decay the latest visible 'old' message for user.
+    if type(new_message) == "string" and string.len(new_message) > 0 then
+        return new_message
+    else
+        return old_message
+    end
+end
+
 --- @param message string
 --- @param percentage integer
 --- @return nil
 function SeriesObject:update(message, percentage)
-    self.message = message
+    self.message = updated_message(self.message, message)
     self.percentage = percentage
     self:_format()
     logger.debug("|series.update| Update series: %s", self:tostring())
@@ -50,7 +63,7 @@ end
 --- @param message string
 --- @return nil
 function SeriesObject:finish(message)
-    self.message = message
+    self.message = updated_message(self.message, message)
     self.percentage = 100
     self.done = true
     self:_format()
