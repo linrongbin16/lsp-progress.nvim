@@ -256,10 +256,10 @@ local function progress(option)
         end
     end
     local content = option.format(client_messages)
-    logger.debug(
-        "|lsp-progress.progress| Progress format: %s",
-        vim.inspect(content)
-    )
+    -- logger.debug(
+    --     "|lsp-progress.progress| Progress format: %s",
+    --     vim.inspect(content)
+    -- )
     if option.max_size >= 0 then
         if vim.fn.strdisplaywidth(content) > option.max_size then
             content = vim.fn.strcharpart(
