@@ -72,7 +72,7 @@ function SeriesObject:_format()
         self.message,
         self.percentage,
         self.done,
-        self.protocol,
+        self.protocol
     )
     logger.debug("|series._format| Format series: %s", self:tostring())
     return self._format_cache

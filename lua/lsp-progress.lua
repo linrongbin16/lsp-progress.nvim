@@ -14,8 +14,8 @@ local new_client = require("lsp-progress.client").new_client
 local Protocol = require("lsp-progress.protocol")
 
 --- @type string
-local WINDOW_SHOW_MESSAGE_TOKEN =
-    require("lsp-progress.series").WINDOW_SHOW_MESSAGE_TOKEN
+-- local WINDOW_SHOW_MESSAGE_TOKEN =
+--     require("lsp-progress.series").WINDOW_SHOW_MESSAGE_TOKEN
 
 -- global variable
 
@@ -258,31 +258,41 @@ local WindowShowMessageTypeMapping = {
 --- @param ctx table<string, any>
 --- @return nil
 local function window_show_message_handler(err, msg, ctx)
-    local client_id = ctx.client_id
-    local nvim_lsp_client = vim.lsp.get_client_by_id(client_id)
-    local client_name = nvim_lsp_client and nvim_lsp_client.name or "unknown"
+    -- local client_id = ctx.client_id
+    -- local nvim_lsp_client = vim.lsp.get_client_by_id(client_id)
+    -- local client_name = nvim_lsp_client and nvim_lsp_client.name or "unknown"
+    --
+    -- -- register client id if not exist
+    -- register_client(client_id, client_name)
+    --
+    -- local value = msg.message
+    -- local type = msg.type
+    -- local client = get_client(client_id)
+    --
+    -- -- add task
+    -- local series =
+    --     new_series(nil, value.message, nil, Protocol.WINDOW_SHOW_MESSAGE)
+    -- client:add_series(WINDOW_SHOW_MESSAGE_TOKEN, series)
+    -- -- start spin, it will also notify user at a fixed rate
+    -- spin(client_id, type)
+    -- logger.debug(
+    --     "|lsp-progress.progress_handler| Add new series to client %s: %s",
+    --     client:tostring(),
+    --     series:tostring()
+    -- )
+    --
+    -- -- notify user to refresh UI
+    -- event.emit()
 
-    -- register client id if not exist
-    register_client(client_id, client_name)
-
-    local value = msg.message
-    local type = msg.type
-    local client = get_client(client_id)
-
-    -- add task
-    local series =
-        new_series(nil, value.message, nil, Protocol.WINDOW_SHOW_MESSAGE)
-    client:add_series(WINDOW_SHOW_MESSAGE_TOKEN, series)
-    -- start spin, it will also notify user at a fixed rate
-    spin(client_id, type)
     logger.debug(
-        "|lsp-progress.progress_handler| Add new series to client %s: %s",
-        client:tostring(),
-        series:tostring()
+        "|lsp-progress.window_show_message_handler| err(%s):%s, msg(%s):%s, ctx(%s):%s",
+        vim.inspect(type(err)),
+        vim.inspect(err),
+        vim.inspect(type(msg)),
+        vim.inspect(msg),
+        vim.inspect(type(ctx)),
+        vim.inspect(ctx)
     )
-
-    -- notify user to refresh UI
-    event.emit()
 end
 
 --- @param option table<string, any>
