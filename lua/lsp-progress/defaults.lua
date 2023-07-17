@@ -96,9 +96,20 @@ local Defaults = {
     ---     The returned value will be passed to function `format` as one of the
     ---     `client_messages` array, or ignored if return nil.
     client_format = function(client_name, spinner, series_messages)
-        return #series_messages > 0
+        local builder = {}
+        for _, series_message in ipairs(series_messages) do
+            if series_message["protocol"] == "$/progress" then
+                table.insert(builder, series_message)
+            end
+        end
+        for _, series_message in ipairs(series_messages) do
+            if series_message["protocol"] == "window/showMessage" then
+                table.insert(builder, series_message)
+            end
+        end
+        return #builder > 0
                 and ("[" .. client_name .. "] " .. spinner .. " " .. table.concat(
-                    series_messages,
+                    builder,
                     ", "
                 ))
             or nil
