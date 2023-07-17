@@ -1,9 +1,9 @@
 --- @type table<string, any>
 local Defaults = {
-    -- If handle 'window/showMessage' protocol as well.
+    -- Enable 'window/showMessage' protocol as well.
     --
     --- @type boolean
-    enable_window_show_message_protocol = true,
+    enable_window_show_message = true,
 
     -- Spinning icons.
     --
@@ -55,10 +55,12 @@ local Defaults = {
     ---     Progress in percentage numbers: 0-100.
     --- @param done boolean
     ---     Indicate whether this series is the last one in progress.
+    --- @param protocol SeriesProtocol|nil
+    ---     Protocol name.
     --- @return SeriesFormatResult messages
     ---     The returned value will be passed to function `client_format` as
     ---     one of the `series_messages` array, or ignored if return nil.
-    series_format = function(title, message, percentage, done)
+    series_format = function(title, message, percentage, done, protocol)
         local builder = {}
         local has_title = false
         local has_message = false

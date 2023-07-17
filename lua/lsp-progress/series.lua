@@ -1,9 +1,12 @@
 --- @type table<string, function>
 local logger = require("lsp-progress.logger")
 
+local WINDOW_SHOW_MESSAGE_TOKEN = "window/showMessage:token"
+
 --- @alias SeriesFormatResult string|table|nil
 
 --- @class SeriesObject
+--- @field protocol Protocol|nil
 --- @field title string|nil
 --- @field message string|nil
 --- @field percentage integer|nil
@@ -15,12 +18,13 @@ local SeriesObject = {
     message = nil,
     percentage = nil,
     done = false,
+    protocol = nil,
 
     -- formatted cache
     _format_cache = nil,
 }
 
---- @alias SeriesFormatterType fun(title:string|nil,message:string|nil,percentage:integer|nil,done:boolean):string|table|nil
+--- @alias SeriesFormatterType fun(title:string|nil,message:string|nil,percentage:integer|nil,done:boolean,protocol:Protocol|nil):string|table|nil
 
 --- @type SeriesFormatterType|nil
 local SeriesFormatter = nil
@@ -28,7 +32,8 @@ local SeriesFormatter = nil
 --- @return string
 function SeriesObject:tostring()
     return string.format(
-        "<Series title:%s, message:%s, percentage:%s, done:%s, _format_cache:%s>",
+        "<Series protocol:%s, title:%s, message:%s, percentage:%s, done:%s, _format_cache:%s>",
+        vim.inspect(self.protocol),
         vim.inspect(self.title),
         vim.inspect(self.message),
         vim.inspect(self.percentage),
@@ -61,8 +66,13 @@ end
 --- @return SeriesFormatResult
 function SeriesObject:_format()
     assert(SeriesFormatter ~= nil, "SeriesFormatter cannot be null")
-    self._format_cache =
-        SeriesFormatter(self.title, self.message, self.percentage, self.done)
+    self._format_cache = SeriesFormatter(
+        self.title,
+        self.message,
+        self.percentage,
+        self.done,
+        self.protocol,
+    )
     logger.debug("|series._format| Format series: %s", self:tostring())
     return self._format_cache
 end
@@ -72,17 +82,19 @@ function SeriesObject:format_result()
     return self._format_cache
 end
 
---- @param title string
+--- @param title string|nil
 --- @param message string
---- @param percentage integer
+--- @param percentage integer|nil
+--- @param protocol Protocol
 --- @return SeriesObject
-local function new_series(title, message, percentage)
+local function new_series(title, message, percentage, protocol)
     --- @type SeriesObject
     local series = vim.tbl_extend("force", vim.deepcopy(SeriesObject), {
-        title = title,
+        title = tostring(title), -- here translate nil to 'nil'
         message = message,
         percentage = percentage,
         done = false,
+        protocol = protocol,
     })
     series:_format()
     logger.debug("|series.new_series| New series: %s", series:tostring())
@@ -101,6 +113,8 @@ local M = {
     setup = setup,
     --- @overload fun(title:string, message:string, percentage:integer):SeriesObject
     new_series = new_series,
+    --- @string WINDOW_SHOW_MESSAGE_TOKEN
+    WINDOW_SHOW_MESSAGE_TOKEN = WINDOW_SHOW_MESSAGE_TOKEN,
 }
 
 return M

@@ -1,7 +1,7 @@
 --- @type table<string, string>
 local EchoHl = {
     ["ERROR"] = "ErrorMsg",
-    ["WARN"] = "ErrorMsg",
+    ["WARN"] = "WarningMsg",
     ["INFO"] = "None",
     ["DEBUG"] = "Comment",
 }

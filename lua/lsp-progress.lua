@@ -4,14 +4,18 @@ local logger = require("lsp-progress.logger")
 local defaults = require("lsp-progress.defaults")
 --- @type table<string, function>
 local event = require("lsp-progress.event")
---- @overload fun(title:string, message:string, percentage:integer):SeriesObject
+--- @overload fun(title:string|nil, message:string, percentage:integer|nil,protocol:Protocol):SeriesObject
 local new_series = require("lsp-progress.series").new_series
 --- @overload fun(client_id:integer, client_name:string):ClientObject
 local new_client = require("lsp-progress.client").new_client
 
-local PROGRESS_PROTOCOL = "$/progress"
-local WINDOW_SHOW_MESSAGE_PROTOCOL = "window/showMessage"
-local WINDOW_SHOW_MESSAGE_TOKEN = "window/showMessage:token"
+-- see: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#progress
+-- see: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#window_showMessage
+local Protocol = require("lsp-progress.protocol")
+
+--- @string
+local WINDOW_SHOW_MESSAGE_TOKEN =
+    require("lsp-progress.series").WINDOW_SHOW_MESSAGE_TOKEN
 
 -- global variable
 
@@ -181,7 +185,12 @@ local function progress_handler(err, msg, ctx)
     local client = get_client(client_id)
     if value.kind == "begin" then
         -- add task
-        local series = new_series(value.title, value.message, value.percentage)
+        local series = new_series(
+            value.title,
+            value.message,
+            value.percentage,
+            Protocol.PROGRESS
+        )
         client:add_series(token, series)
         -- start spin, it will also notify user at a fixed rate
         spin(client_id, token)
@@ -237,6 +246,13 @@ local function progress_handler(err, msg, ctx)
     event.emit()
 end
 
+local WindowShowMessageTypeMapping = {
+    [1] = "ErrorMsg",
+    [2] = "WarningMsg",
+    [3] = "Comment",
+    [4] = "Comment",
+}
+
 --- @param err any
 --- @param msg table<string, any>
 --- @param ctx table<string, any>
@@ -251,61 +267,19 @@ local function window_show_message_handler(err, msg, ctx)
 
     local value = msg.message
     local type = msg.type
-
     local client = get_client(client_id)
-    if type == "begin" then
-        -- add task
-        local series = new_series(value.title, value.message, value.percentage)
-        client:add_series(type, series)
-        -- start spin, it will also notify user at a fixed rate
-        spin(client_id, type)
-        logger.debug(
-            "|lsp-progress.progress_handler| Add new series to client %s: %s",
-            client:tostring(),
-            series:tostring()
-        )
-    elseif value.kind == "report" then
-        local series = client:get_series(type)
-        if series then
-            series:update(value.message, value.percentage)
-            client:add_series(type, series)
-            logger.debug(
-                "|lsp-progress.progress_handler| Update series in client %s: %s",
-                client:tostring(),
-                series:tostring()
-            )
-        else
-            logger.debug(
-                "|lsp-progress.progress_handler| Series (token: %s) not found in client %s when updating",
-                type,
-                client:tostring()
-            )
-        end
-    else
-        if value.kind ~= "end" then
-            logger.warn(
-                "|lsp-progress.progress_handler| Unknown message kind `%s` from client %s",
-                value.kind,
-                client:tostring()
-            )
-        end
-        if client:has_series(type) then
-            local series = client:get_series(type)
-            series:finish(value.message)
-            client:format()
-            logger.debug(
-                "|lsp-progress.progress_handler| Series done in client %s: %s",
-                client:tostring(),
-                series:tostring()
-            )
-        else
-            logger.debug(
-                "|lsp-progress.progress_handler| Series (token: %s) not found in client %s when ending",
-                type,
-                client:tostring()
-            )
-        end
-    end
+
+    -- add task
+    local series =
+        new_series(nil, value.message, nil, Protocol.WINDOW_SHOW_MESSAGE)
+    client:add_series(WINDOW_SHOW_MESSAGE_TOKEN, series)
+    -- start spin, it will also notify user at a fixed rate
+    spin(client_id, type)
+    logger.debug(
+        "|lsp-progress.progress_handler| Add new series to client %s: %s",
+        client:tostring(),
+        series:tostring()
+    )
 
     -- notify user to refresh UI
     event.emit()
@@ -374,26 +348,26 @@ local function setup(option)
     require("lsp-progress.client").setup(Config.client_format, Config.spinner)
 
     if not Registered then
-        if vim.lsp.handlers[PROGRESS_PROTOCOL] then
-            local old_handler = vim.lsp.handlers[PROGRESS_PROTOCOL]
-            vim.lsp.handlers[PROGRESS_PROTOCOL] = function(...)
+        if vim.lsp.handlers[Protocol.PROGRESS] then
+            local old_handler = vim.lsp.handlers[Protocol.PROGRESS]
+            vim.lsp.handlers[Protocol.PROGRESS] = function(...)
                 old_handler(...)
                 progress_handler(...)
             end
         else
-            vim.lsp.handlers[PROGRESS_PROTOCOL] = progress_handler
+            vim.lsp.handlers[Protocol.PROGRESS] = progress_handler
         end
 
-        if Config.enable_window_show_message_protocol then
-            if vim.lsp.handlers[WINDOW_SHOW_MESSAGE_PROTOCOL] then
+        if Config.enable_window_show_message then
+            if vim.lsp.handlers[Protocol.WINDOW_SHOW_MESSAGE] then
                 local old_handler =
-                    vim.lsp.handlers[WINDOW_SHOW_MESSAGE_PROTOCOL]
-                vim.lsp.handlers[WINDOW_SHOW_MESSAGE_PROTOCOL] = function(...)
+                    vim.lsp.handlers[Protocol.WINDOW_SHOW_MESSAGE]
+                vim.lsp.handlers[Protocol.WINDOW_SHOW_MESSAGE] = function(...)
                     old_handler(...)
                     window_show_message_handler(...)
                 end
             else
-                vim.lsp.handlers[WINDOW_SHOW_MESSAGE_PROTOCOL] =
+                vim.lsp.handlers[Protocol.WINDOW_SHOW_MESSAGE] =
                     window_show_message_handler
             end
         end
