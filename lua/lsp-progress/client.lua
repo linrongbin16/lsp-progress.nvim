@@ -19,8 +19,8 @@ local Spinner = nil
 ---     map: key => SeriesObject.
 --- @field private _format_cache ClientFormatResult
 ---     formatted cache.
---- @field private _deduped_tokens table<string, table<string, string>>
----     deduped tokens, map: title => message => token.
+--- @field private _deduped_tokens table<string, string>
+---     deduped tokens, map: title+message => token.
 local ClientObject = {
     client_id = nil,
     client_name = nil,
@@ -42,17 +42,17 @@ end
 --- @package
 --- @param title string
 --- @param message string
+--- @return string
+local function get_dedup_key(title, message)
+    return tostring(title) .. "-" .. tostring(message)
+end
+
+--- @package
+--- @param title string
+--- @param message string
 --- @return boolean
 function ClientObject:_has_dedup_token(title, message)
-    title = tostring(title)
-    message = tostring(message)
-    if not self._deduped_tokens[title] then
-        return false
-    end
-    if not self._deduped_tokens[title][message] then
-        return false
-    end
-    return true
+    return self._deduped_tokens[get_dedup_key(title, message)] ~= nil
 end
 
 --- @package
@@ -61,12 +61,7 @@ end
 --- @param token string
 --- @return nil
 function ClientObject:_set_dedup_token(title, message, token)
-    title = tostring(title)
-    message = tostring(message)
-    if not self._deduped_tokens[title] then
-        self._deduped_tokens[title] = {}
-    end
-    self._deduped_tokens[title][message] = token
+    self._deduped_tokens[get_dedup_key(title, message)] = token
 end
 
 --- @package
@@ -74,12 +69,7 @@ end
 --- @param message string
 --- @return nil
 function ClientObject:_remove_dedup_token(title, message)
-    title = tostring(title)
-    message = tostring(message)
-    if not self._deduped_tokens[title] then
-        return
-    end
-    self._deduped_tokens[title][message] = nil
+    self._deduped_tokens[get_dedup_key(title, message)] = nil
 end
 
 --- @package
@@ -87,9 +77,7 @@ end
 --- @param message string
 --- @return string token
 function ClientObject:_get_dedup_token(title, message)
-    title = tostring(title)
-    message = tostring(message)
-    return self._deduped_tokens[title][message]
+    return self._deduped_tokens[get_dedup_key(title, message)]
 end
 
 --- @param token string
@@ -156,26 +144,23 @@ function ClientObject:format()
     local series_messages = {}
     --- @type table<string, boolean>
     local visited_tokens = {}
-    for tt, message_tokens in pairs(self._deduped_tokens) do
-        for ms, token in pairs(message_tokens) do
-            if not visited_tokens[token] then
-                if self:has_series(token) then
-                    --- @type SeriesObject
-                    local series = self:get_series(token)
-                    --- @type SeriesFormatResult
-                    local result = series:format_result()
-                    logger.debug(
-                        "|client.format| Get series %s (deduped key: %s-%s) format result in client %s: %s",
-                        series:tostring(),
-                        tt,
-                        ms,
-                        self:tostring(),
-                        vim.inspect(series_messages)
-                    )
-                    table.insert(series_messages, result)
-                end
-                visited_tokens[token] = true
+    for dedup_key, token in pairs(self._deduped_tokens) do
+        if not visited_tokens[token] then
+            if self:has_series(token) then
+                --- @type SeriesObject
+                local series = self:get_series(token)
+                --- @type SeriesFormatResult
+                local result = series:format_result()
+                logger.debug(
+                    "|client.format| Get series %s (deduped key: %s) format result in client %s: %s",
+                    series:tostring(),
+                    dedup_key,
+                    self:tostring(),
+                    vim.inspect(series_messages)
+                )
+                table.insert(series_messages, result)
             end
+            visited_tokens[token] = true
         end
     end
     assert(Spinner ~= nil, "Spinner cannot be nil")
