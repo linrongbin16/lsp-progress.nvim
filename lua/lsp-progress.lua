@@ -189,6 +189,14 @@ local function progress_handler(err, msg, ctx)
     elseif value.kind == "report" then
         local series = client:get_series(token)
         if series then
+            -- if new message is nil, usually means the lifecycle of this message series is going to end.
+            -- here we don't have to update it to nil value, so users still can see it.
+            if
+                (value.message == nil or string.len(value.message) == 0)
+                and string.len(series.message) > 0
+            then
+                value.message = series.message
+            end
             series:update(value.message, value.percentage)
             client:add_series(token, series)
             logger.debug(
@@ -256,10 +264,10 @@ local function progress(option)
         end
     end
     local content = option.format(client_messages)
-    logger.debug(
-        "|lsp-progress.progress| Progress format: %s",
-        vim.inspect(content)
-    )
+    -- logger.debug(
+    --     "|lsp-progress.progress| Progress format: %s",
+    --     vim.inspect(content)
+    -- )
     if option.max_size >= 0 then
         if vim.fn.strdisplaywidth(content) > option.max_size then
             content = vim.fn.strcharpart(
