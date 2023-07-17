@@ -1,6 +1,7 @@
 --- @type table<string, function>
 local logger = require("lsp-progress.logger")
 
+--- @type string
 local WINDOW_SHOW_MESSAGE_TOKEN = "window/showMessage:token"
 
 --- @alias SeriesFormatResult string|table|nil
@@ -113,7 +114,7 @@ local M = {
     setup = setup,
     --- @overload fun(title:string, message:string, percentage:integer):SeriesObject
     new_series = new_series,
-    --- @string WINDOW_SHOW_MESSAGE_TOKEN
+    --- @type string
     WINDOW_SHOW_MESSAGE_TOKEN = WINDOW_SHOW_MESSAGE_TOKEN,
 }
 

@@ -13,7 +13,7 @@ local new_client = require("lsp-progress.client").new_client
 -- see: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#window_showMessage
 local Protocol = require("lsp-progress.protocol")
 
---- @string
+--- @type string
 local WINDOW_SHOW_MESSAGE_TOKEN =
     require("lsp-progress.series").WINDOW_SHOW_MESSAGE_TOKEN
 
@@ -308,10 +308,6 @@ local function progress(option)
         end
     end
     local content = option.format(client_messages)
-    logger.debug(
-        "|lsp-progress.progress| Progress format: %s",
-        vim.inspect(content)
-    )
     if option.max_size >= 0 then
         if vim.fn.strdisplaywidth(content) > option.max_size then
             content = vim.fn.strcharpart(
@@ -329,6 +325,7 @@ end
 local function setup(option)
     -- setup config
     Config = defaults.setup(option)
+    print("|lsp-progress.setup| Config:" .. vim.inspect(Config))
 
     -- setup logger
     logger.setup(
@@ -343,9 +340,11 @@ local function setup(option)
 
     -- setup series
     require("lsp-progress.series").setup(Config.series_format)
+    print("|lsp-progress.setup| series.setup")
 
     -- init client
     require("lsp-progress.client").setup(Config.client_format, Config.spinner)
+    print("|lsp-progress.setup| client.setup")
 
     if not Registered then
         if vim.lsp.handlers[Protocol.PROGRESS] then
