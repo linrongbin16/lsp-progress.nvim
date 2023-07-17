@@ -354,8 +354,14 @@ local function setup(option)
                 old_handler(...)
                 progress_handler(...)
             end
+            logger.debug(
+                "|lsp-progress.setup| '$/progress' handler registered with old handler"
+            )
         else
             vim.lsp.handlers[Protocol.PROGRESS] = progress_handler
+            logger.debug(
+                "|lsp-progress.setup| new '$/progress' handler registered"
+            )
         end
 
         if Config.enable_window_show_message then
@@ -366,9 +372,15 @@ local function setup(option)
                     old_handler(...)
                     window_show_message_handler(...)
                 end
+                logger.debug(
+                    "|lsp-progress.setup| 'window/showMessage' handler registered with old handler"
+                )
             else
                 vim.lsp.handlers[Protocol.WINDOW_SHOW_MESSAGE] =
                     window_show_message_handler
+                logger.debug(
+                    "|lsp-progress.setup| new 'window/showMessage' handler registered"
+                )
             end
         end
         Registered = true
