@@ -6,7 +6,7 @@ local Defaults = {
     -- message.
     --
     --- @type integer
-    regular_internal_update_time = 1000,
+    regular_internal_update_time = 500,
 
     -- Spinning icons.
     --
