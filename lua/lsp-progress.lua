@@ -306,6 +306,13 @@ local function setup(option)
             vim.lsp.handlers["$/progress"] = progress_handler
         end
         Registered = true
+
+        local function regular_update()
+            event.emit()
+            vim.defer_fn(regular_update, Config.regular_internal_update_time)
+        end
+
+        regular_update()
     end
 end
 

@@ -127,19 +127,26 @@ require("lualine").setup({
     }
 })
 
--- refresh lualine
-vim.cmd([[
-augroup lualine_augroup
-    autocmd!
-    autocmd User LspProgressStatusUpdated lua require("lualine").refresh()
-augroup END
-]])
+-- listen lsp-progress event and refresh lualine
+vim.api.nvim_create_augroup("lualine_augroup", { clear = true })
+vim.api.nvim_create_autocmd("User LspProgressStatusUpdated", {
+    group = "lualine_augroup",
+    callback = require("lualine").refresh,
+})
 ```
 
 ## Configuration
 
 ```lua
 require('lsp-progress').setup({
+    -- Regular internal update time.
+    --
+    -- Emit user event to update the lsp progress status, even there's no new
+    -- message.
+    --
+    --- @type integer
+    regular_internal_update_time = 1000,
+
     -- Spinning icons.
     --
     --- @type string[]

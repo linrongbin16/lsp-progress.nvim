@@ -1,5 +1,13 @@
 --- @type table<string, any>
 local Defaults = {
+    -- Regular internal update time.
+    --
+    -- Emit user event to update the lsp progress status, even there's no new
+    -- message.
+    --
+    --- @type integer
+    regular_internal_update_time = 1000,
+
     -- Spinning icons.
     --
     --- @type string[]
