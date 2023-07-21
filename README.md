@@ -2,7 +2,7 @@
 
 A performant lsp progress status for Neovim.
 
-https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/a96d8ad8-3366-4895-8300-6903479b9b60
+<https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/a96d8ad8-3366-4895-8300-6903479b9b60>
 
 Table of contents:
 
@@ -18,7 +18,7 @@ Table of contents:
 - [Credit](#credit)
 - [Contribute](#contribute)
 
-## Performance
+## Performant
 
 I use a 2-layer map to cache all lsp progress messages, thus transforming the
 **O(n \* m)** time complexity calculation to almost **O(1)**.
@@ -300,6 +300,6 @@ Please open [issue](https://github.com/linrongbin16/lsp-progress.nvim/issues)/[P
 
 Like lsp-progress.nvim? Consider
 
-[![buymeacoffee](https://img.shields.io/badge/-Buy%20Me%20a%20Coffee-ff5f5f?logo=ko-fi&logoColor=white)](https://www.buymeacoffee.com/linrongbin16)
+[![Github Sponsor](https://img.shields.io/badge/-Sponsor%20Me%20on%20Github-magenta?logo=github&logoColor=white)](https://github.com/sponsors/linrongbin16)
 [![Wechat Pay](https://img.shields.io/badge/-Tip%20Me%20on%20WeChat-brightgreen?logo=wechat&logoColor=white)](https://github.com/linrongbin16/lin.nvim/wiki/Sponsor)
 [![Alipay](https://img.shields.io/badge/-Tip%20Me%20on%20Alipay-blue?logo=alipay&logoColor=white)](https://github.com/linrongbin16/lin.nvim/wiki/Sponsor)
