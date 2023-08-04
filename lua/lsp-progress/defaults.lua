@@ -25,7 +25,7 @@ local Defaults = {
     -- for a while for user view.
     --
     --- @type integer
-    decay = 1000,
+    decay = 700,
 
     -- User event name.
     --
