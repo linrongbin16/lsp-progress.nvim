@@ -18,7 +18,7 @@ Table of contents:
 - [Credit](#credit)
 - [Contribute](#contribute)
 
-## Performant
+## Performance
 
 I use a 2-layer map to cache all lsp progress messages, thus transforming the
 **O(n \* m)** time complexity calculation to almost **O(1)**.
