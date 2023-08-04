@@ -1,10 +1,14 @@
 --- @type table<string, string>
 local EchoHl = {
     ["ERROR"] = "ErrorMsg",
-    ["WARN"] = "ErrorMsg",
+    ["WARN"] = "WarningMsg",
     ["INFO"] = "None",
     ["DEBUG"] = "Comment",
 }
+
+local PathSep = (vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0) and "\\"
+    or "/"
+
 --- @type string
 local LogLevel = "INFO"
 --- @type boolean|nil
@@ -27,7 +31,8 @@ local function setup(debug, console_log, file_log, file_log_name)
     UseFile = file_log
     -- For Windows: $env:USERPROFILE\AppData\Local\nvim-data\lsp-progress.log
     -- For *NIX: ~/.local/share/nvim/lsp-progress.log
-    FileName = string.format("%s/%s", vim.fn.stdpath("data"), file_log_name)
+    FileName =
+        string.format("%s%s%s", vim.fn.stdpath("data"), PathSep, file_log_name)
 end
 
 --- @param level string
@@ -52,7 +57,12 @@ local function log(level, msg)
         vim.cmd("echohl None")
     end
     if UseFile then
-        local fp = io.open(FileName --[[@as string]], "a")
+        assert(
+            type(FileName) == "string",
+            "error! log filename cannot be empty!"
+        )
+        assert(string.len(FileName) > 0, "error! log filename cannot be empty!")
+        local fp = io.open(FileName, "a")
         if fp then
             for _, line in ipairs(msg_lines) do
                 fp:write(
