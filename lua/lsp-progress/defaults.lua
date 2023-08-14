@@ -1,13 +1,5 @@
 --- @type table<string, any>
 local Defaults = {
-    -- Regular internal update time.
-    --
-    -- Emit user event to update the lsp progress status, even there's no new
-    -- message.
-    --
-    --- @type integer
-    regular_internal_update_time = 500,
-
     -- Spinning icons.
     --
     --- @type string[]
@@ -25,7 +17,7 @@ local Defaults = {
     -- for a while for user view.
     --
     --- @type integer
-    decay = 1000,
+    decay = 700,
 
     -- User event name.
     --
@@ -45,6 +37,32 @@ local Defaults = {
     --
     --- @type integer
     max_size = -1,
+
+    -- Regular internal update time.
+    --
+    -- Emit user event to update the lsp progress status, even there's no new
+    -- message.
+    --
+    --- @type integer
+    regular_internal_update_time = 500,
+
+    -- Disable emitting events on specific vim mode.
+    -- User events would interrupt insert mode, thus break which-key like plugins behaviour.
+    -- See:
+    --  * https://github.com/linrongbin16/lsp-progress.nvim/issues/50
+    --  * https://neovim.io/doc/user/builtin.html#mode()
+    --
+    --- @type string[]
+    disable_events_on_mode = {},
+
+    -- Disable emitting events on specific filetype.
+    -- User events would interrupt insert mode, thus break which-key like plugins behaviour.
+    -- See:
+    --  * https://github.com/linrongbin16/lsp-progress.nvim/issues/50
+    --  * https://neovim.io/doc/user/builtin.html#mode()
+    --
+    --- @type string[]
+    disable_events_on_filetype = { "TelescopePrompt" },
 
     -- Format series message.
     --

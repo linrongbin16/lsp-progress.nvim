@@ -40,16 +40,24 @@ local function log(level, msg)
 
     local msg_lines = vim.split(msg, "\n")
     if UseConsole then
-        vim.cmd("echohl " .. EchoHl[level])
-        for _, line in ipairs(msg_lines) do
-            vim.cmd(
-                string.format(
-                    'echom "%s"',
-                    vim.fn.escape(string.format("[lsp-progress] %s", line), '"')
-                )
-            )
+        local msg_chunks = {}
+        for _, mline in ipairs(msg_lines) do
+            table.insert(msg_chunks, {
+                string.format("[lsp-progress] %s\n", mline),
+                EchoHl[level],
+            })
         end
-        vim.cmd("echohl None")
+        vim.api.nvim_echo(msg_chunks, true, {})
+        -- vim.cmd("echohl " .. EchoHl[level])
+        -- for _, line in ipairs(msg_lines) do
+        --     vim.cmd(
+        --         string.format(
+        --             'echom "%s"',
+        --             vim.fn.escape(string.format("[lsp-progress] %s", line), '"')
+        --         )
+        --     )
+        -- end
+        -- vim.cmd("echohl None")
     end
     if UseFile then
         local fp = io.open(FileName --[[@as string]], "a")

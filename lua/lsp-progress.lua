@@ -287,7 +287,12 @@ local function setup(option)
     )
 
     -- setup event
-    event.setup(Config.event, Config.event_update_time_limit)
+    event.setup(
+        Config.event,
+        Config.event_update_time_limit,
+        Config.disable_events_on_mode,
+        Config.disable_events_on_filetype
+    )
 
     -- setup series
     require("lsp-progress.series").setup(Config.series_format)
