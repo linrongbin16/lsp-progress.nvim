@@ -290,8 +290,7 @@ local function setup(option)
     event.setup(
         Config.event,
         Config.event_update_time_limit,
-        Config.disable_events_on_mode,
-        Config.disable_events_on_filetype
+        Config.disable_events_opts
     )
 
     -- setup series

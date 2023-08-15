@@ -5,12 +5,68 @@ local logger = require("lsp-progress.logger")
 local EventName = nil
 --- @type integer?
 local EventUpdateTimeLimit = nil
---- @type table<string, boolean>?
-local DisabledModes = nil
---- @type table<string, boolean>?
-local DisabledFiletypes = nil
 --- @type boolean
 local EventEmit = false
+
+--- @class DisableEventOpt
+--- @field mode string?
+--- @field filetype string?
+local DisableEventOpt = {
+    mode = nil,
+    filetype = nil,
+}
+
+function DisableEventOpt:new(opts)
+    return vim.tbl_deep_extend("force", vim.deepcopy(DisableEventOpt), {
+        mode = opts.mode,
+        filetype = opts.filetype,
+    })
+end
+
+function DisableEventOpt:match()
+    local current_mode = vim.api.nvim_get_mode()
+    local current_bufnr = vim.api.nvim_get_current_buf()
+    local current_filetype = vim.fn.has("nvim-0.7") > 0
+            and vim.api.nvim_get_option_value(
+                "filetype",
+                { buf = current_bufnr }
+            )
+        or vim.api.nvim_buf_get_option(current_bufnr, "filetype")
+    local mode_match = self.mode == "*" or self.mode == current_mode
+    local filetype_match = self.filetype == "*"
+        or self.filetype == current_filetype
+    return mode_match and filetype_match
+end
+
+--- @class DisableEventOptsManager
+--- @field disable_event_opts DisableEventOpt[]
+local DisableEventOptsManager = {
+    disable_event_opts = {},
+}
+
+function DisableEventOptsManager:new(opts)
+    local disable_event_opts = {}
+    if type(opts) == "table" and #opts > 0 then
+        for _, o in ipairs(opts) do
+            table.insert(disable_event_opts, DisableEventOpt:new(o))
+        end
+    end
+    return vim.tbl_deep_extend("force", vim.deepcopy(DisableEventOptsManager), {
+        disable_event_opts = disable_event_opts,
+    })
+end
+
+function DisableEventOptsManager:match()
+    for _, opt in ipairs(self.disable_event_opts) do
+        if opt:match() then
+            return true
+        end
+    end
+    return false
+end
+
+--- @type DisableEventOptsManager?
+local GlobalDisabledEventOptsManager = nil
 
 --- @return nil
 local function reset()
@@ -20,29 +76,12 @@ end
 --- @return nil
 local function emit()
     if not EventEmit then
-        EventEmit = true
-        local m = vim.api.nvim_get_mode()
-        local bufnr = vim.api.nvim_get_current_buf()
-        local ft = nil
-        if vim.fn.has("nvim-0.7") > 0 then
-            ft = vim.api.nvim_get_option_value("filetype", { buf = bufnr })
-        else
-            ft = vim.api.nvim_buf_get_option(bufnr, "filetype")
-        end
-        logger.debug(
-            "mode:%s, disabledModes:%s, bufnr:%s, filetype:%s",
-            vim.inspect(m),
-            vim.inspect(DisabledModes),
-            vim.inspect(bufnr),
-            vim.inspect(ft)
-        )
         if
-            (type(DisabledModes) ~= "table" or not DisabledModes[m.mode])
-            and (
-                type(DisabledFiletypes) ~= "table" or not DisabledFiletypes[ft]
-            )
+            GlobalDisabledEventOptsManager == nil
+            or not GlobalDisabledEventOptsManager:match()
         then
             vim.cmd("doautocmd User " .. EventName)
+            EventEmit = true
             logger.debug("Emit user event:%s", EventName)
         else
             logger.debug("Disabled emit user event:%s", EventName)
@@ -53,32 +92,13 @@ end
 
 --- @param event_name string
 --- @param event_update_time_limit integer
---- @param disabled_modes string[]?
+--- @param disable_events_opts table[]?
 --- @return nil
-local function setup(
-    event_name,
-    event_update_time_limit,
-    disabled_modes,
-    disabled_filetypes
-)
+local function setup(event_name, event_update_time_limit, disable_events_opts)
     EventName = event_name
     EventUpdateTimeLimit = event_update_time_limit
-    if type(disabled_modes) == "table" and #disabled_modes > 0 then
-        DisabledModes = {}
-        for _, m in ipairs(disabled_modes) do
-            if type(m) == "string" and string.len(m) > 0 then
-                DisabledModes[m] = true
-            end
-        end
-    end
-    if type(disabled_filetypes) == "table" and #disabled_filetypes > 0 then
-        DisabledFiletypes = {}
-        for _, ft in ipairs(disabled_filetypes) do
-            if type(ft) == "string" and string.len(ft) > 0 then
-                DisabledFiletypes[ft] = true
-            end
-        end
-    end
+    GlobalDisabledEventOptsManager =
+        DisableEventOptsManager:new(disable_events_opts)
     reset()
 end
 
