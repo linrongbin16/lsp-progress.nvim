@@ -32,7 +32,13 @@ function DisableEventOpt:match()
                 { buf = current_bufnr }
             )
         or vim.api.nvim_buf_get_option(current_bufnr, "filetype")
-    local mode_match = self.mode == "*" or self.mode == current_mode
+    logger.debug(
+        "|lsp-progress.event - DisableEventOpt:match| current_mode:%s, current_filetype:%s, self:%s",
+        vim.inspect(current_mode),
+        vim.inspect(current_filetype),
+        vim.inspect(self)
+    )
+    local mode_match = self.mode == "*" or self.mode == current_mode.mode
     local filetype_match = self.filetype == "*"
         or self.filetype == current_filetype
     return mode_match and filetype_match
