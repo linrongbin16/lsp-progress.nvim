@@ -46,23 +46,19 @@ local Defaults = {
     --- @type integer
     regular_internal_update_time = 500,
 
-    -- Disable emitting events on specific vim mode.
+    -- Disable emitting events on specific mode/filetype.
     -- User events would interrupt insert mode, thus break which-key like plugins behaviour.
     -- See:
     --  * https://github.com/linrongbin16/lsp-progress.nvim/issues/50
     --  * https://neovim.io/doc/user/builtin.html#mode()
     --
-    --- @type string[]
-    disable_events_on_mode = {},
-
-    -- Disable emitting events on specific filetype.
-    -- User events would interrupt insert mode, thus break which-key like plugins behaviour.
-    -- See:
-    --  * https://github.com/linrongbin16/lsp-progress.nvim/issues/50
-    --  * https://neovim.io/doc/user/builtin.html#mode()
-    --
-    --- @type string[]
-    disable_events_on_filetype = { "TelescopePrompt" },
+    --- @type table[]
+    disable_events_opts = {
+        {
+            mode = "i",
+            filetype = "TelescopePrompt",
+        },
+    },
 
     -- Format series message.
     --
