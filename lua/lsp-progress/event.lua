@@ -31,6 +31,7 @@ function DisableEventOpt:match()
                 "filetype",
                 { buf = current_bufnr }
             )
+        ---@diagnostic disable-next-line: redundant-parameter
         or vim.api.nvim_buf_get_option(current_bufnr, "filetype")
     logger.debug(
         "|lsp-progress.event - DisableEventOpt:match| current_mode:%s, current_filetype:%s, self:%s",
