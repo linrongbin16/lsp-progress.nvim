@@ -17,7 +17,8 @@ jobs:
       - uses: stevearc/nvim-typecheck-action@v1
         with:
           path: lua
+          level: Information
           configpath: ".luarc.json"
-          neodev-version: stable
+          neodev-version: nightly
           nvim-version: v0.9.1
           luals-version: 3.6.25
