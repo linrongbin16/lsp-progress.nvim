@@ -7,6 +7,8 @@ local EventName = nil
 local EventUpdateTimeLimit = nil
 --- @type boolean
 local EventEmit = false
+--- @type integer?
+local InternalRegularUpdateTime = nil
 
 --- @class DisableEventOpt
 --- @field mode string?
@@ -97,16 +99,29 @@ local function emit()
     end
 end
 
+local function regular_update()
+    emit()
+    vim.defer_fn(regular_update, InternalRegularUpdateTime --[[@as integer]])
+end
+
 --- @param event_name string
 --- @param event_update_time_limit integer
+--- @param internal_regular_update_time integer
 --- @param disable_events_opts table[]?
 --- @return nil
-local function setup(event_name, event_update_time_limit, disable_events_opts)
+local function setup(
+    event_name,
+    event_update_time_limit,
+    internal_regular_update_time,
+    disable_events_opts
+)
     EventName = event_name
     EventUpdateTimeLimit = event_update_time_limit
+    InternalRegularUpdateTime = internal_regular_update_time
     GlobalDisabledEventOptsManager =
         DisableEventOptsManager:new(disable_events_opts)
     reset()
+    regular_update()
 end
 
 --- @type table<string, any>
