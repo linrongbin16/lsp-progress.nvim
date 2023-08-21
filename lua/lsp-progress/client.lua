@@ -93,6 +93,10 @@ function ClientObject:remove_series(token)
         end
     end
     self.serieses[token] = nil
+    if self:empty() then
+        self.serieses = {}
+        self._deduped_tokens = {}
+    end
     self:format()
 end
 
@@ -113,7 +117,7 @@ end
 
 --- @return boolean
 function ClientObject:empty()
-    return next(self.serieses) --[[@as boolean]]
+    return not next(self.serieses) --[[@as boolean]]
 end
 
 --- @return nil

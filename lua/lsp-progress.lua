@@ -36,6 +36,9 @@ end
 --- @return nil
 local function remove_client(client_id)
     LspClients[client_id] = nil
+    if not next(LspClients) then
+        LspClients = {}
+    end
 end
 
 --- @param client_id integer
@@ -290,6 +293,7 @@ local function setup(option)
     event.setup(
         Config.event,
         Config.event_update_time_limit,
+        Config.regular_internal_update_time,
         Config.disable_events_opts
     )
 
@@ -310,13 +314,6 @@ local function setup(option)
             vim.lsp.handlers["$/progress"] = progress_handler
         end
         Registered = true
-
-        local function regular_update()
-            event.emit()
-            vim.defer_fn(regular_update, Config.regular_internal_update_time)
-        end
-
-        regular_update()
     end
 end
 
