@@ -36,6 +36,9 @@ end
 --- @return nil
 local function remove_client(client_id)
     LspClients[client_id] = nil
+    if not next(LspClients) then
+        LspClients = {}
+    end
 end
 
 --- @param client_id integer
