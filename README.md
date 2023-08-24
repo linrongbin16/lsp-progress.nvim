@@ -134,7 +134,41 @@ vim.api.nvim_create_autocmd("User LspProgressStatusUpdated", {
 })
 ```
 
+
+
 ## Configuration
+
+The configuration (which has a permanent ` LSP` icon) in the demo is:
+
+```lua
+local function LspIcon()
+    local active_clients_count = #vim.lsp.get_active_clients()
+    return active_clients_count > 0 and " LSP" or ""
+end
+
+local function LspStatus()
+    return require("lsp-progress").progress({
+        format = function(messages)
+            return #messages > 0 and table.concat(messages, " ") or ""
+        end,
+    })
+end
+
+require("lualine").setup({
+    sections = {
+        lualine_a = { "mode" },
+        lualine_b = { "branch", "diff" },
+        lualine_c = { "filename", "diagnostics", LspIcon, LspStatus },
+    },
+    ...
+})
+
+vim.api.nvim_create_augroup("lualine_augroup", { clear = true })
+vim.api.nvim_create_autocmd("User LspProgressStatusUpdated", {
+    group = "lualine_augroup",
+    callback = require("lualine").refresh,
+})
+```
 
 For complete configurations and defaults, please check [defaults.lua](https://github.com/linrongbin16/lsp-progress.nvim/blob/main/lua/lsp-progress/defaults.lua).
 
