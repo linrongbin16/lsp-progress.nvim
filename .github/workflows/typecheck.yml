@@ -19,6 +19,6 @@ jobs:
           path: lua
           level: Information
           configpath: ".luarc.json"
-          neodev-version: nightly
+          neodev-version: stable
           nvim-version: v0.9.1
           luals-version: 3.6.25
