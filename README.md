@@ -18,7 +18,7 @@ Table of contents:
 - [Credit](#credit)
 - [Contribute](#contribute)
 
-## Performant
+## Performance
 
 I use a 2-layer map to cache all lsp progress messages, thus transforming the
 **O(n \* m)** time complexity calculation to almost **O(1)**.
@@ -29,7 +29,7 @@ For more details, please see [Design & Technics](https://github.com/linrongbin16
 
 ## Requirement
 
-- Neovim version &ge; 0.8.
+- Neovim version &ge; 0.5.
 - [Nerd fonts](https://www.nerdfonts.com/) for icons.
 
 ## Install
@@ -133,8 +133,6 @@ vim.api.nvim_create_autocmd("User LspProgressStatusUpdated", {
     callback = require("lualine").refresh,
 })
 ```
-
-
 
 ## Configuration
 
