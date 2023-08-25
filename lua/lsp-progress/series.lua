@@ -1,4 +1,3 @@
---- @type table<string, function>
 local logger = require("lsp-progress.logger")
 
 --- @alias SeriesFormatResult string|table|nil
