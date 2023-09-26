@@ -1,9 +1,7 @@
---- @type string
 local PATH_SEPARATOR = (vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0)
         and "\\"
     or "/"
 
---- @type table<string, integer>
 local LogLevels = {
     TRACE = 0,
     DEBUG = 1,
@@ -13,24 +11,19 @@ local LogLevels = {
     OFF = 5,
 }
 
---- @type table<string, string>
-local EchoHl = {
-    ERROR = "ErrorMsg",
-    WARN = "WarningMsg",
-    INFO = "None",
-    DEBUG = "Comment",
+local LogHighlights = {
+    [1] = "Comment",
+    [2] = "None",
+    [3] = "WarningMsg",
+    [4] = "ErrorMsg",
 }
 
---- @type table<string, string|boolean|nil>
+--- @type Configs
 local Configs = {
-    --- @type string
-    level = "INFO",
-    --- @type boolean?
-    use_console = nil,
-    --- @type boolean?
-    use_file = nil,
-    --- @type string?
-    file_name = nil,
+    level = LogLevels.INFO,
+    use_console = true,
+    use_file = false,
+    file_name = "lsp-progress.log",
 }
 
 --- @param debug boolean
@@ -39,9 +32,7 @@ local Configs = {
 --- @param file_log_name string
 --- @return nil
 local function setup(debug, console_log, file_log, file_log_name)
-    if debug then
-        Configs.level = "DEBUG"
-    end
+    Configs.level = debug and LogLevels.DEBUG or LogLevels.INFO
     Configs.use_console = console_log
     Configs.use_file = file_log
     -- For Windows: $env:USERPROFILE\AppData\Local\nvim-data\lsp-progress.log
@@ -54,11 +45,10 @@ local function setup(debug, console_log, file_log, file_log_name)
     )
 end
 
---- @param level "ERROR"|"WARN"|"INFO"|"DEBUG"
+--- @param level integer
 --- @param msg string
---- @return nil
-local function log(level, msg)
-    if LogLevels[level] < LogLevels[Configs.level] then
+local function _log(level, msg)
+    if level < Configs.level then
         return
     end
 
@@ -68,18 +58,18 @@ local function log(level, msg)
         for _, line in ipairs(msg_lines) do
             table.insert(msg_chunks, {
                 string.format("[lsp-progress] %s\n", line),
-                EchoHl[level],
+                LogHighlights[level],
             })
         end
-        vim.api.nvim_echo(msg_chunks, true, {})
+        vim.api.nvim_echo(msg_chunks, false, {})
     end
     if Configs.use_file then
-        local fp = io.open(Configs.file_name --[[@as string]], "a")
+        local fp = io.open(Configs.file_name, "a")
         if fp then
             for _, line in ipairs(msg_lines) do
                 fp:write(
                     string.format(
-                        "[lsp-progress] %s [%s]: %s\n",
+                        "%s [%s]: %s\n",
                         os.date("%Y-%m-%d %H:%M:%S"),
                         level,
                         line
@@ -93,33 +83,28 @@ end
 
 --- @param fmt string
 --- @param ... any
---- @return nil
 local function debug(fmt, ...)
-    log("DEBUG", string.format(fmt, ...))
+    _log(LogLevels.DEBUG, string.format(fmt, ...))
 end
 
 --- @param fmt string
 --- @param ... any
---- @return nil
 local function info(fmt, ...)
-    log("INFO", string.format(fmt, ...))
+    _log(LogLevels.INFO, string.format(fmt, ...))
 end
 
 --- @param fmt string
 --- @param ... any
---- @return nil
 local function warn(fmt, ...)
-    log("WARN", string.format(fmt, ...))
+    _log(LogLevels.WARN, string.format(fmt, ...))
 end
 
 --- @param fmt string
 --- @param ... any
---- @return nil
 local function error(fmt, ...)
-    log("ERROR", string.format(fmt, ...))
+    _log(LogLevels.ERROR, string.format(fmt, ...))
 end
 
---- @type table<string, function>
 local M = {
     setup = setup,
     debug = debug,
