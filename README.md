@@ -4,7 +4,7 @@
 <a href="https://github.com/neovim/neovim/releases/stable"><img alt="Neovim-v0.5" src="https://img.shields.io/badge/Neovim-v0.5-blueviolet.svg?logo=Neovim&logoColor=green" /></a>
 <a href="https://github.com/linrongbin16/lsp-progress.nvim/search?l=lua"><img alt="Top Language" src="https://img.shields.io/github/languages/top/linrongbin16/lsp-progress.nvim?label=Lua&logo=lua&logoColor=darkblue" /></a>
 <a href="https://github.com/linrongbin16/lsp-progress.nvim/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/linrongbin16/lsp-progress.nvim?logo=GNU&label=License" /></a>
-<a href="https://github.com/linrongbin16/lsp-progress.nvim/actions/workflows/typecheck.yml"><img alt="typecheck.yml" src="https://img.shields.io/github/actions/workflow/status/linrongbin16/lsp-progress.nvim/typecheck.yml?logo=GitHub&label=Typecheck" /></a>
+<a href="https://github.com/linrongbin16/lsp-progress.nvim/actions/workflows/ci.yml"><img alt="ci.yml" src="https://img.shields.io/github/actions/workflow/status/linrongbin16/lsp-progress.nvim/ci.yml?logo=GitHub&label=Luacheck" /></a>
 </p>
 
 A performant lsp progress status for Neovim.
