@@ -47,7 +47,7 @@ end
 
 --- @param level integer
 --- @param msg string
-local function _log(level, msg)
+local function log(level, msg)
     if level < Configs.level then
         return
     end
@@ -84,25 +84,25 @@ end
 --- @param fmt string
 --- @param ... any
 local function debug(fmt, ...)
-    _log(LogLevels.DEBUG, string.format(fmt, ...))
+    log(LogLevels.DEBUG, string.format(fmt, ...))
 end
 
 --- @param fmt string
 --- @param ... any
 local function info(fmt, ...)
-    _log(LogLevels.INFO, string.format(fmt, ...))
+    log(LogLevels.INFO, string.format(fmt, ...))
 end
 
 --- @param fmt string
 --- @param ... any
 local function warn(fmt, ...)
-    _log(LogLevels.WARN, string.format(fmt, ...))
+    log(LogLevels.WARN, string.format(fmt, ...))
 end
 
 --- @param fmt string
 --- @param ... any
 local function error(fmt, ...)
-    _log(LogLevels.ERROR, string.format(fmt, ...))
+    log(LogLevels.ERROR, string.format(fmt, ...))
 end
 
 local M = {
