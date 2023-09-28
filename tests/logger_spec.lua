@@ -9,7 +9,7 @@ describe("logger", function()
         vim.api.nvim_command("cd " .. cwd)
     end)
 
-    local logger = require("lsp-progress.log")
+    local logger = require("lsp-progress.logger")
     logger.setup({
         level = "DEBUG",
         console_log = true,
