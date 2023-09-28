@@ -10,7 +10,7 @@ describe("logger", function()
     end)
 
     local logger = require("lsp-progress.logger")
-    logger.setup("DEBUG", true, true, "lsp-progress.log")
+    logger.setup("DEBUG", true, true, "lsp-progress-test.log")
     describe("[log]", function()
         it("debug", function()
             logger.debug("debug without parameters")
