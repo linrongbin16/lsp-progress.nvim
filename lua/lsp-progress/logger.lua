@@ -11,6 +11,15 @@ local LogLevels = {
     OFF = 5,
 }
 
+local LogLevelNames = {
+    [0] = "TRACE",
+    [1] = "DEBUG",
+    [2] = "INFO",
+    [3] = "WARN",
+    [4] = "ERROR",
+    [5] = "OFF",
+}
+
 local LogHighlights = {
     [1] = "Comment",
     [2] = "None",
@@ -71,7 +80,7 @@ local function log(level, msg)
                     string.format(
                         "%s [%s]: %s\n",
                         os.date("%Y-%m-%d %H:%M:%S"),
-                        level,
+                        LogLevelNames[level],
                         line
                     )
                 )
