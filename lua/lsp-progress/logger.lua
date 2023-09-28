@@ -19,25 +19,25 @@ local LogHighlights = {
 }
 
 --- @type Configs
-local Configs = {
+local LogConfigs = {
     level = LogLevels.INFO,
-    use_console = true,
-    use_file = false,
-    file_name = "lsp-progress.log",
+    console_log = true,
+    file_log = false,
+    file_name = nil,
 }
 
---- @param debug boolean
+--- @param level string
 --- @param console_log boolean
 --- @param file_log boolean
 --- @param file_log_name string
 --- @return nil
-local function setup(debug, console_log, file_log, file_log_name)
-    Configs.level = debug and LogLevels.DEBUG or LogLevels.INFO
-    Configs.use_console = console_log
-    Configs.use_file = file_log
+local function setup(level, console_log, file_log, file_log_name)
+    LogConfigs.level = LogLevels[level]
+    LogConfigs.console_log = console_log
+    LogConfigs.file_log = file_log
     -- For Windows: $env:USERPROFILE\AppData\Local\nvim-data\lsp-progress.log
     -- For *NIX: ~/.local/share/nvim/lsp-progress.log
-    Configs.file_name = string.format(
+    LogConfigs.file_name = string.format(
         "%s%s%s",
         vim.fn.stdpath("data"),
         PATH_SEPARATOR,
@@ -48,12 +48,12 @@ end
 --- @param level integer
 --- @param msg string
 local function log(level, msg)
-    if level < Configs.level then
+    if level < LogConfigs.level then
         return
     end
 
     local msg_lines = vim.split(msg, "\n", { plain = true })
-    if Configs.use_console and level >= LogLevels.INFO then
+    if LogConfigs.console_log and level >= LogLevels.INFO then
         local msg_chunks = {}
         for _, line in ipairs(msg_lines) do
             table.insert(msg_chunks, {
@@ -63,8 +63,8 @@ local function log(level, msg)
         end
         vim.api.nvim_echo(msg_chunks, false, {})
     end
-    if Configs.use_file then
-        local fp = io.open(Configs.file_name, "a")
+    if LogConfigs.file_log then
+        local fp = io.open(LogConfigs.file_name, "a")
         if fp then
             for _, line in ipairs(msg_lines) do
                 fp:write(

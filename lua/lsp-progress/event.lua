@@ -1,14 +1,12 @@
---- @type table<string, any>
 local logger = require("lsp-progress.logger")
 
---- @type string|nil
-local EventName = nil
---- @type integer?
-local EventUpdateTimeLimit = nil
---- @type boolean
-local EventEmit = false
---- @type integer?
-local InternalRegularUpdateTime = nil
+--- @type Configs
+local EventConfigs = {
+    name = nil,
+    update_time_limit = nil,
+    regular_update_time = nil,
+    emit = false,
+}
 
 --- @class DisableEventOpt
 --- @field mode string?
@@ -79,29 +77,32 @@ local GlobalDisabledEventOptsManager = nil
 
 --- @return nil
 local function reset()
-    EventEmit = false
+    EventConfigs.emit = false
 end
 
 --- @return nil
 local function emit()
-    if not EventEmit then
+    if not EventConfigs.emit then
         if
             GlobalDisabledEventOptsManager == nil
             or not GlobalDisabledEventOptsManager:match()
         then
-            vim.cmd("doautocmd User " .. EventName)
-            EventEmit = true
-            logger.debug("Emit user event:%s", EventName)
+            vim.cmd("doautocmd User " .. EventConfigs.name)
+            EventConfigs.emit = true
+            logger.debug("Emit user event:%s", EventConfigs.name)
         else
-            logger.debug("Disabled emit user event:%s", EventName)
+            logger.debug("Disabled emit user event:%s", EventConfigs.name)
         end
-        vim.defer_fn(reset, EventUpdateTimeLimit --[[@as integer]])
+        vim.defer_fn(reset, EventConfigs.update_time_limit --[[@as integer]])
     end
 end
 
 local function regular_update()
     emit()
-    vim.defer_fn(regular_update, InternalRegularUpdateTime --[[@as integer]])
+    vim.defer_fn(
+        regular_update,
+        EventConfigs.regular_update_time --[[@as integer]]
+    )
 end
 
 --- @param event_name string
@@ -115,9 +116,9 @@ local function setup(
     internal_regular_update_time,
     disable_events_opts
 )
-    EventName = event_name
-    EventUpdateTimeLimit = event_update_time_limit
-    InternalRegularUpdateTime = internal_regular_update_time
+    EventConfigs.name = event_name
+    EventConfigs.update_time_limit = event_update_time_limit
+    EventConfigs.regular_update_time = internal_regular_update_time
     GlobalDisabledEventOptsManager =
         DisableEventOptsManager:new(disable_events_opts)
     reset()

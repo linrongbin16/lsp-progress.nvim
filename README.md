@@ -36,7 +36,7 @@ For more details, please see [Design & Technics](https://github.com/linrongbin16
 
 ## Requirement
 
-- Neovim version &ge; 0.5.
+- Neovim version &ge; 0.6.0.
 - [Nerd fonts](https://www.nerdfonts.com/) for icons.
 
 ## Install
