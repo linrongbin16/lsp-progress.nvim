@@ -12,7 +12,7 @@ local new_client = require("lsp-progress.client").new_client
 -- global variable
 
 --- @type table<string, any>
-local Config = {}
+local Configs = {}
 --- @type boolean
 local Registered = false
 --- @type table<integer, ClientObject>
@@ -84,7 +84,7 @@ local function spin(client_id, token)
     end
 
     client:increase_spin_index()
-    vim.defer_fn(spin_again, Config.spin_update_time)
+    vim.defer_fn(spin_again, Configs.spin_update_time)
 
     local series = client:get_series(token)
     -- if series done, remove this series from client later
@@ -125,7 +125,7 @@ local function spin(client_id, token)
                 )
             end
             event.emit()
-        end, Config.decay)
+        end, Configs.decay)
         logger.debug(
             "|lsp-progress.spin| Token %s is done in client %s, remove series later...",
             token,
@@ -151,7 +151,7 @@ local function spin(client_id, token)
                 client_id
             )
             event.emit()
-        end, Config.decay)
+        end, Configs.decay)
         logger.debug(
             "|lsp-progress.spin| Client id %d is stopped, remove it later...",
             client_id
@@ -239,7 +239,7 @@ end
 --- @param option table<string, any>
 --- @return string|nil
 local function progress(option)
-    option = vim.tbl_deep_extend("force", vim.deepcopy(Config), option or {})
+    option = vim.tbl_deep_extend("force", vim.deepcopy(Configs), option or {})
 
     local active_clients_count = #vim.lsp.get_active_clients()
     if active_clients_count <= 0 then
@@ -279,29 +279,29 @@ end
 --- @return nil
 local function setup(option)
     -- setup config
-    Config = defaults.setup(option)
+    Configs = defaults.setup(option)
 
     -- setup logger
     logger.setup(
-        Config.debug,
-        Config.console_log,
-        Config.file_log,
-        Config.file_log_name
+        Configs.debug,
+        Configs.console_log,
+        Configs.file_log,
+        Configs.file_log_name
     )
 
     -- setup event
     event.setup(
-        Config.event,
-        Config.event_update_time_limit,
-        Config.regular_internal_update_time,
-        Config.disable_events_opts
+        Configs.event,
+        Configs.event_update_time_limit,
+        Configs.regular_internal_update_time,
+        Configs.disable_events_opts
     )
 
     -- setup series
-    require("lsp-progress.series").setup(Config.series_format)
+    require("lsp-progress.series").setup(Configs.series_format)
 
     -- init client
-    require("lsp-progress.client").setup(Config.client_format, Config.spinner)
+    require("lsp-progress.client").setup(Configs.client_format, Configs.spinner)
 
     if not Registered then
         if vim.lsp.handlers["$/progress"] then
