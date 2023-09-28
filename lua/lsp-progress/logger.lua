@@ -101,7 +101,7 @@ end
 
 --- @param fmt string
 --- @param ... any
-local function error(fmt, ...)
+local function err(fmt, ...)
     log(LogLevels.ERROR, string.format(fmt, ...))
 end
 
@@ -110,7 +110,7 @@ local M = {
     debug = debug,
     info = info,
     warn = warn,
-    error = error,
+    err = err,
 }
 
 return M
