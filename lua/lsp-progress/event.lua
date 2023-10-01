@@ -101,10 +101,7 @@ end
 
 local function regular_update()
     emit()
-    vim.defer_fn(
-        regular_update,
-        InternalRegularUpdateTime --[[@as integer]]
-    )
+    vim.defer_fn(regular_update, InternalRegularUpdateTime --[[@as integer]])
 end
 
 --- @param event_name string
