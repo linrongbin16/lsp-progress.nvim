@@ -10,14 +10,6 @@ local EventEmit = false
 --- @type integer?
 local InternalRegularUpdateTime = nil
 
---- @type Configs
-local EventConfigs = {
-    name = nil,
-    update_time_limit = nil,
-    regular_update_time = nil,
-    emit = false,
-}
-
 --- @class DisableEventOpt
 --- @field mode string?
 --- @field filetype string?
