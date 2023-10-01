@@ -1,5 +1,5 @@
 local PATH_SEPARATOR = (vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0)
-        and "\\"
+    and "\\"
     or "/"
 
 local LogLevels = {
@@ -112,6 +112,7 @@ end
 --- @param ... any
 local function err(fmt, ...)
     log(LogLevels.ERROR, string.format(fmt, ...))
+    error(string.format(fmt, ...))
 end
 
 local M = {

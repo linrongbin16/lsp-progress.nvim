@@ -170,11 +170,19 @@ function ClientObject:format()
     assert(Spinner ~= nil, "Spinner cannot be nil")
     assert(#Spinner > 0, "Spinner length cannot be 0")
     assert(ClientFormatter ~= nil, "ClientFormatter cannot be null")
-    self._format_cache = ClientFormatter(
+    local ok, result = pcall(ClientFormatter,
         self.client_name,
         Spinner[self.spin_index + 1],
         series_messages
     )
+
+    if not ok then
+        logger.err("failed to invoke 'client_format'! error: %s, params: %s, %s, %s", vim.inspect(result),
+            vim.inspect(self.client_name),
+            vim.inspect(Spinner[self.spin_index + 1]), vim.inspect(series_messages))
+    end
+    self._format_cache = result
+
     logger.debug(
         "|client.format| format client %s: %s",
         self:tostring(),
