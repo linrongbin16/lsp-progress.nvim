@@ -1,4 +1,5 @@
---- @type table<string, any>
+--- @alias Configs table<any, any>
+--- @type Configs
 local Defaults = {
     -- Spinning icons.
     --

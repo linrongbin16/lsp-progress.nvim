@@ -1,0 +1,59 @@
+---
+name: CI
+on:
+  pull_request: ~
+  push:
+    branches:
+      - main
+      - master
+jobs:
+  typecheck:
+    name: Type check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Neovim Typecheck linter
+        uses: stevearc/nvim-typecheck-action@v1
+        with:
+          path: lua
+          level: Information
+          configpath: ".luarc.json"
+          neodev-version: stable
+  luacheck:
+    name: Lua check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Luacheck linter
+        uses: lunarmodules/luacheck@v1
+        with:
+          args: lua --config .luacheckrc
+  unit_test:
+    name: Unit Test
+    strategy:
+      matrix:
+        nvim_version: [stable, nightly, v0.6.0]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup neovim
+        uses: rhysd/action-setup-vim@v1
+        id: vim
+        with:
+          neovim: true
+          version: ${{ matrix.nvim_version }}
+      - name: Install luajit
+        uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: "luajit-2.1.0-beta3"
+      - name: Install luarocks
+        uses: leafo/gh-actions-luarocks@v4
+      - name: Run test cases
+        shell: bash
+        run: |
+          luarocks install luacheck
+          luarocks install vusted
+          vusted --shuffle ./tests

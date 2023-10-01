@@ -29,10 +29,10 @@ function DisableEventOpt:match()
     local current_mode = vim.api.nvim_get_mode()
     local current_bufnr = vim.api.nvim_get_current_buf()
     local current_filetype = vim.fn.has("nvim-0.7") > 0
-            and vim.api.nvim_get_option_value(
-                "filetype",
-                { buf = current_bufnr }
-            )
+        and vim.api.nvim_get_option_value(
+            "filetype",
+            { buf = current_bufnr }
+        )
         ---@diagnostic disable-next-line: redundant-parameter
         or vim.api.nvim_buf_get_option(current_bufnr, "filetype")
     logger.debug(

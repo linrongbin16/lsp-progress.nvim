@@ -283,7 +283,7 @@ local function setup(option)
 
     -- setup logger
     logger.setup(
-        Config.debug,
+        Config.debug and "DEBUG" or "INFO",
         Config.console_log,
         Config.file_log,
         Config.file_log_name
