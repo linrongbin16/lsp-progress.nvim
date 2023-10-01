@@ -265,7 +265,7 @@ local function progress(option)
     -- )
     if option.max_size >= 0 then
         if vim.fn.strdisplaywidth(content) > option.max_size then
-            content = vim.fn.strcharpart(
+            content = vim.fn.strpart(
                 content,
                 0,
                 vim.fn.max({ option.max_size - 1, 0 })
