@@ -73,8 +73,15 @@ end
 --- @return SeriesFormatResult
 function SeriesObject:_format()
     assert(SeriesFormatter ~= nil, "SeriesFormatter cannot be null")
-    self._format_cache =
-        SeriesFormatter(self.title, self.message, self.percentage, self.done)
+    local ok, result =
+        pcall(SeriesFormatter, self.title, self.message, self.percentage, self.done)
+
+    if not ok then
+        logger.err("failed to invoke 'series_format' function! error: %s, params: %s, %s, %s, %s", vim.inspect(result),
+            vim.inspect(self.title), vim.inspect(self.message), vim.inspect(self.percentage), vim.inspect(self.done))
+    end
+
+    self._format_cache = result
     logger.debug("|series._format| Format series: %s", self:tostring())
     return self._format_cache
 end
