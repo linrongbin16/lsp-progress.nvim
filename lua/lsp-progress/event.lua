@@ -1,4 +1,14 @@
+--- @type table<string, any>
 local logger = require("lsp-progress.logger")
+
+--- @type string|nil
+local EventName = nil
+--- @type integer?
+local EventUpdateTimeLimit = nil
+--- @type boolean
+local EventEmit = false
+--- @type integer?
+local InternalRegularUpdateTime = nil
 
 --- @type Configs
 local EventConfigs = {
@@ -27,10 +37,10 @@ function DisableEventOpt:match()
     local current_mode = vim.api.nvim_get_mode()
     local current_bufnr = vim.api.nvim_get_current_buf()
     local current_filetype = vim.fn.has("nvim-0.7") > 0
-            and vim.api.nvim_get_option_value(
-                "filetype",
-                { buf = current_bufnr }
-            )
+        and vim.api.nvim_get_option_value(
+            "filetype",
+            { buf = current_bufnr }
+        )
         ---@diagnostic disable-next-line: redundant-parameter
         or vim.api.nvim_buf_get_option(current_bufnr, "filetype")
     logger.debug(
@@ -77,23 +87,23 @@ local GlobalDisabledEventOptsManager = nil
 
 --- @return nil
 local function reset()
-    EventConfigs.emit = false
+    EventEmit = false
 end
 
 --- @return nil
 local function emit()
-    if not EventConfigs.emit then
+    if not EventEmit then
         if
             GlobalDisabledEventOptsManager == nil
             or not GlobalDisabledEventOptsManager:match()
         then
-            vim.cmd("doautocmd User " .. EventConfigs.name)
-            EventConfigs.emit = true
-            logger.debug("Emit user event:%s", EventConfigs.name)
+            vim.cmd("doautocmd User " .. EventName)
+            EventEmit = true
+            logger.debug("Emit user event:%s", EventName)
         else
-            logger.debug("Disabled emit user event:%s", EventConfigs.name)
+            logger.debug("Disabled emit user event:%s", EventName)
         end
-        vim.defer_fn(reset, EventConfigs.update_time_limit --[[@as integer]])
+        vim.defer_fn(reset, EventUpdateTimeLimit --[[@as integer]])
     end
 end
 
@@ -101,7 +111,7 @@ local function regular_update()
     emit()
     vim.defer_fn(
         regular_update,
-        EventConfigs.regular_update_time --[[@as integer]]
+        InternalRegularUpdateTime --[[@as integer]]
     )
 end
 
@@ -116,9 +126,9 @@ local function setup(
     internal_regular_update_time,
     disable_events_opts
 )
-    EventConfigs.name = event_name
-    EventConfigs.update_time_limit = event_update_time_limit
-    EventConfigs.regular_update_time = internal_regular_update_time
+    EventName = event_name
+    EventUpdateTimeLimit = event_update_time_limit
+    InternalRegularUpdateTime = internal_regular_update_time
     GlobalDisabledEventOptsManager =
         DisableEventOptsManager:new(disable_events_opts)
     reset()
