@@ -258,7 +258,15 @@ local function progress(option)
             )
         end
     end
-    local content = option.format(client_messages)
+    local ok, result = pcall(option.format, client_messages)
+    if not ok then
+        logger.err(
+            "failed to invoke 'format' function! error: %s, params: %s",
+            vim.inspect(result),
+            vim.inspect(client_messages)
+        )
+    end
+    local content = result
     -- logger.debug(
     --     "|lsp-progress.progress| Progress format: %s",
     --     vim.inspect(content)
