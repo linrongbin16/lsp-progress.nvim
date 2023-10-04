@@ -11,8 +11,6 @@ A performant lsp progress status for Neovim.
 
 <https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/a96d8ad8-3366-4895-8300-6903479b9b60>
 
-Table of contents:
-
 - [Performance](#performance)
 - [Requirement](#requirement)
 - [Install](#install)
