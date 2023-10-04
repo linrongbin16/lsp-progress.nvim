@@ -95,12 +95,14 @@ end
 --- @type DisableEventOptsManager?
 local GlobalDisabledEventOptsManager = nil
 
---- @return nil
+--- @package
+--- @return boolean
 local function reset()
     Configs.emit = false
+    return Configs.emit
 end
 
---- @return nil
+--- @return boolean
 local function emit()
     if not Configs.emit then
         if
@@ -115,6 +117,7 @@ local function emit()
         end
         vim.defer_fn(reset, Configs.update_time_limit --[[@as integer]])
     end
+    return Configs.emit
 end
 
 local function regular_update()
@@ -146,6 +149,7 @@ end
 local M = {
     setup = setup,
     emit = emit,
+    reset = reset,
     DisableEventOpt = DisableEventOpt,
     DisableEventOptsManager = DisableEventOptsManager,
 }
