@@ -1,5 +1,12 @@
---- @type table<string, any>
 local logger = require("lsp-progress.logger")
+
+--- @type Configs
+local Configs = {
+    name = nil,
+    update_time_limit = nil,
+    regular_update_time = nil,
+    emit = false,
+}
 
 --- @type string|nil
 local EventName = nil
@@ -18,13 +25,21 @@ local DisableEventOpt = {
     filetype = nil,
 }
 
+--- @package
+--- @param opts Configs
+--- @return DisableEventOpt
 function DisableEventOpt:new(opts)
-    return vim.tbl_deep_extend("force", vim.deepcopy(DisableEventOpt), {
+    local o = {
         mode = opts.mode,
         filetype = opts.filetype,
-    })
+    }
+    setmetatable(o, self)
+    self.__index = self
+    return o
 end
 
+--- @package
+--- @return boolean
 function DisableEventOpt:match()
     local current_mode = vim.api.nvim_get_mode()
     local current_bufnr = vim.api.nvim_get_current_buf()
@@ -33,11 +48,11 @@ function DisableEventOpt:match()
                 "filetype",
                 { buf = current_bufnr }
             )
-        ---@diagnostic disable-next-line: redundant-parameter
         or vim.api.nvim_buf_get_option(current_bufnr, "filetype")
     logger.debug(
-        "|lsp-progress.event - DisableEventOpt:match| current_mode:%s, current_filetype:%s, self:%s",
+        "|lsp-progress.event - DisableEventOpt:match| current mode:%s, bufnr:%s, ft:%s, self:%s",
         vim.inspect(current_mode),
+        vim.inspect(current_bufnr),
         vim.inspect(current_filetype),
         vim.inspect(self)
     )
@@ -53,18 +68,26 @@ local DisableEventOptsManager = {
     disable_event_opts = {},
 }
 
+--- @package
+--- @param opts DisableEventOpt[]
+--- @return DisableEventOptsManager
 function DisableEventOptsManager:new(opts)
     local disable_event_opts = {}
-    if type(opts) == "table" and #opts > 0 then
+    if type(opts) == "table" then
         for _, o in ipairs(opts) do
             table.insert(disable_event_opts, DisableEventOpt:new(o))
         end
     end
-    return vim.tbl_deep_extend("force", vim.deepcopy(DisableEventOptsManager), {
+    local o = {
         disable_event_opts = disable_event_opts,
-    })
+    }
+    setmetatable(o, self)
+    self.__index = self
+    return o
 end
 
+--- @package
+--- @return boolean
 function DisableEventOptsManager:match()
     for _, opt in ipairs(self.disable_event_opts) do
         if opt:match() then
@@ -115,9 +138,9 @@ local function setup(
     internal_regular_update_time,
     disable_events_opts
 )
-    EventName = event_name
-    EventUpdateTimeLimit = event_update_time_limit
-    InternalRegularUpdateTime = internal_regular_update_time
+    Configs.name = event_name
+    Configs.update_time_limit = event_update_time_limit
+    Configs.regular_update_time = internal_regular_update_time
     GlobalDisabledEventOptsManager =
         DisableEventOptsManager:new(disable_events_opts)
     reset()
@@ -128,6 +151,8 @@ end
 local M = {
     setup = setup,
     emit = emit,
+    DisableEventOpt = DisableEventOpt,
+    DisableEventOptsManager = DisableEventOptsManager,
 }
 
 return M
