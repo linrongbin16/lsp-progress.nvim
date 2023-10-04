@@ -1,5 +1,5 @@
 local PATH_SEPARATOR = (vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0)
-    and "\\"
+        and "\\"
     or "/"
 
 local LogLevels = {
