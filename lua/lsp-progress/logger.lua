@@ -121,6 +121,16 @@ local function throw(fmt, ...)
     error(string.format(fmt, ...))
 end
 
+--- @param cond boolean
+--- @param fmt string
+--- @param ... any
+local function ensure(cond, fmt, ...)
+    if not cond then
+        log(LogLevels.ERROR, string.format(fmt, ...))
+        error(string.format(fmt, ...))
+    end
+end
+
 local M = {
     setup = setup,
     debug = debug,
@@ -128,6 +138,7 @@ local M = {
     warn = warn,
     err = err,
     throw = throw,
+    ensure = ensure,
 }
 
 return M

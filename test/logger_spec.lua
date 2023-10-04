@@ -52,5 +52,23 @@ describe("logger", function()
             assert_true(string.len(msg2) > 0)
             assert_true(true)
         end)
+        it("ensure", function()
+            local ok1, msg1 = pcall(
+                logger.ensure,
+                true,
+                "ensure successfully without parameters"
+            )
+            local ok2, msg2 = pcall(
+                logger.ensure,
+                false,
+                "ensure failure with 1 parameters: %s",
+                "a"
+            )
+            assert_true(ok1)
+            assert_true(msg1 == nil)
+            assert_false(ok2)
+            assert_eq(type(msg2), "string")
+            assert_true(string.len(msg2) > 0)
+        end)
     end)
 end)
