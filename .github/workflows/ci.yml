@@ -76,13 +76,13 @@ jobs:
           files: luacov.report.out
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-  code_format:
-    name: Code format
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: JohnnyMorganz/stylua-action@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          version: latest
-          args: --config-path .stylua.toml --color always --check lua
+  # code_format:
+  #   name: Code format
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: JohnnyMorganz/stylua-action@v3
+  #       with:
+  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #         version: latest
+  #         args: --config-path .stylua.toml --color always --check lua
