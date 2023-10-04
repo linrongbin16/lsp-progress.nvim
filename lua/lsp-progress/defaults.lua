@@ -127,13 +127,17 @@ local Defaults = {
     --
     --- @param client_messages string[]|table[]
     ---     Client messages array.
-    --- @return nil|string message
+    --- @return string
     ---     The returned value will be returned from `progress` API.
     format = function(client_messages)
         local sign = " LSP" -- nf-fa-gear \uf013
-        return #client_messages > 0
-                and (sign .. " " .. table.concat(client_messages, " "))
-            or sign
+        if #client_messages > 0 then
+            return sign .. " " .. table.concat(client_messages, " ")
+        end
+        if vim.lsp.get_active_clients() > 0 then
+            return sign
+        end
+        return ""
     end,
 
     -- Enable debug.
