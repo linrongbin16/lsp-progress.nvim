@@ -31,7 +31,7 @@ jobs:
         with:
           args: lua --config .luacheckrc
   unit_test:
-    name: Unit Test
+    name: Unit test
     strategy:
       matrix:
         nvim_version: [stable, nightly, v0.6.0]
@@ -76,3 +76,10 @@ jobs:
           files: luacov.report.out
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  format:
+    - name: Code format
+    - uses: JohnnyMorganz/stylua-action@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        version: latest
+        args: --color always --check .
