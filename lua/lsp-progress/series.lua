@@ -82,7 +82,7 @@ function SeriesObject:_format()
     )
 
     if not ok then
-        logger.err(
+        logger.throw(
             "failed to invoke 'series_format' function! error: %s, params: %s, %s, %s, %s",
             vim.inspect(result),
             vim.inspect(self.title),

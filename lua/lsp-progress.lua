@@ -260,7 +260,7 @@ local function progress(option)
     end
     local ok, result = pcall(option.format, client_messages)
     if not ok then
-        logger.err(
+        logger.throw(
             "failed to invoke 'format' function! error: %s, params: %s",
             vim.inspect(result),
             vim.inspect(client_messages)
