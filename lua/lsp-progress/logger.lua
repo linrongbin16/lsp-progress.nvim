@@ -112,7 +112,23 @@ end
 --- @param ... any
 local function err(fmt, ...)
     log(LogLevels.ERROR, string.format(fmt, ...))
+end
+
+--- @param fmt string
+--- @param ... any
+local function throw(fmt, ...)
+    log(LogLevels.ERROR, string.format(fmt, ...))
     error(string.format(fmt, ...))
+end
+
+--- @param cond boolean
+--- @param fmt string
+--- @param ... any
+local function ensure(cond, fmt, ...)
+    if not cond then
+        log(LogLevels.ERROR, string.format(fmt, ...))
+        error(string.format(fmt, ...))
+    end
 end
 
 local M = {
@@ -121,6 +137,8 @@ local M = {
     info = info,
     warn = warn,
     err = err,
+    throw = throw,
+    ensure = ensure,
 }
 
 return M

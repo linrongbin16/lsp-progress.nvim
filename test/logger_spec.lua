@@ -34,9 +34,16 @@ describe("logger", function()
             assert_true(true)
         end)
         it("err", function()
-            local ok1, msg1 = pcall(logger.err, "err without parameters")
+            logger.err("err without parameters")
+            logger.err("err with 1 parameters: %s", "a")
+            logger.err("err with 2 parameters: %s, %d", "a", 1)
+            logger.err("err with 3 parameters: %s, %d, %f", "a", 1, 3.12)
+            assert_true(true)
+        end)
+        it("throw", function()
+            local ok1, msg1 = pcall(logger.throw, "throw without parameters")
             local ok2, msg2 =
-                pcall(logger.err, "err with 1 parameters: %s", "a")
+                pcall(logger.throw, "throw with 1 parameters: %s", "a")
             assert_false(ok1)
             assert_eq(type(msg1), "string")
             assert_true(string.len(msg1) > 0)
@@ -44,6 +51,24 @@ describe("logger", function()
             assert_eq(type(msg2), "string")
             assert_true(string.len(msg2) > 0)
             assert_true(true)
+        end)
+        it("ensure", function()
+            local ok1, msg1 = pcall(
+                logger.ensure,
+                true,
+                "ensure successfully without parameters"
+            )
+            local ok2, msg2 = pcall(
+                logger.ensure,
+                false,
+                "ensure failure with 1 parameters: %s",
+                "a"
+            )
+            assert_true(ok1)
+            assert_true(msg1 == nil)
+            assert_false(ok2)
+            assert_eq(type(msg2), "string")
+            assert_true(string.len(msg2) > 0)
         end)
     end)
 end)

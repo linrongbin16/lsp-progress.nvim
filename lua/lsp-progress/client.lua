@@ -178,7 +178,7 @@ function ClientObject:format()
     )
 
     if not ok then
-        logger.err(
+        logger.throw(
             "failed to invoke 'client_format'! error: %s, params: %s, %s, %s",
             vim.inspect(result),
             vim.inspect(self.client_name),
