@@ -147,6 +147,8 @@ For complete configurations and defaults, please check [defaults.lua](https://gi
 
 https://github.com/linrongbin16/lsp-progress.nvim/blob/6cca236f9d198907355d45d87008cc009e69cb4c/lua/lsp-progress/defaults.lua
 
+https://github.com/linrongbin16/lsp-progress.nvim/blob/6cca236f9d198907355d45d87008cc009e69cb4c/lua/lsp-progress/defaults.lua#L3
+
 For how to configure the permanent ` LSP` icon, please see [Permanent LSP icon](https://github.com/linrongbin16/lsp-progress.nvim/wiki/Advanced-Configuration#permanent-lsp-icon).
 
 For more advanced configurations, please see [Advanced Configuration](https://github.com/linrongbin16/lsp-progress.nvim/wiki/Advanced-Configuration).
