@@ -2,20 +2,15 @@ local logger = require("lsp-progress.logger")
 
 --- @type Configs
 local Configs = {
+    --- @type string?
     name = nil,
+    --- @type integer?
     update_time_limit = nil,
+    --- @type integer?
     regular_update_time = nil,
+    --- @type boolean
     emit = false,
 }
-
---- @type string|nil
-local EventName = nil
---- @type integer?
-local EventUpdateTimeLimit = nil
---- @type boolean
-local EventEmit = false
---- @type integer?
-local InternalRegularUpdateTime = nil
 
 --- @class DisableEventOpt
 --- @field mode string?
@@ -102,29 +97,29 @@ local GlobalDisabledEventOptsManager = nil
 
 --- @return nil
 local function reset()
-    EventEmit = false
+    Configs.emit = false
 end
 
 --- @return nil
 local function emit()
-    if not EventEmit then
+    if not Configs.emit then
         if
             GlobalDisabledEventOptsManager == nil
             or not GlobalDisabledEventOptsManager:match()
         then
-            vim.cmd("doautocmd User " .. EventName)
-            EventEmit = true
-            logger.debug("Emit user event:%s", EventName)
+            vim.cmd("doautocmd User " .. Configs.name)
+            Configs.emit = true
+            logger.debug("Emit user event:%s", Configs.name)
         else
-            logger.debug("Disabled emit user event:%s", EventName)
+            logger.debug("Disabled emit user event:%s", Configs.name)
         end
-        vim.defer_fn(reset, EventUpdateTimeLimit --[[@as integer]])
+        vim.defer_fn(reset, Configs.update_time_limit --[[@as integer]])
     end
 end
 
 local function regular_update()
     emit()
-    vim.defer_fn(regular_update, InternalRegularUpdateTime --[[@as integer]])
+    vim.defer_fn(regular_update, Configs.regular_update_time --[[@as integer]])
 end
 
 --- @param event_name string
