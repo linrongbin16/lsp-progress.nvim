@@ -48,11 +48,29 @@ describe("event", function()
         end)
     end)
     describe("[emit/reset]", function()
+        event.setup("TestEvent", 1000, 1000, {})
         it("emit", function()
             assert_true(event.emit())
         end)
         it("reset", function()
             assert_false(event.reset())
+        end)
+    end)
+    describe("[GlobalDisabledEventOptsManager]", function()
+        it("disable all events", function()
+            event.setup("TestEvent", 1000, 1000, {
+                { mode = "i", filetype = "TelescopePrompt" },
+                { mode = "i", filetype = "lua" },
+                { mode = "*", filetype = "*" },
+            })
+            assert_false(event.emit())
+        end)
+        it("allows event", function()
+            event.setup("TestEvent", 1000, 1000, {
+                { mode = "i", filetype = "TelescopePrompt" },
+                { mode = "i", filetype = "lua" },
+            })
+            assert_true(event.emit())
         end)
     end)
 end)
