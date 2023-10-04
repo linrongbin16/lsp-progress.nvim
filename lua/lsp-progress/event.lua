@@ -64,7 +64,7 @@ local DisableEventOptsManager = {
 }
 
 --- @package
---- @param opts DisableEventOpt[]
+--- @param opts Configs[]?
 --- @return DisableEventOptsManager
 function DisableEventOptsManager:new(opts)
     local disable_event_opts = {}
@@ -125,7 +125,7 @@ end
 --- @param event_name string
 --- @param event_update_time_limit integer
 --- @param internal_regular_update_time integer
---- @param disable_events_opts table[]?
+--- @param disable_events_opts Configs[]?
 --- @return nil
 local function setup(
     event_name,
