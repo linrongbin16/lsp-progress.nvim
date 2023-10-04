@@ -55,5 +55,24 @@ jobs:
         shell: bash
         run: |
           luarocks install luacheck
+          luarocks install luacov
+          luarocks install cluacov
           luarocks install vusted
-          vusted --shuffle ./tests
+          vusted --coverage --shuffle ./test
+      - name: Generate coverage reports
+        shell: bash
+        run: |
+          echo "ls ."
+          ls -l .
+          echo "run luacov"
+          luacov
+          echo "ls ."
+          ls -l .
+          echo "cat ./luacov.report.out"
+          cat ./luacov.report.out
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: luacov.report.out
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
