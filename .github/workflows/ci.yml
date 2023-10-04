@@ -85,4 +85,4 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: latest
-          args: --color always --check .
+          args: --config-path .stylua.toml --color always --check .
