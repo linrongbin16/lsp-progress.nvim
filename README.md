@@ -145,7 +145,7 @@ vim.api.nvim_create_autocmd("User LspProgressStatusUpdated", {
 
 For complete configurations and defaults, please check:
 
-https://github.com/linrongbin16/lsp-progress.nvim/blob/6cca236f9d198907355d45d87008cc009e69cb4c/lua/lsp-progress/defaults.lua?plain=1#L3-L161
+https://github.com/linrongbin16/lsp-progress.nvim/blob/6cca236f9d198907355d45d87008cc009e69cb4c/lua/lsp-progress/defaults.lua#L3-L161
 
 For how to configure the permanent ` LSP` icon, please see [Permanent LSP icon](https://github.com/linrongbin16/lsp-progress.nvim/wiki/Advanced-Configuration#permanent-lsp-icon).
 
