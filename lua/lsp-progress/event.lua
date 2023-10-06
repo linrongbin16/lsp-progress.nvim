@@ -109,7 +109,7 @@ local function emit()
             GlobalDisabledEventOptsManager == nil
             or not GlobalDisabledEventOptsManager:match()
         then
-            vim.cmd("doautocmd <nomodeline> User " .. Configs.name)
+            vim.cmd("doautocmd User " .. Configs.name)
             Configs.emit = true
             logger.debug("Emit user event:%s", Configs.name)
         else
