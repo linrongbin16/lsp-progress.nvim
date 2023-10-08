@@ -145,7 +145,15 @@ vim.api.nvim_create_autocmd("User", {
 
 ## Configuration
 
-For complete configurations and defaults, please check [defaults.lua](https://github.com/linrongbin16/lsp-progress.nvim/blob/main/lua/lsp-progress/defaults.lua).
+To configure options, please use:
+
+```lua
+require('lsp-progress').setup(option)
+```
+
+The `option` is an optional lua table that override the default options.
+
+For complete options and defaults, please check [defaults.lua](https://github.com/linrongbin16/lsp-progress.nvim/blob/main/lua/lsp-progress/defaults.lua).
 
 For how to configure the permanent ` LSP` icon, please see [Permanent LSP icon](https://github.com/linrongbin16/lsp-progress.nvim/wiki/Advanced-Configuration#permanent-lsp-icon).
 
