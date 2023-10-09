@@ -15,7 +15,7 @@ local Spinner = nil
 --- @field client_id integer|nil
 --- @field client_name string|nil
 --- @field spin_index integer
---- @field serieses table<string, SeriesObject>
+--- @field serieses table<string, Series>
 ---     map: key => SeriesObject.
 --- @field private _format_cache ClientFormatResult
 ---     formatted cache.
@@ -101,13 +101,13 @@ function ClientObject:remove_series(token)
 end
 
 --- @param token string
---- @return SeriesObject
+--- @return Series
 function ClientObject:get_series(token)
     return self.serieses[token]
 end
 
 --- @param token string
---- @param series SeriesObject
+--- @param series Series
 --- @return nil
 function ClientObject:add_series(token, series)
     self:_set_dedup_token(series.title, series.message, token)
@@ -151,7 +151,7 @@ function ClientObject:format()
     for dedup_key, token in pairs(self._deduped_tokens) do
         if not visited_tokens[token] then
             if self:has_series(token) then
-                --- @type SeriesObject
+                --- @type Series
                 local series = self:get_series(token)
                 --- @type SeriesFormatResult
                 local result = series:format_result()

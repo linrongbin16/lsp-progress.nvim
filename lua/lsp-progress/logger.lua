@@ -126,8 +126,7 @@ end
 --- @param ... any
 local function ensure(cond, fmt, ...)
     if not cond then
-        log(LogLevels.ERROR, string.format(fmt, ...))
-        error(string.format(fmt, ...))
+        throw(fmt, ...)
     end
 end
 

@@ -1,12 +1,7 @@
---- @type table<string, function>
 local logger = require("lsp-progress.logger")
---- @type table<string, function>
 local defaults = require("lsp-progress.defaults")
---- @type table<string, function>
 local event = require("lsp-progress.event")
---- @overload fun(title:string, message:string, percentage:integer):SeriesObject
-local new_series = require("lsp-progress.series").new_series
---- @overload fun(client_id:integer, client_name:string):ClientObject
+local Series = require("lsp-progress.series").Series
 local new_client = require("lsp-progress.client").new_client
 
 -- global variable
@@ -180,24 +175,24 @@ local function progress_handler(err, msg, ctx)
     local client = get_client(client_id)
     if value.kind == "begin" then
         -- add task
-        local series = new_series(value.title, value.message, value.percentage)
-        client:add_series(token, series)
+        local ss = Series:new(value.title, value.message, value.percentage)
+        client:add_series(token, ss)
         -- start spin, it will also notify user at a fixed rate
         spin(client_id, token)
         logger.debug(
             "|lsp-progress.progress_handler| Add new series to client %s: %s",
             client:tostring(),
-            series:tostring()
+            ss:tostring()
         )
     elseif value.kind == "report" then
-        local series = client:get_series(token)
-        if series then
-            series:update(value.message, value.percentage)
-            client:add_series(token, series)
+        local ss = client:get_series(token)
+        if ss then
+            ss:update(value.message, value.percentage)
+            client:add_series(token, ss)
             logger.debug(
                 "|lsp-progress.progress_handler| Update series in client %s: %s",
                 client:tostring(),
-                series:tostring()
+                ss:tostring()
             )
         else
             logger.debug(
@@ -215,13 +210,13 @@ local function progress_handler(err, msg, ctx)
             )
         end
         if client:has_series(token) then
-            local series = client:get_series(token)
-            series:finish(value.message)
+            local ss = client:get_series(token)
+            ss:finish(value.message)
             client:format()
             logger.debug(
                 "|lsp-progress.progress_handler| Series done in client %s: %s",
                 client:tostring(),
-                series:tostring()
+                ss:tostring()
             )
         else
             logger.debug(
