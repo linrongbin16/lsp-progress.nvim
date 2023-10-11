@@ -81,9 +81,9 @@ local function spin(client_id, token)
     client:increase_spin_index()
     vim.defer_fn(spin_again, Config.spin_update_time)
 
-    local series = client:get_series(token)
+    local ss = client:get_series(token)
     -- if series done, remove this series from client later
-    if series.done then
+    if ss.done then
         vim.defer_fn(function()
             -- check client id again
             if not has_client(client_id) then
