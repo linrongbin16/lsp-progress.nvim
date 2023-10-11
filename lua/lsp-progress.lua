@@ -180,9 +180,9 @@ local function progress_handler(err, msg, ctx)
         -- start spin, it will also notify user at a fixed rate
         spin(client_id, token)
         logger.debug(
-            "|lsp-progress.progress_handler| Add new series to client %s: %s",
-            client:tostring(),
-            ss:tostring()
+            "|progress_handler| add new series to client(%s): %s",
+            vim.inspect(client),
+            vim.inspect(ss)
         )
     elseif value.kind == "report" then
         local ss = client:get_series(token)
@@ -190,9 +190,9 @@ local function progress_handler(err, msg, ctx)
             ss:update(value.message, value.percentage)
             client:add_series(token, ss)
             logger.debug(
-                "|lsp-progress.progress_handler| Update series in client %s: %s",
-                client:tostring(),
-                ss:tostring()
+                "|progress_handler| update series in client(%s): %s",
+                vim.inspect(client),
+                vim.inspect(ss)
             )
         else
             logger.debug(
@@ -214,9 +214,9 @@ local function progress_handler(err, msg, ctx)
             ss:finish(value.message)
             client:format()
             logger.debug(
-                "|lsp-progress.progress_handler| Series done in client %s: %s",
-                client:tostring(),
-                ss:tostring()
+                "|progress_handler| series is done in client(%s): %s",
+                vim.inspect(client),
+                vim.inspect(ss)
             )
         else
             logger.debug(

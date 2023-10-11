@@ -152,14 +152,14 @@ function ClientObject:format()
         if not visited_tokens[token] then
             if self:has_series(token) then
                 --- @type Series
-                local series = self:get_series(token)
+                local ss = self:get_series(token)
                 --- @type SeriesFormatResult
-                local result = series:format_result()
+                local result = ss:format_result()
                 logger.debug(
-                    "|client.format| Get series %s (deduped key: %s) format result in client %s: %s",
-                    series:tostring(),
+                    "|client - Client:format| get series %s (deduped key: %s) format result in client %s, series_messages: %s",
+                    vim.inspect(ss),
                     dedup_key,
-                    self:tostring(),
+                    vim.inspect(self),
                     vim.inspect(series_messages)
                 )
                 table.insert(series_messages, result)

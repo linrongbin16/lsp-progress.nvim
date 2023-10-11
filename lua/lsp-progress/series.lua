@@ -67,18 +67,6 @@ function Series:_format()
     return self._format_cache
 end
 
---- @return string
-function Series:tostring()
-    return string.format(
-        "<Series title:%s, message:%s, percentage:%s, done:%s, _format_cache:%s>",
-        vim.inspect(self.title),
-        vim.inspect(self.message),
-        vim.inspect(self.percentage),
-        vim.inspect(self.done),
-        vim.inspect(self._format_cache)
-    )
-end
-
 --- @param old_message string?
 --- @param new_message string?
 --- @return string?
