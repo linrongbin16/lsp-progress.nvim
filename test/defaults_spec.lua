@@ -9,6 +9,45 @@ describe("defaults", function()
         vim.api.nvim_command("cd " .. cwd)
     end)
 
+    local function equals_to(a, b)
+        if type(a) ~= type(b) then
+            print(
+                string.format(
+                    "type(a) (%s) ~= type(b) (%s)\n",
+                    vim.inspect(type(a)),
+                    vim.inspect(type(b))
+                )
+            )
+            return false
+        end
+        if type(a) == "table" then
+            for ka, va in pairs(a) do
+                local vb = b[ka]
+                if not equals_to(va, vb) then
+                    print(
+                        string.format(
+                            "ka (%s), va (%s) ~= vb (%s)\n",
+                            vim.inspect(ka),
+                            vim.inspect(va),
+                            vim.inspect(vb)
+                        )
+                    )
+                    return false
+                end
+            end
+            return true
+        end
+        print(
+            string.format(
+                "a (%s) == b (%s): %s\n",
+                vim.inspect(a),
+                vim.inspect(b),
+                vim.inspect(a == b)
+            )
+        )
+        return a == b
+    end
+
     local defaults = require("lsp-progress.defaults")
     describe("[get_defaults]", function()
         it("is defaults", function()
@@ -41,6 +80,13 @@ describe("defaults", function()
             assert_eq(type(df.format), "function")
             assert_eq(type(df.format({ "a", "b", "c" })), "string")
             assert_true(string.len(df.format({ "a", "b", "c" })) > 0)
+        end)
+        it("setup", function()
+            local cfg = defaults.setup()
+            local dfs = defaults._get_defaults()
+            assert_eq(type(cfg), "table")
+            assert_eq(type(dfs), "table")
+            assert_true(equals_to(cfg, dfs))
         end)
     end)
 end)
