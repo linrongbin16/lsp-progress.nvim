@@ -132,6 +132,10 @@ describe("series", function()
                 series_formatter(ss.title, "message5", 100, ss.done),
                 ss:_format()
             )
+            assert_eq(
+                series_formatter(ss.title, "message5", 100, ss.done),
+                ss:format_result()
+            )
         end)
     end)
     describe("[_choose_updated_message]", function()
