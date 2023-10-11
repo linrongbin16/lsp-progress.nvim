@@ -1,32 +1,43 @@
 ---
 name: CI
 on:
-  pull_request: ~
+  pull_request:
+    branches:
+      - main
   push:
     branches:
       - main
       - master
 jobs:
-  typecheck:
-    name: Type check
+  pr_conventional_commit:
+    name: PR Conventional Commit
+    if: ${{ github.ref != 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Neovim Typecheck linter
-        uses: stevearc/nvim-typecheck-action@v1
+      - uses:  ytanikin/PRConventionalCommits@1.1.0
         with:
-          path: lua
-          level: Information
-          configpath: ".luarc.json"
-          neodev-version: stable
+          task_types: '["feat","fix","docs","test","ci","refactor","perf","chore","revert"]'
   luacheck:
     name: Lua check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Luacheck linter
+      - uses: JohnnyMorganz/stylua-action@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: latest
+          args: --config-path .stylua.toml --color always --check lua
+      - name: LuaLs annotation typecheck
+        uses: stevearc/nvim-typecheck-action@v1
+        with:
+          path: lua
+          level: Information
+          configpath: ".luarc.json"
+          neodev-version: stable
+      - name: Luacheck
         uses: lunarmodules/luacheck@v1
         with:
           args: lua --config .luacheckrc
@@ -39,7 +50,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup neovim
+      - name: Install neovim
         uses: rhysd/action-setup-vim@v1
         id: vim
         with:
@@ -76,21 +87,10 @@ jobs:
           files: luacov.report.out
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-  code_format:
-    name: Code format
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: JohnnyMorganz/stylua-action@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          version: latest
-          args: --config-path .stylua.toml --color always --check lua
   release:
     name: Release
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
-      - typecheck
       - luacheck
       - unit_test
       - code_format
