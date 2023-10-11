@@ -242,8 +242,7 @@ local function progress(option)
     return content
 end
 
---- @param option table<string, any>
---- @return nil
+--- @param option Configs
 local function setup(option)
     -- setup config
     Configs = defaults.setup(option)
@@ -285,7 +284,6 @@ local function setup(option)
     end
 end
 
---- @type table<string, function>
 local M = {
     setup = setup,
     progress = progress,
