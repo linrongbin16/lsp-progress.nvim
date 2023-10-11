@@ -11,13 +11,7 @@ local SeriesFormat = nil
 --- @field percentage integer?
 --- @field done boolean
 --- @field private _format_cache SeriesFormatResult
-local Series = {
-    title = nil,
-    message = nil,
-    percentage = nil,
-    done = false,
-    _format_cache = nil,
-}
+local Series = {}
 
 --- @param title string?
 --- @param message string?

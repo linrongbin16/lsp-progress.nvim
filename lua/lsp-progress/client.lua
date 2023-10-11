@@ -1,41 +1,46 @@
---- @type table<string, function>
 local logger = require("lsp-progress.logger")
 
---- @alias ClientFormatterType fun(client_name:string,spinner:string,series_messages:string[]|table[]):string|table|nil
-
---- @type ClientFormatterType|nil
-local ClientFormatter = nil
+--- @alias ClientFormatResult string|any|nil
+--- @alias ClientFormat fun(client_name:string,spinner:string,series_messages:string[]|table[]):ClientFormatResult
+--- @type ClientFormat?
+local ClientFormat = nil
 
 --- @type string[]|nil
 local Spinner = nil
 
---- @alias ClientFormatResult string|table|nil
-
---- @class ClientObject
+--- @class Client
 --- @field client_id integer|nil
 --- @field client_name string|nil
 --- @field spin_index integer
---- @field serieses table<string, Series>
----     map: key => SeriesObject.
+--- @field serieses table<string, Series> map: key => SeriesObject.
 --- @field private _format_cache ClientFormatResult
----     formatted cache.
---- @field private _deduped_tokens table<string, string>
----     deduped tokens, map: title+message => token.
-local ClientObject = {
-    client_id = nil,
-    client_name = nil,
-    spin_index = 0,
-    serieses = {},
+--- @field private _deduped_tokens table<string, string> map: title+message => token.
+local Client = {}
 
-    -- format cache
-    _format_cache = nil,
-    -- deduped tokens
-    _deduped_tokens = {},
-}
+--- @param client_id integer
+--- @param client_name string
+--- @return Client
+function Client:new(client_id, client_name)
+    local o = {
+        client_id = client_id,
+        client_name = client_name,
+        spin_index = 0,
+        serieses = {},
+        _format_cache = nil,
+        _deduped_tokens = {},
+    }
+    setmetatable(o, self)
+    self.__index = self
+
+    o:format()
+    logger.debug("|client - Client:new| new: %s", vim.inspect(o))
+
+    return o
+end
 
 --- @param token string
 --- @return boolean
-function ClientObject:has_series(token)
+function Client:has_series(token)
     return self.serieses[token] ~= nil
 end
 
@@ -43,7 +48,7 @@ end
 --- @param title string
 --- @param message string
 --- @return string
-local function get_dedup_key(title, message)
+local function _get_dedup_key(title, message)
     return tostring(title) .. "-" .. tostring(message)
 end
 
@@ -51,38 +56,35 @@ end
 --- @param title string
 --- @param message string
 --- @return boolean
-function ClientObject:_has_dedup_token(title, message)
-    return self._deduped_tokens[get_dedup_key(title, message)] ~= nil
+function Client:_has_dedup_token(title, message)
+    return self._deduped_tokens[_get_dedup_key(title, message)] ~= nil
 end
 
 --- @package
 --- @param title string
 --- @param message string
 --- @param token string
---- @return nil
-function ClientObject:_set_dedup_token(title, message, token)
-    self._deduped_tokens[get_dedup_key(title, message)] = token
+function Client:_set_dedup_token(title, message, token)
+    self._deduped_tokens[_get_dedup_key(title, message)] = token
 end
 
 --- @package
 --- @param title string
 --- @param message string
---- @return nil
-function ClientObject:_remove_dedup_token(title, message)
-    self._deduped_tokens[get_dedup_key(title, message)] = nil
+function Client:_remove_dedup_token(title, message)
+    self._deduped_tokens[_get_dedup_key(title, message)] = nil
 end
 
 --- @package
 --- @param title string
 --- @param message string
 --- @return string token
-function ClientObject:_get_dedup_token(title, message)
-    return self._deduped_tokens[get_dedup_key(title, message)]
+function Client:_get_dedup_token(title, message)
+    return self._deduped_tokens[_get_dedup_key(title, message)]
 end
 
 --- @param token string
---- @return nil
-function ClientObject:remove_series(token)
+function Client:remove_series(token)
     if self:has_series(token) then
         local series = self:get_series(token)
         if
@@ -102,58 +104,60 @@ end
 
 --- @param token string
 --- @return Series
-function ClientObject:get_series(token)
+function Client:get_series(token)
     return self.serieses[token]
 end
 
 --- @param token string
 --- @param series Series
---- @return nil
-function ClientObject:add_series(token, series)
+function Client:add_series(token, series)
     self:_set_dedup_token(series.title, series.message, token)
     self.serieses[token] = series
     self:format()
 end
 
 --- @return boolean
-function ClientObject:empty()
+function Client:empty()
     return not next(self.serieses) --[[@as boolean]]
 end
 
---- @return nil
-function ClientObject:increase_spin_index()
-    --- @type integer
+function Client:increase_spin_index()
     local old = self.spin_index
-    assert(Spinner ~= nil, "Spinner cannot be nil")
-    assert(#Spinner > 0, "Spinner length cannot be 0")
-    --- @type integer
+    assert(type(Spinner) == "table", "Spinner must be a lua table")
+    assert(#Spinner > 0, "Spinner length must greater than 0")
     self.spin_index = (self.spin_index + 1) % #Spinner
     logger.debug(
-        "|client.increase_spin_index| client %s spin index:%d => %d",
-        self:tostring(),
+        "|client.increase_spin_index| client(%s) spin index: %d => %d",
+        vim.inspect(self),
         old,
         self.spin_index
     )
     self:format()
 end
 
+function Client:get_spin_index()
+    assert(Spinner ~= nil, "Spinner cannot be nil")
+    assert(#Spinner > 0, "Spinner length must greater than 0")
+    return Spinner[self.spin_index + 1]
+end
+
 --- @return string
-function ClientObject:tostring()
+function Client:tostring()
     return string.format("[%s-%d]", self.client_name, self.client_id)
 end
 
 --- @return ClientFormatResult
-function ClientObject:format()
+function Client:format()
     --- @type SeriesFormatResult[]
     local series_messages = {}
+
     --- @type table<string, boolean>
     local visited_tokens = {}
+
     for dedup_key, token in pairs(self._deduped_tokens) do
         if not visited_tokens[token] then
             if self:has_series(token) then
-                --- @type Series
                 local ss = self:get_series(token)
-                --- @type SeriesFormatResult
                 local result = ss:format_result()
                 logger.debug(
                     "|client - Client:format| get series %s (deduped key: %s) format result in client %s, series_messages: %s",
@@ -167,68 +171,45 @@ function ClientObject:format()
             visited_tokens[token] = true
         end
     end
-    assert(Spinner ~= nil, "Spinner cannot be nil")
-    assert(#Spinner > 0, "Spinner length cannot be 0")
-    assert(ClientFormatter ~= nil, "ClientFormatter cannot be null")
-    local ok, result = pcall(
-        ClientFormatter,
+
+    assert(type(ClientFormat) == "function", "ClientFormat must be a function")
+
+    local ok, result_or_err = pcall(
+        ClientFormat,
         self.client_name,
-        Spinner[self.spin_index + 1],
+        self:get_spin_index(),
         series_messages
     )
 
-    if not ok then
-        logger.throw(
-            "failed to invoke 'client_format'! error: %s, params: %s, %s, %s",
-            vim.inspect(result),
-            vim.inspect(self.client_name),
-            vim.inspect(Spinner[self.spin_index + 1]),
-            vim.inspect(series_messages)
-        )
-    end
-    self._format_cache = result
-
-    logger.debug(
-        "|client.format| format client %s: %s",
-        self:tostring(),
-        vim.inspect(self._format_cache)
+    logger.ensure(
+        ok,
+        "failed to invoke 'client_format' function with params: %s! error: %s",
+        vim.inspect(self),
+        vim.inspect(result_or_err)
     )
+
+    self._format_cache = result_or_err
+    logger.debug("|client - Client:format| format: %s", vim.inspect(self))
     return self._format_cache
 end
 
 --- @return ClientFormatResult
-function ClientObject:format_result()
+function Client:format_result()
     return self._format_cache
 end
 
---- @param client_id integer
---- @param client_name string
---- @return ClientObject
-local function new_client(client_id, client_name)
-    --- @type ClientObject
-    local client = vim.tbl_extend(
-        "force",
-        vim.deepcopy(ClientObject),
-        { client_id = client_id, client_name = client_name }
-    )
-    client:format()
-    return client
-end
-
---- @param client_formatter ClientFormatterType
+--- @param client_format ClientFormat
 --- @param spinner string[]
 --- @return nil
-local function setup(client_formatter, spinner)
-    ClientFormatter = client_formatter
+local function setup(client_format, spinner)
+    ClientFormat = client_format
     Spinner = spinner
 end
 
---- @type table<string, function>
 local M = {
-    --- @overload fun(client_formatter:ClientFormatterType, spinner:string[]):nil
     setup = setup,
-    --- @overload fun(client_id:integer, client_name:string):ClientObject
-    new_client = new_client,
+    Client = Client,
+    _get_dedup_key = _get_dedup_key,
 }
 
 return M

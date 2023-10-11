@@ -2,7 +2,7 @@ local logger = require("lsp-progress.logger")
 local defaults = require("lsp-progress.defaults")
 local event = require("lsp-progress.event")
 local Series = require("lsp-progress.series").Series
-local new_client = require("lsp-progress.client").new_client
+local Client = require("lsp-progress.client").Client
 
 -- global variable
 
@@ -10,7 +10,7 @@ local new_client = require("lsp-progress.client").new_client
 local Config = {}
 --- @type boolean
 local Registered = false
---- @type table<integer, ClientObject>
+--- @type table<integer, Client>
 local LspClients = {}
 
 -- client utils
@@ -22,7 +22,7 @@ local function has_client(client_id)
 end
 
 --- @param client_id integer
---- @return ClientObject
+--- @return Client
 local function get_client(client_id)
     return LspClients[client_id]
 end
@@ -41,7 +41,7 @@ end
 --- @return nil
 local function register_client(client_id, client_name)
     if not has_client(client_id) then
-        LspClients[client_id] = new_client(client_id, client_name)
+        LspClients[client_id] = Client:new(client_id, client_name)
         logger.debug(
             "|lsp-progress.register_client| Register client %s",
             get_client(client_id):tostring()
