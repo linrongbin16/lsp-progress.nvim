@@ -94,7 +94,6 @@ jobs:
     needs:
       - luacheck
       - unit_test
-      - code_format
     runs-on: ubuntu-latest
     steps:
       - uses: google-github-actions/release-please-action@v3
