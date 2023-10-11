@@ -41,49 +41,6 @@ function Series:new(title, message, percentage)
     return o
 end
 
---- @return string
-function Series:tostring()
-    return string.format(
-        "<Series title:%s, message:%s, percentage:%s, done:%s, _format_cache:%s>",
-        vim.inspect(self.title),
-        vim.inspect(self.message),
-        vim.inspect(self.percentage),
-        vim.inspect(self.done),
-        vim.inspect(self._format_cache)
-    )
-end
-
---- @param old_message string?
---- @param new_message string?
---- @return string?
-local function _update_message(old_message, new_message)
-    -- if the 'new' message is nil, it usually means the lifecycle of this message series is going to end.
-    -- thus we can decay the latest visible 'old' message for user.
-    if type(new_message) == "string" and string.len(new_message) > 0 then
-        return new_message
-    else
-        return old_message
-    end
-end
-
---- @param message string
---- @param percentage integer
-function Series:update(message, percentage)
-    self.message = _update_message(self.message, message)
-    self.percentage = percentage
-    self:_format()
-    logger.debug("|series.update| Update series: %s", self:tostring())
-end
-
---- @param message string
-function Series:finish(message)
-    self.message = _update_message(self.message, message)
-    self.percentage = 100
-    self.done = true
-    self:_format()
-    logger.debug("|series.finish| Finish series: %s", self:tostring())
-end
-
 --- @package
 --- @return SeriesFormatResult
 function Series:_format()
@@ -116,6 +73,49 @@ function Series:_format()
     return self._format_cache
 end
 
+--- @return string
+function Series:tostring()
+    return string.format(
+        "<Series title:%s, message:%s, percentage:%s, done:%s, _format_cache:%s>",
+        vim.inspect(self.title),
+        vim.inspect(self.message),
+        vim.inspect(self.percentage),
+        vim.inspect(self.done),
+        vim.inspect(self._format_cache)
+    )
+end
+
+--- @param old_message string?
+--- @param new_message string?
+--- @return string?
+local function _choose_updated_message(old_message, new_message)
+    -- if the 'new' message is nil, it usually means the lifecycle of this message series is going to end.
+    -- thus we can decay the latest visible 'old' message for user.
+    if type(new_message) == "string" and string.len(new_message) > 0 then
+        return new_message
+    else
+        return old_message
+    end
+end
+
+--- @param message string
+--- @param percentage integer
+function Series:update(message, percentage)
+    self.message = _choose_updated_message(self.message, message)
+    self.percentage = percentage
+    self:_format()
+    logger.debug("|series.update| Update series: %s", self:tostring())
+end
+
+--- @param message string
+function Series:finish(message)
+    self.message = _choose_updated_message(self.message, message)
+    self.percentage = 100
+    self.done = true
+    self:_format()
+    logger.debug("|series.finish| Finish series: %s", self:tostring())
+end
+
 --- @return SeriesFormatResult
 function Series:format_result()
     return self._format_cache
@@ -129,6 +129,7 @@ end
 local M = {
     setup = setup,
     Series = Series,
+    _choose_updated_message = _choose_updated_message,
 }
 
 return M
