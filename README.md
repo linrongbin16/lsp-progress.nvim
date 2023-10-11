@@ -155,8 +155,6 @@ The `option` is an optional lua table that override the default options.
 
 For complete options and defaults, please check [defaults.lua](https://github.com/linrongbin16/lsp-progress.nvim/blob/main/lua/lsp-progress/defaults.lua).
 
-For how to configure the permanent ` LSP` icon, please see [Permanent LSP icon](https://github.com/linrongbin16/lsp-progress.nvim/wiki/Advanced-Configuration#permanent-lsp-icon).
-
 For more advanced configurations, please see [Advanced Configuration](https://github.com/linrongbin16/lsp-progress.nvim/wiki/Advanced-Configuration).
 
 ## Credit
