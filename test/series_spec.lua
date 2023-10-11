@@ -86,6 +86,53 @@ describe("series", function()
                 ss:_format()
             )
         end)
+        it("finish", function()
+            local ss = series.Series:new("title", "message", 10)
+            assert_eq(type(ss), "table")
+            assert_eq(ss.title, "title")
+            assert_eq(ss.message, "message")
+            assert_eq(ss.percentage, 10)
+            assert_eq(
+                series_formatter(ss.title, ss.message, ss.percentage, ss.done),
+                ss:_format()
+            )
+
+            ss:finish("message2")
+            assert_eq(ss.message, "message2")
+            assert_eq(ss.percentage, 100)
+            assert_eq(ss.done, true)
+            assert_eq(
+                series_formatter(ss.title, "message2", 100, true),
+                ss:_format()
+            )
+
+            ss:finish("")
+            assert_eq(ss.message, "message2")
+            assert_eq(ss.percentage, 100)
+            assert_eq(ss.done, true)
+            assert_eq(
+                series_formatter(ss.title, "message2", 100, ss.done),
+                ss:_format()
+            )
+
+            ss:finish(nil)
+            assert_eq(ss.message, "message2")
+            assert_eq(ss.percentage, 100)
+            assert_eq(ss.done, true)
+            assert_eq(
+                series_formatter(ss.title, "message2", 100, ss.done),
+                ss:_format()
+            )
+
+            ss:finish("message5")
+            assert_eq(ss.message, "message5")
+            assert_eq(ss.percentage, 100)
+            assert_eq(ss.done, true)
+            assert_eq(
+                series_formatter(ss.title, "message5", 100, ss.done),
+                ss:_format()
+            )
+        end)
     end)
     describe("[_choose_updated_message]", function()
         it("choose non-empty", function()
