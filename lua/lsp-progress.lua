@@ -2,8 +2,6 @@ local logger = require("lsp-progress.logger")
 local defaults = require("lsp-progress.defaults")
 local event = require("lsp-progress.event")
 local Series = require("lsp-progress.series").Series
-local Client = require("lsp-progress.client").Client
-local ClientManager = require("lsp-progress.client_manager").ClientManager
 
 -- global variable
 
@@ -272,10 +270,6 @@ local function setup(option)
     -- init client
     require("lsp-progress.client").setup(Configs.client_format, Configs.spinner)
 
-    if not LspClients then
-        LspClients = ClientManager:new()
-    end
-
     if not Registered then
         if vim.lsp.handlers["$/progress"] then
             local old_handler = vim.lsp.handlers["$/progress"]
@@ -286,6 +280,7 @@ local function setup(option)
         else
             vim.lsp.handlers["$/progress"] = progress_handler
         end
+        LspClients = require("lsp-progress.client_manager").ClientManager:new()
         Registered = true
     end
 end
