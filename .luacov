@@ -2,4 +2,3 @@ modules = {
     ["lsp-progress"] = "lua/lsp-progress.lua",
     ["lsp-progress.*"] = "lua",
 }
-
