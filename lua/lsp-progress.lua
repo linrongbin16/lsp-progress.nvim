@@ -11,44 +11,50 @@ local Registered = false
 --- @type Configs
 local Configs = {}
 
+-- client manager {
+
 --- @type table<integer, Client>
 local LspClients = {}
 
--- client utils
-
+--- @package
 --- @param client_id integer
 --- @return boolean
-local function has_client(client_id)
+local function _has_client(client_id)
     return LspClients[client_id] ~= nil
 end
 
+--- @package
 --- @param client_id integer
 --- @return Client
-local function get_client(client_id)
+local function _get_client(client_id)
     return LspClients[client_id]
 end
 
+--- @package
 --- @param client_id integer
 --- @return nil
-local function remove_client(client_id)
+local function _remove_client(client_id)
     LspClients[client_id] = nil
     if not next(LspClients) then
         LspClients = {}
     end
 end
 
+--- @package
 --- @param client_id integer
 --- @param client_name string
 --- @return nil
-local function register_client(client_id, client_name)
-    if not has_client(client_id) then
+local function _register_client(client_id, client_name)
+    if not _has_client(client_id) then
         LspClients[client_id] = Client:new(client_id, client_name)
         logger.debug(
             "|lsp-progress.register_client| Register client %s",
-            vim.inspect(get_client(client_id))
+            vim.inspect(_get_client(client_id))
         )
     end
 end
+
+-- client manager }
 
 --- @param client_id integer
 --- @param token string
@@ -60,7 +66,7 @@ local function spin(client_id, token)
     end
 
     -- check client exist
-    if not has_client(client_id) then
+    if not _has_client(client_id) then
         logger.debug(
             "|lsp-progress.spin| Client id %d not found, stop spin",
             client_id
@@ -69,7 +75,7 @@ local function spin(client_id, token)
     end
 
     -- check token exist
-    local cli = get_client(client_id)
+    local cli = _get_client(client_id)
     if not cli:has_series(token) then
         logger.debug(
             "|lsp-progress.spin| Token %s not found in client %s, stop spin",
@@ -87,7 +93,7 @@ local function spin(client_id, token)
     if ss.done then
         vim.defer_fn(function()
             -- check client id again
-            if not has_client(client_id) then
+            if not _has_client(client_id) then
                 logger.debug(
                     "|lsp-progress.spin| Client id %d not found, stop remove series",
                     client_id
@@ -95,7 +101,7 @@ local function spin(client_id, token)
                 event.emit()
                 return
             end
-            local cli2 = get_client(client_id)
+            local cli2 = _get_client(client_id)
             -- check token again
             if not cli2:has_series(token) then
                 logger.debug(
@@ -114,7 +120,7 @@ local function spin(client_id, token)
             )
             if cli2:empty() then
                 -- if client2 is empty, also remove it from Clients
-                remove_client(client_id)
+                _remove_client(client_id)
                 logger.debug(
                     "|lsp-progress.spin| Client %s has been removed from since it's empty",
                     vim.inspect(cli2)
@@ -132,7 +138,7 @@ local function spin(client_id, token)
     if vim.lsp.client_is_stopped(client_id) then
         vim.defer_fn(function()
             -- check client id again
-            if not has_client(client_id) then
+            if not _has_client(client_id) then
                 logger.debug(
                     "|lsp-progress.spin| Client id %d not found, stop remove series",
                     client_id
@@ -141,7 +147,7 @@ local function spin(client_id, token)
                 return
             end
             -- if this client is stopped, remove it from Clients
-            remove_client(client_id)
+            _remove_client(client_id)
             logger.debug(
                 "|lsp-progress.spin| Client id %d has been removed from since it's stopped",
                 client_id
@@ -168,12 +174,12 @@ local function progress_handler(err, msg, ctx)
     local client_name = nvim_lsp_client and nvim_lsp_client.name or "unknown"
 
     -- register client id if not exist
-    register_client(client_id, client_name)
+    _register_client(client_id, client_name)
 
     local value = msg.value
     local token = msg.token
 
-    local cli = get_client(client_id)
+    local cli = _get_client(client_id)
     if value.kind == "begin" then
         -- add task
         local ss = Series:new(value.title, value.message, value.percentage)
@@ -325,6 +331,10 @@ end
 local M = {
     setup = setup,
     progress = progress,
+    _has_client = _has_client,
+    _get_client = _get_client,
+    _remove_client = _remove_client,
+    _register_client = _register_client,
 }
 
 return M
