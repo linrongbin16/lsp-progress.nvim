@@ -238,8 +238,8 @@ local function progress_handler(err, msg, ctx)
     event.emit()
 end
 
---- @param option table<string, any>
---- @return string|nil
+--- @param option Configs?
+--- @return string?
 local function progress(option)
     option = vim.tbl_deep_extend("force", vim.deepcopy(Configs), option or {})
 
