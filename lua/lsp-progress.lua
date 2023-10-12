@@ -6,10 +6,11 @@ local Client = require("lsp-progress.client").Client
 
 -- global variable
 
---- @type table<string, any>
-local Config = {}
---- @type boolean
 local Registered = false
+
+--- @type Configs
+local Configs = {}
+
 --- @type table<integer, Client>
 local LspClients = {}
 
@@ -44,7 +45,7 @@ local function register_client(client_id, client_name)
         LspClients[client_id] = Client:new(client_id, client_name)
         logger.debug(
             "|lsp-progress.register_client| Register client %s",
-            get_client(client_id):tostring()
+            vim.inspect(get_client(client_id))
         )
     end
 end
@@ -68,20 +69,20 @@ local function spin(client_id, token)
     end
 
     -- check token exist
-    local client = get_client(client_id)
-    if not client:has_series(token) then
+    local cli = get_client(client_id)
+    if not cli:has_series(token) then
         logger.debug(
             "|lsp-progress.spin| Token %s not found in client %s, stop spin",
             token,
-            client:tostring()
+            vim.inspect(cli)
         )
         return
     end
 
-    client:increase_spin_index()
-    vim.defer_fn(spin_again, Config.spin_update_time)
+    cli:increase_spin_index()
+    vim.defer_fn(spin_again, Configs.spin_update_time)
 
-    local ss = client:get_series(token)
+    local ss = cli:get_series(token)
     -- if series done, remove this series from client later
     if ss.done then
         vim.defer_fn(function()
@@ -94,37 +95,37 @@ local function spin(client_id, token)
                 event.emit()
                 return
             end
-            local client2 = get_client(client_id)
+            local cli2 = get_client(client_id)
             -- check token again
-            if not client2:has_series(token) then
+            if not cli2:has_series(token) then
                 logger.debug(
                     "|lsp-progress.spin| Token %s not found in client %s, stop remove series",
                     token,
-                    client2:tostring()
+                    vim.inspect(cli2)
                 )
                 event.emit()
                 return
             end
-            client2:remove_series(token)
+            cli2:remove_series(token)
             logger.debug(
                 "|lsp-progress.spin| Token %s has been removed from client %s since it's done",
                 token,
-                client2:tostring()
+                vim.inspect(cli2)
             )
-            if client2:empty() then
+            if cli2:empty() then
                 -- if client2 is empty, also remove it from Clients
                 remove_client(client_id)
                 logger.debug(
                     "|lsp-progress.spin| Client %s has been removed from since it's empty",
-                    client2:tostring()
+                    vim.inspect(cli2)
                 )
             end
             event.emit()
-        end, Config.decay)
+        end, Configs.decay)
         logger.debug(
             "|lsp-progress.spin| Token %s is done in client %s, remove series later...",
             token,
-            client:tostring()
+            vim.inspect(cli)
         )
     end
     -- if client is stopped, remove this client later
@@ -146,7 +147,7 @@ local function spin(client_id, token)
                 client_id
             )
             event.emit()
-        end, Config.decay)
+        end, Configs.decay)
         logger.debug(
             "|lsp-progress.spin| Client id %d is stopped, remove it later...",
             client_id
@@ -172,33 +173,33 @@ local function progress_handler(err, msg, ctx)
     local value = msg.value
     local token = msg.token
 
-    local client = get_client(client_id)
+    local cli = get_client(client_id)
     if value.kind == "begin" then
         -- add task
         local ss = Series:new(value.title, value.message, value.percentage)
-        client:add_series(token, ss)
+        cli:add_series(token, ss)
         -- start spin, it will also notify user at a fixed rate
         spin(client_id, token)
         logger.debug(
             "|progress_handler| add new series to client(%s): %s",
-            vim.inspect(client),
+            vim.inspect(cli),
             vim.inspect(ss)
         )
     elseif value.kind == "report" then
-        local ss = client:get_series(token)
+        local ss = cli:get_series(token)
         if ss then
             ss:update(value.message, value.percentage)
-            client:add_series(token, ss)
+            cli:add_series(token, ss)
             logger.debug(
                 "|progress_handler| update series in client(%s): %s",
-                vim.inspect(client),
+                vim.inspect(cli),
                 vim.inspect(ss)
             )
         else
             logger.debug(
                 "|lsp-progress.progress_handler| Series (token: %s) not found in client %s when updating",
                 token,
-                client:tostring()
+                vim.inspect(cli)
             )
         end
     else
@@ -206,23 +207,23 @@ local function progress_handler(err, msg, ctx)
             logger.warn(
                 "|lsp-progress.progress_handler| Unknown message kind `%s` from client %s",
                 value.kind,
-                client:tostring()
+                vim.inspect(cli)
             )
         end
-        if client:has_series(token) then
-            local ss = client:get_series(token)
+        if cli:has_series(token) then
+            local ss = cli:get_series(token)
             ss:finish(value.message)
-            client:format()
+            cli:format()
             logger.debug(
                 "|progress_handler| series is done in client(%s): %s",
-                vim.inspect(client),
+                vim.inspect(cli),
                 vim.inspect(ss)
             )
         else
             logger.debug(
                 "|lsp-progress.progress_handler| Series (token: %s) not found in client %s when ending",
                 token,
-                client:tostring()
+                vim.inspect(cli)
             )
         end
     end
@@ -234,7 +235,7 @@ end
 --- @param option table<string, any>
 --- @return string|nil
 local function progress(option)
-    option = vim.tbl_deep_extend("force", vim.deepcopy(Config), option or {})
+    option = vim.tbl_deep_extend("force", vim.deepcopy(Configs), option or {})
 
     local active_clients_count = #vim.lsp.get_active_clients()
     if active_clients_count <= 0 then
@@ -242,13 +243,13 @@ local function progress(option)
     end
 
     local client_messages = {}
-    for _, client_obj in pairs(LspClients) do
-        local msg = client_obj:format_result()
+    for _, cli in pairs(LspClients) do
+        local msg = cli:format_result()
         if msg and msg ~= "" then
             table.insert(client_messages, msg)
             logger.debug(
                 "|lsp-progress.progress| Get client %s format result: %s",
-                client_obj:tostring(),
+                vim.inspect(cli),
                 vim.inspect(client_messages)
             )
         end
@@ -282,29 +283,29 @@ end
 --- @return nil
 local function setup(option)
     -- setup config
-    Config = defaults.setup(option)
+    Configs = defaults.setup(option)
 
     -- setup logger
     logger.setup(
-        Config.debug and "DEBUG" or "INFO",
-        Config.console_log,
-        Config.file_log,
-        Config.file_log_name
+        Configs.debug and "DEBUG" or "INFO",
+        Configs.console_log,
+        Configs.file_log,
+        Configs.file_log_name
     )
 
     -- setup event
     event.setup(
-        Config.event,
-        Config.event_update_time_limit,
-        Config.regular_internal_update_time,
-        Config.disable_events_opts
+        Configs.event,
+        Configs.event_update_time_limit,
+        Configs.regular_internal_update_time,
+        Configs.disable_events_opts
     )
 
     -- setup series
-    require("lsp-progress.series").setup(Config.series_format)
+    require("lsp-progress.series").setup(Configs.series_format)
 
     -- init client
-    require("lsp-progress.client").setup(Config.client_format, Config.spinner)
+    require("lsp-progress.client").setup(Configs.client_format, Configs.spinner)
 
     if not Registered then
         if vim.lsp.handlers["$/progress"] then

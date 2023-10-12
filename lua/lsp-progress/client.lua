@@ -141,11 +141,6 @@ function Client:get_spin_index()
     return Spinner[self.spin_index + 1]
 end
 
---- @return string
-function Client:tostring()
-    return string.format("[%s-%d]", self.client_name, self.client_id)
-end
-
 --- @return ClientFormatResult
 function Client:format()
     --- @type SeriesFormatResult[]
