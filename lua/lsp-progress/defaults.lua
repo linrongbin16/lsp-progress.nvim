@@ -14,8 +14,7 @@ local Defaults = {
     -- Last message cached decay time in milliseconds.
     --
     -- Message could be really fast(appear and disappear in an
-    -- instant) that user cannot even see it, thus we cache the last message
-    -- for a while for user view.
+    -- instant) that user cannot even see it, thus we cache the last message for a while for user view.
     --
     --- @type integer
     decay = 700,
@@ -53,7 +52,7 @@ local Defaults = {
     --  * https://github.com/linrongbin16/lsp-progress.nvim/issues/50
     --  * https://neovim.io/doc/user/builtin.html#mode()
     --
-    --- @type table[]
+    --- @type DisableEventOpt[]
     disable_events_opts = {
         {
             mode = "i",
@@ -65,26 +64,26 @@ local Defaults = {
     --
     -- By default it looks like: `formatting isort (100%) - done`.
     --
-    --- @param title string|nil
+    --- @param title string?
     ---     Message title.
-    --- @param message string|nil
+    --- @param message string?
     ---     Message body.
-    --- @param percentage number|nil
+    --- @param percentage integer?
     ---     Progress in percentage numbers: 0-100.
     --- @param done boolean
     ---     Indicate whether this series is the last one in progress.
-    --- @return SeriesFormatResult messages
+    --- @return SeriesFormatResult
     ---     The returned value will be passed to function `client_format` as
     ---     one of the `series_messages` array, or ignored if return nil.
     series_format = function(title, message, percentage, done)
         local builder = {}
         local has_title = false
         local has_message = false
-        if title and title ~= "" then
+        if title and string.len(title) then
             table.insert(builder, title)
             has_title = true
         end
-        if message and message ~= "" then
+        if message and string.len(message) then
             table.insert(builder, message)
             has_message = true
         end
@@ -108,15 +107,17 @@ local Defaults = {
     ---     Spinner icon.
     --- @param series_messages string[]|table[]
     ---     Messages array.
-    --- @return ClientFormatResult messages
+    --- @return ClientFormatResult
     ---     The returned value will be passed to function `format` as one of the
     ---     `client_messages` array, or ignored if return nil.
     client_format = function(client_name, spinner, series_messages)
         return #series_messages > 0
-                and ("[" .. client_name .. "] " .. spinner .. " " .. table.concat(
-                    series_messages,
-                    ", "
-                ))
+                and string.format(
+                    "[%s] %s %s",
+                    client_name,
+                    spinner,
+                    table.concat(series_messages, ", ")
+                )
             or nil
     end,
 
@@ -128,7 +129,7 @@ local Defaults = {
     --- @param client_messages string[]|table[]
     ---     Client messages array.
     --- @return string
-    ---     The returned value will be returned from `progress` API.
+    ---     The returned value will be returned as the result of `progress` API.
     format = function(client_messages)
         local sign = " LSP" -- nf-fa-gear \uf013
         if #client_messages > 0 then
@@ -164,17 +165,23 @@ local Defaults = {
     file_log_name = "lsp-progress.log",
 }
 
---- @param option table<string, any>
---- @return nil
+--- @param option Configs
+--- @return Configs
 local function setup(option)
     local config =
         vim.tbl_deep_extend("force", vim.deepcopy(Defaults), option or {})
     return config
 end
 
---- @type table<string, any>
+--- @package
+--- @return Configs
+local function _get_defaults()
+    return Defaults
+end
+
 local M = {
     setup = setup,
+    _get_defaults = _get_defaults,
 }
 
 return M

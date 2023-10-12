@@ -327,7 +327,6 @@ local function setup(option)
     end
 end
 
---- @type table<string, function>
 local M = {
     setup = setup,
     progress = progress,
