@@ -100,6 +100,8 @@ call plug#begin()
 
 Plug 'nvim-tree/nvim-web-devicons'
 Plug 'linrongbin16/lsp-progress.nvim'
+
+" integrate with lualine
 Plug 'nvim-lualine/lualine.nvim'
 
 call plug#end()
