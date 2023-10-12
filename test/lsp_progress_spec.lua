@@ -5,15 +5,14 @@ describe("lsp-progress", function()
     local assert_true = assert.is_true
     local assert_false = assert.is_false
 
+    local lsp_progress = require("lsp-progress")
+
     before_each(function()
         vim.api.nvim_command("cd " .. cwd)
+        lsp_progress.setup()
     end)
 
-    local lsp_progress = require("lsp-progress")
     describe("[LspClients]", function()
-        it("setup", function()
-            lsp_progress.setup()
-        end)
         it("progress", function()
             assert_eq(type(lsp_progress.progress()), "string")
         end)
