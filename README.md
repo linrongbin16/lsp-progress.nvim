@@ -46,56 +46,61 @@ For more details, please see [Design & Technics](https://github.com/linrongbin16
 
 ```lua
 -- lua
--- integrate with lualine
-use {
-  'nvim-lualine/lualine.nvim',
-  requires = {
-    'nvim-tree/nvim-web-devicons'
+return require('packer').startup(function(use)
+
+  use {'nvim-tree/nvim-web-devicons'},
+  use {
     'linrongbin16/lsp-progress.nvim',
-  },
-  config = ...,
-}
-use {
-  'linrongbin16/lsp-progress.nvim',
-  requires = {'nvim-tree/nvim-web-devicons'},
-  config = function()
-    require('lsp-progress').setup()
-  end
-}
+    config = function()
+      require('lsp-progress').setup()
+    end
+  }
+
+  -- integrate with lualine
+  use {
+    'nvim-lualine/lualine.nvim',
+    config = ...,
+  }
+
+end)
 ```
 
 ### [lazy.nvim](https://github.com/folke/lazy.nvim)
 
 ```lua
 -- lua
-{
-  -- integrate with lualine
-  'nvim-lualine/lualine.nvim',
-  dependencies = {
-    'nvim-tree/nvim-web-devicons',
+require("lazy").setup({
+
+  {
     'linrongbin16/lsp-progress.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = function()
+      require('lsp-progress').setup()
+    end
+  }
+
+  -- integrate with lualine
+  {
+    'nvim-lualine/lualine.nvim',
+    dependencies = {
+      'nvim-tree/nvim-web-devicons',
+      'linrongbin16/lsp-progress.nvim',
+    },
+    config = ...
   },
-  config = ...
-},
-{
-  'linrongbin16/lsp-progress.nvim',
-  dependencies = { 'nvim-tree/nvim-web-devicons' },
-  config = function()
-    require('lsp-progress').setup()
-  end
-}
+
+})
 ```
 
 ### [vim-plug](https://github.com/junegunn/vim-plug)
 
 ```vim
 " vim
-
 call plug#begin()
 
 Plug 'nvim-tree/nvim-web-devicons'
-Plug 'nvim-lualine/lualine.nvim'
 Plug 'linrongbin16/lsp-progress.nvim'
+Plug 'nvim-lualine/lualine.nvim'
 
 call plug#end()
 
@@ -123,23 +128,23 @@ lua require('lsp-progress').setup()
 
 ```lua
 require("lualine").setup({
-    sections = {
-        lualine_a = { "mode" },
-        lualine_b = { "filename" },
-        lualine_c = {
-            -- invoke `progress` here.
-            require('lsp-progress').progress,
-        },
-        ...
-    }
+  sections = {
+    lualine_a = { "mode" },
+    lualine_b = { "filename" },
+    lualine_c = {
+      -- invoke `progress` here.
+      require('lsp-progress').progress,
+    },
+    ...
+  }
 })
 
 -- listen lsp-progress event and refresh lualine
 vim.api.nvim_create_augroup("lualine_augroup", { clear = true })
 vim.api.nvim_create_autocmd("User", {
-    group = "lualine_augroup",
-    pattern = "LspProgressStatusUpdated",
-    callback = require("lualine").refresh,
+  group = "lualine_augroup",
+  pattern = "LspProgressStatusUpdated",
+  callback = require("lualine").refresh,
 })
 ```
 
