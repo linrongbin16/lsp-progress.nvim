@@ -10,7 +10,9 @@
 
 A performant lsp progress status for Neovim.
 
-<https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/a96d8ad8-3366-4895-8300-6903479b9b60>
+<!-- <https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/a96d8ad8-3366-4895-8300-6903479b9b60> -->
+
+https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/97c8629e-775d-4c2d-86b7-9ab3b3804c47
 
 ## Table of contents
 
