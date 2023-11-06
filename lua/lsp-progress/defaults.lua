@@ -84,7 +84,8 @@ local Defaults = {
             has_title = true
         end
         if message and string.len(message) then
-            table.insert(builder, message)
+            local escaped = vim.pesc(message)
+            table.insert(builder, escaped)
             has_message = true
         end
         if percentage and (has_title or has_message) then
