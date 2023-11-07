@@ -84,8 +84,7 @@ local Defaults = {
             has_title = true
         end
         if type(message) == "string" and string.len(message) > 0 then
-            local escaped = message:gsub("%%", "%%%%")
-            table.insert(builder, escaped)
+            table.insert(builder, message)
             has_message = true
         end
         if percentage and (has_title or has_message) then
@@ -113,12 +112,10 @@ local Defaults = {
     ---     `client_messages` array, or ignored if return nil.
     client_format = function(client_name, spinner, series_messages)
         return #series_messages > 0
-                and string.format(
-                    "[%s] %s %s",
-                    client_name,
-                    spinner,
-                    table.concat(series_messages, ", ")
-                )
+                and ("[" .. client_name .. "] " .. spinner .. " " .. table.concat(
+                    series_messages,
+                    ", "
+                ))
             or nil
     end,
 
