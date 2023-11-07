@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.2...v1.0.3) (2023-11-07)
+
+
+### Bug Fixes
+
+* **format:** don't use 'string.format' when formatting ([#103](https://github.com/linrongbin16/lsp-progress.nvim/issues/103)) ([d671304](https://github.com/linrongbin16/lsp-progress.nvim/commit/d671304da3f066001c717c12c4c49fa84444a5e1))
+
 ## [1.0.2](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.1...v1.0.2) (2023-11-07)
 
 
