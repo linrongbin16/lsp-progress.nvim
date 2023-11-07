@@ -26,13 +26,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Stylua
-        uses: JohnnyMorganz/stylua-action@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          version: latest
-          args: --config-path .stylua.toml --color always --check lua
-      - name: LuaLs annotation typecheck
+      - name: LuaLs typecheck
         uses: stevearc/nvim-typecheck-action@v1
         with:
           path: lua
@@ -43,6 +37,17 @@ jobs:
         uses: lunarmodules/luacheck@v1
         with:
           args: lua --config .luacheckrc
+      - name: Stylua
+        uses: JohnnyMorganz/stylua-action@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: latest
+          args: --config-path .stylua.toml --color always ./
+      - name: Auto Commit
+        if: ${{ github.ref != 'refs/heads/main' }}
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "chore(pr): auto-commit"
   unit_test:
     name: Unit test
     strategy:

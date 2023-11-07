@@ -79,12 +79,12 @@ local Defaults = {
         local builder = {}
         local has_title = false
         local has_message = false
-        if title and string.len(title) then
+        if type(title) == "string" and string.len(title) > 0 then
             table.insert(builder, title)
             has_title = true
         end
-        if message and string.len(message) then
-            local escaped = vim.pesc(message)
+        if type(message) == "string" and string.len(message) > 0 then
+            local escaped = message:gsub("%%", "%%%%")
             table.insert(builder, escaped)
             has_message = true
         end
