@@ -201,7 +201,7 @@ local function progress_handler(err, msg, ctx)
             --     vim.inspect(cli),
             --     vim.inspect(ss)
             -- )
-        else
+            -- else
             -- logger.debug(
             --     "|lsp-progress.progress_handler| Series (token: %s) not found in client %s when updating",
             --     token,
@@ -210,11 +210,11 @@ local function progress_handler(err, msg, ctx)
         end
     else
         if value.kind ~= "end" then
-            -- logger.warn(
-            --     "|lsp-progress.progress_handler| Unknown message kind `%s` from client %s",
-            --     value.kind,
-            --     vim.inspect(cli)
-            -- )
+            logger.warn(
+                "|lsp-progress.progress_handler| Unknown message kind `%s` from client %s",
+                value.kind,
+                vim.inspect(cli)
+            )
         end
         if cli:has_series(token) then
             local ss = cli:get_series(token)
@@ -225,7 +225,7 @@ local function progress_handler(err, msg, ctx)
             --     vim.inspect(cli),
             --     vim.inspect(ss)
             -- )
-        else
+            -- else
             -- logger.debug(
             --     "|lsp-progress.progress_handler| Series (token: %s) not found in client %s when ending",
             --     token,
