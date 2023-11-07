@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.0...v1.0.1) (2023-11-07)
+
+
+### Bug Fixes
+
+* escapes percentages in LSP progress messages ([#95](https://github.com/linrongbin16/lsp-progress.nvim/issues/95)) ([b9d5002](https://github.com/linrongbin16/lsp-progress.nvim/commit/b9d5002314ecf0bb592d60b649ab185996b85edc))
+
 ## 1.0.0 (2023-10-09)
 
 
