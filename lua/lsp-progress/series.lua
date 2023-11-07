@@ -30,7 +30,7 @@ function Series:new(title, message, percentage)
     self.__index = self
 
     o:_format()
-    logger.debug("|series - Series:new| new: %s", vim.inspect(o))
+    -- logger.debug("|series - Series:new| new: %s", vim.inspect(o))
 
     return o
 end
@@ -56,7 +56,7 @@ function Series:_format()
     )
 
     self._format_cache = result_or_err
-    logger.debug("|series - Series:_format| format: %s", vim.inspect(self))
+    -- logger.debug("|series - Series:_format| format: %s", vim.inspect(self))
 
     return self._format_cache
 end
@@ -80,7 +80,7 @@ function Series:update(message, percentage)
     self.message = _choose_updated_message(self.message, message)
     self.percentage = percentage
     self:_format()
-    logger.debug("|series - Series:update| update: %s", vim.inspect(self))
+    -- logger.debug("|series - Series:update| update: %s", vim.inspect(self))
 end
 
 --- @param message string
@@ -89,7 +89,7 @@ function Series:finish(message)
     self.percentage = 100
     self.done = true
     self:_format()
-    logger.debug("|series - Series:finish| finish: %s", vim.inspect(self))
+    -- logger.debug("|series - Series:finish| finish: %s", vim.inspect(self))
 end
 
 --- @return SeriesFormatResult
