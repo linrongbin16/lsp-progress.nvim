@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.1...v1.0.2) (2023-11-07)
+
+
+### Performance Improvements
+
+* **log:** reduce too big logs ([#99](https://github.com/linrongbin16/lsp-progress.nvim/issues/99)) ([cddf1fd](https://github.com/linrongbin16/lsp-progress.nvim/commit/cddf1fd64edaac03e1f64edf76575fdd3dd4041e))
+
 ## [1.0.1](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.0...v1.0.1) (2023-11-07)
 
 
