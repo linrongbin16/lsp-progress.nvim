@@ -112,7 +112,7 @@ local function emit()
             vim.cmd("doautocmd <nomodeline> User " .. Configs.name)
             Configs.emit = true
             -- logger.debug("Emit user event:%s", Configs.name)
-        else
+            -- else
             -- logger.debug("Disabled emit user event:%s", Configs.name)
         end
         vim.defer_fn(reset, Configs.update_time_limit --[[@as integer]])
