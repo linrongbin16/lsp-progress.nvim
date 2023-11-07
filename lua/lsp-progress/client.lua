@@ -33,7 +33,7 @@ function Client:new(client_id, client_name)
     self.__index = self
 
     o:format()
-    logger.debug("|client - Client:new| new: %s", vim.inspect(o))
+    -- logger.debug("|client - Client:new| new: %s", vim.inspect(o))
 
     return o
 end
@@ -126,12 +126,12 @@ function Client:increase_spin_index()
     assert(type(Spinner) == "table", "Spinner must be a lua table")
     assert(#Spinner > 0, "Spinner length must greater than 0")
     self.spin_index = (self.spin_index + 1) % #Spinner
-    logger.debug(
-        "|client.increase_spin_index| client(%s) spin index: %d => %d",
-        vim.inspect(self),
-        old,
-        self.spin_index
-    )
+    -- logger.debug(
+    --     "|client.increase_spin_index| client(%s) spin index: %d => %d",
+    --     vim.inspect(self),
+    --     old,
+    --     self.spin_index
+    -- )
     self:format()
 end
 
@@ -154,13 +154,13 @@ function Client:format()
             if self:has_series(token) then
                 local ss = self:get_series(token)
                 local result = ss:format_result()
-                logger.debug(
-                    "|client - Client:format| get series %s (deduped key: %s) format result in client %s, series_messages: %s",
-                    vim.inspect(ss),
-                    dedup_key,
-                    vim.inspect(self),
-                    vim.inspect(series_messages)
-                )
+                -- logger.debug(
+                --     "|client - Client:format| get series %s (deduped key: %s) format result in client %s, series_messages: %s",
+                --     vim.inspect(ss),
+                --     dedup_key,
+                --     vim.inspect(self),
+                --     vim.inspect(series_messages)
+                -- )
                 table.insert(series_messages, result)
             end
             visited_tokens[token] = true
@@ -184,7 +184,7 @@ function Client:format()
     )
 
     self._format_cache = result_or_err
-    logger.debug("|client - Client:format| format: %s", vim.inspect(self))
+    -- logger.debug("|client - Client:format| format: %s", vim.inspect(self))
     return self._format_cache
 end
 
