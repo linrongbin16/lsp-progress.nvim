@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.3...v1.0.4) (2023-11-07)
+
+
+### Bug Fixes
+
+* **format:** double percentage '%' for nvim components ([#105](https://github.com/linrongbin16/lsp-progress.nvim/issues/105)) ([b304f51](https://github.com/linrongbin16/lsp-progress.nvim/commit/b304f51640c9b4486d8e402482e4c55658ab14d6))
+
 ## [1.0.3](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.2...v1.0.3) (2023-11-07)
 
 
