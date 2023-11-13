@@ -168,7 +168,7 @@ For complete options and defaults, please check [defaults.lua](https://github.co
 
 - Always show LSP client names instead of `LSP` word:
 
-  https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/4bf9cf48-675c-495d-b2eb-b46e81abb4b8
+  https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/d9859101-5916-4950-945c-2fc7f2331b3c
 
   <details>
   <summary><b>Click here to see how to configure</b></summary>
