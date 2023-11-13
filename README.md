@@ -172,6 +172,7 @@ For complete options and defaults, please check [defaults.lua](https://github.co
 
   <details>
   <summary><b>Click here to see how to configure</b></summary>
+
   ```lua
   require("lsp-progress").setup({
     client_format = function(client_name, spinner, series_messages)
@@ -221,6 +222,7 @@ For complete options and defaults, please check [defaults.lua](https://github.co
     end,
   })
   ```
+
   </details>
 
 For more advanced configurations, please see [Advanced Configuration](https://github.com/linrongbin16/lsp-progress.nvim/wiki/Advanced-Configuration).
