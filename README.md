@@ -11,16 +11,13 @@ A performant lsp progress status for Neovim.
 
 <!-- <https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/a96d8ad8-3366-4895-8300-6903479b9b60> -->
 
-- Default
+![default](https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/e089234b-d465-45ae-840f-72a57b846b0d)
 
-  https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/33c3366f-1f20-477c-9fac-6802e80eba02
-
-  ![default](https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/e089234b-d465-45ae-840f-72a57b846b0d)
-
-
-- Lsp Client Names
+Lsp Client Names
 
   https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/04dc744a-90ff-48af-b6b5-2f42cc814c3e
+
+  ![client-names](https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/01dac7a0-678a-421d-a243-9dba2576b15b)
 
   <details>
   <summary><i>Click here to see how to configure</i></summary>
