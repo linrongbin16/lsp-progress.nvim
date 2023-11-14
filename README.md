@@ -71,6 +71,9 @@ end,
 
 </details>
 
+![green-check](https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/2666b105-4939-4985-8b5e-74bc43e5615c)
+
+
 ## Table of contents
 
 - [Performance](#performance)
