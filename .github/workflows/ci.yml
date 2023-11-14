@@ -16,10 +16,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: webiny/action-conventional-commits@v1.1.0
-      # - uses: ytanikin/PRConventionalCommits@1.1.0
-      #   with:
-      #     task_types: '["feat","fix","docs","test","ci","refactor","perf","chore","revert"]'
+      # - uses: webiny/action-conventional-commits@v1.1.0
+      - uses: ytanikin/PRConventionalCommits@1.1.0
+        with:
+          task_types: '["feat","fix","docs","test","ci","refactor","perf","chore","revert","break"]'
   luacheck:
     name: Lua check
     runs-on: ubuntu-latest
@@ -42,7 +42,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: latest
-          args: --config-path .stylua.toml --color always ./
+          args: --config-path .stylua.toml lua/ test/
       - name: Auto Commit
         if: ${{ github.ref != 'refs/heads/main' }}
         uses: stefanzweifel/git-auto-commit-action@v4
