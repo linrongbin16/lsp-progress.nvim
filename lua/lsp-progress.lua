@@ -160,9 +160,9 @@ local function spin(client_id, token)
     event.emit()
 end
 
---- @param progress table<any, any>
 --- @param client_id integer
-local function update_progress(progress, client_id)
+--- @param progress table<any, any>
+local function update_progress(client_id, progress)
     local nvim_lsp_client = vim.lsp.get_client_by_id(client_id)
     local client_name = nvim_lsp_client and nvim_lsp_client.name or "unknown"
 
@@ -254,7 +254,7 @@ end
 --- @param msg table<string, any>
 --- @param ctx table<string, any>
 local function method_handler(err, msg, ctx)
-    update_progress(msg, ctx.client_id)
+    update_progress(ctx.client_id, msg)
 end
 
 local function event_handler()
@@ -272,7 +272,7 @@ local function event_handler()
                     and progress.token ~= nil
                     and type(progress.value) == "table"
                 then
-                    update_progress(progress, client.id)
+                    update_progress(client.id, progress)
                 end
             end
         end
