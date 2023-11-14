@@ -253,11 +253,11 @@ end
 --- @param err any
 --- @param msg table<string, any>
 --- @param ctx table<string, any>
-local function progress_handler(err, msg, ctx)
+local function method_handler(err, msg, ctx)
     update_progress(msg, ctx.client_id)
 end
 
-local function lsp_progress_event_handler()
+local function event_handler()
     local lsp_clients = vim.lsp.get_active_clients()
     for _, client in ipairs(lsp_clients) do
         if
@@ -357,19 +357,17 @@ local function setup(option)
         -- see:
         -- https://github.com/neovim/neovim/blob/582d7f47905d82f315dc852a9d2937cd5b655e55/runtime/doc/news.txt#L44
         -- https://github.com/neovim/neovim/blob/582d7f47905d82f315dc852a9d2937cd5b655e55/runtime/lua/vim/lsp/util.lua#L348
-        vim.api.nvim_create_autocmd("LspProgress", {
-            callback = lsp_progress_event_handler,
-        })
+        vim.api.nvim_create_autocmd("LspProgress", { callback = event_handler })
     else
         if not Registered then
             if vim.lsp.handlers["$/progress"] then
                 local old_handler = vim.lsp.handlers["$/progress"]
                 vim.lsp.handlers["$/progress"] = function(...)
                     old_handler(...)
-                    progress_handler(...)
+                    method_handler(...)
                 end
             else
-                vim.lsp.handlers["$/progress"] = progress_handler
+                vim.lsp.handlers["$/progress"] = method_handler
             end
             Registered = true
         end
