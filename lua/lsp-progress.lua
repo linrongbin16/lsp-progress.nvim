@@ -164,7 +164,7 @@ end
 --- @param progress table<any, any>
 local function update_progress(client, progress)
     local client_id = client.id
-    local client_name = client.name and client.name or "unknown"
+    local client_name = client.name
 
     -- register client id if not exist
     _register_client(client_id, client_name)
