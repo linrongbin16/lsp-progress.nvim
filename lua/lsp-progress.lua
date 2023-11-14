@@ -173,31 +173,12 @@ local function update_progress(client_id, progress)
     local value = progress.value
 
     local cli = _get_client(client_id)
-    if not cli:has_series(token) then
-        -- add new
+    if value.kind == "begin" then
+        -- add task
         local ss = Series:new(value.title, value.message, value.percentage)
         cli:add_series(token, ss)
+        -- start spin, it will also notify user at a fixed rate
         spin(client_id, token)
-    else
-        local ss = cli:get_series(token)
-        if ss then
-            ss:update(value.message, value.percentage)
-            cli:add_series(token, ss)
-            -- logger.debug(
-            --     "|progress_handler| update series in client(%s): %s",
-            --     vim.inspect(cli),
-            --     vim.inspect(ss)
-            -- )
-            -- else
-            -- logger.debug(
-            --     "|lsp-progress.progress_handler| Series (token: %s) not found in client %s when updating",
-            --     token,
-            --     vim.inspect(cli)
-            -- )
-        end
-    end
-
-    if value.kind == "begin" then
         -- logger.debug(
         --     "|progress_handler| add new series to client(%s): %s",
         --     vim.inspect(cli),
