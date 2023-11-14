@@ -1,5 +1,5 @@
 local logger = require("lsp-progress.logger")
-local defaults = require("lsp-progress.defaults"    )
+local defaults = require("lsp-progress.defaults")
 local event = require("lsp-progress.event")
 local Series = require("lsp-progress.series").Series
 local Client = require("lsp-progress.client").Client
