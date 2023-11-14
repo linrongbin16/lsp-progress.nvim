@@ -38,7 +38,7 @@ function Client:new(client_id, client_name)
     return o
 end
 
---- @param token string
+--- @param token integer|string
 --- @return boolean
 function Client:has_series(token)
     return self.serieses[token] ~= nil
@@ -102,13 +102,13 @@ function Client:remove_series(token)
     self:format()
 end
 
---- @param token string
+--- @param token integer|string
 --- @return Series
 function Client:get_series(token)
     return self.serieses[token]
 end
 
---- @param token string
+--- @param token integer|string
 --- @param series Series
 function Client:add_series(token, series)
     self:_set_dedup_token(series.title, series.message, token)
@@ -195,7 +195,6 @@ end
 
 --- @param client_format ClientFormat
 --- @param spinner string[]
---- @return nil
 local function setup(client_format, spinner)
     ClientFormat = client_format
     Spinner = spinner

@@ -129,7 +129,6 @@ end
 --- @param event_update_time_limit integer
 --- @param internal_regular_update_time integer
 --- @param disable_events_opts Configs[]?
---- @return nil
 local function setup(
     event_name,
     event_update_time_limit,

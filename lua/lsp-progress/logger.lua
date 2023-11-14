@@ -39,7 +39,6 @@ local Configs = {
 --- @param console_log boolean
 --- @param file_log boolean
 --- @param file_log_name string
---- @return nil
 local function setup(level, console_log, file_log, file_log_name)
     Configs.level = LogLevels[level]
     Configs.console_log = console_log

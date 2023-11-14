@@ -32,7 +32,6 @@ end
 
 --- @package
 --- @param client_id integer
---- @return nil
 local function _remove_client(client_id)
     LspClients[client_id] = nil
     if not next(LspClients) then
@@ -43,7 +42,6 @@ end
 --- @package
 --- @param client_id integer
 --- @param client_name string
---- @return nil
 local function _register_client(client_id, client_name)
     if not _has_client(client_id) then
         LspClients[client_id] = Client:new(client_id, client_name)
@@ -57,10 +55,8 @@ end
 -- client manager }
 
 --- @param client_id integer
---- @param token string
---- @return nil
+--- @param token integer|string
 local function spin(client_id, token)
-    --- @return nil
     local function spin_again()
         spin(client_id, token)
     end
@@ -164,28 +160,44 @@ local function spin(client_id, token)
     event.emit()
 end
 
---- @param err any
---- @param msg table<string, any>
---- @param ctx table<string, any>
---- @return nil
-local function progress_handler(err, msg, ctx)
-    local client_id = ctx.client_id
+--- @param progress table<any, any>
+--- @param client_id integer
+local function update_progress(progress, client_id)
     local nvim_lsp_client = vim.lsp.get_client_by_id(client_id)
     local client_name = nvim_lsp_client and nvim_lsp_client.name or "unknown"
 
     -- register client id if not exist
     _register_client(client_id, client_name)
 
-    local value = msg.value
-    local token = msg.token
+    local token = progress.token
+    local value = progress.value
 
     local cli = _get_client(client_id)
-    if value.kind == "begin" then
-        -- add task
+    if not cli:has_series(token) then
+        -- add new
         local ss = Series:new(value.title, value.message, value.percentage)
         cli:add_series(token, ss)
-        -- start spin, it will also notify user at a fixed rate
         spin(client_id, token)
+    else
+        local ss = cli:get_series(token)
+        if ss then
+            ss:update(value.message, value.percentage)
+            cli:add_series(token, ss)
+            -- logger.debug(
+            --     "|progress_handler| update series in client(%s): %s",
+            --     vim.inspect(cli),
+            --     vim.inspect(ss)
+            -- )
+            -- else
+            -- logger.debug(
+            --     "|lsp-progress.progress_handler| Series (token: %s) not found in client %s when updating",
+            --     token,
+            --     vim.inspect(cli)
+            -- )
+        end
+    end
+
+    if value.kind == "begin" then
         -- logger.debug(
         --     "|progress_handler| add new series to client(%s): %s",
         --     vim.inspect(cli),
@@ -238,6 +250,35 @@ local function progress_handler(err, msg, ctx)
     event.emit()
 end
 
+--- @param err any
+--- @param msg table<string, any>
+--- @param ctx table<string, any>
+local function progress_handler(err, msg, ctx)
+    update_progress(msg, ctx.client_id)
+end
+
+local function lsp_progress_event_handler()
+    local lsp_clients = vim.lsp.get_active_clients()
+    for _, client in ipairs(lsp_clients) do
+        if
+            type(client) == "table"
+            and type(client.name) == "string"
+            and type(client.progress) == "table"
+        then
+            for progress in client.progress do
+                -- logger.debug("|setup| v0.10 progress:%s", vim.inspect(progress))
+                if
+                    type(progress) == "table"
+                    and progress.token ~= nil
+                    and type(progress.value) == "table"
+                then
+                    update_progress(progress, client.id)
+                end
+            end
+        end
+    end
+end
+
 --- @param option Configs?
 --- @return string?
 local function progress(option)
@@ -286,7 +327,6 @@ local function progress(option)
 end
 
 --- @param option table<string, any>
---- @return nil
 local function setup(option)
     -- setup config
     Configs = defaults.setup(option)
@@ -313,17 +353,26 @@ local function setup(option)
     -- init client
     require("lsp-progress.client").setup(Configs.client_format, Configs.spinner)
 
-    if not Registered then
-        if vim.lsp.handlers["$/progress"] then
-            local old_handler = vim.lsp.handlers["$/progress"]
-            vim.lsp.handlers["$/progress"] = function(...)
-                old_handler(...)
-                progress_handler(...)
+    if vim.fn.has("nvim-0.10") > 0 and type(vim.lsp.status) == "function" then
+        -- see:
+        -- https://github.com/neovim/neovim/blob/582d7f47905d82f315dc852a9d2937cd5b655e55/runtime/doc/news.txt#L44
+        -- https://github.com/neovim/neovim/blob/582d7f47905d82f315dc852a9d2937cd5b655e55/runtime/lua/vim/lsp/util.lua#L348
+        vim.api.nvim_create_autocmd("LspProgress", {
+            callback = lsp_progress_event_handler,
+        })
+    else
+        if not Registered then
+            if vim.lsp.handlers["$/progress"] then
+                local old_handler = vim.lsp.handlers["$/progress"]
+                vim.lsp.handlers["$/progress"] = function(...)
+                    old_handler(...)
+                    progress_handler(...)
+                end
+            else
+                vim.lsp.handlers["$/progress"] = progress_handler
             end
-        else
-            vim.lsp.handlers["$/progress"] = progress_handler
+            Registered = true
         end
-        Registered = true
     end
 end
 
