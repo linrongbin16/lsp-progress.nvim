@@ -14,7 +14,7 @@ local Spinner = nil
 --- @field spin_index integer
 --- @field serieses table<string, Series> map: key => SeriesObject.
 --- @field private _format_cache ClientFormatResult
---- @field private _deduped_tokens table<string, string> map: title+message => token.
+--- @field private _deduped_tokens table<string, integer|string> map: title+message => token.
 local Client = {}
 
 --- @param client_id integer
@@ -63,7 +63,7 @@ end
 --- @package
 --- @param title string
 --- @param message string
---- @param token string
+--- @param token integer|string
 function Client:_set_dedup_token(title, message, token)
     self._deduped_tokens[_get_dedup_key(title, message)] = token
 end
@@ -78,12 +78,12 @@ end
 --- @package
 --- @param title string
 --- @param message string
---- @return string token
+--- @return integer|string token
 function Client:_get_dedup_token(title, message)
     return self._deduped_tokens[_get_dedup_key(title, message)]
 end
 
---- @param token string
+--- @param token integer|string
 function Client:remove_series(token)
     if self:has_series(token) then
         local series = self:get_series(token)
