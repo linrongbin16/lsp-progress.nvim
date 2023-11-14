@@ -11,8 +11,6 @@ A performant lsp progress status for Neovim.
 
 ![default](https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/e089234b-d465-45ae-840f-72a57b846b0d)
 
-Lsp Client Names
-
 ![client-names](https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/01dac7a0-678a-421d-a243-9dba2576b15b)
 
 <details>
