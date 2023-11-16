@@ -7,7 +7,7 @@
 <a href="https://app.codecov.io/github/linrongbin16/lsp-progress.nvim"><img alt="codecov" src="https://img.shields.io/codecov/c/github/linrongbin16/lsp-progress.nvim?logo=codecov&logoColor=F01F7A&label=Codecov" /></a>
 </p>
 
-A performant lsp progress status for Neovim.
+<p align="center"> A performant lsp progress status for Neovim. </p>
 
 ![default](https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/e089234b-d465-45ae-840f-72a57b846b0d)
 
