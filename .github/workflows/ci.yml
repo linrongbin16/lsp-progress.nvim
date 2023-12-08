@@ -115,3 +115,14 @@ jobs:
           message: "Current stable release: ${{ steps.release.outputs.tag_name }}"
           tag_exists_error: false
           force_push_tag: true
+      - name: LuaRocks Upload
+        uses: nvim-neorocks/luarocks-tag-release@v5
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
+        with:
+          version: ${{ steps.release.outputs.tag_name }}
+          summary: "A performant lsp progress status for Neovim."
+          labels: |
+            vim
+            neovim
