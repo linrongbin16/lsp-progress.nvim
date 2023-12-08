@@ -111,3 +111,6 @@ jobs:
           LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
         with:
           version: ${{ steps.release.outputs.tag_name }}
+          labels: |
+            vim
+            neovim

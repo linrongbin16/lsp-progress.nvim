@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.5](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.4...v1.0.5) (2023-12-08)
+
+
+### Performance Improvements
+
+* **ci:** upload luarocks ([#110](https://github.com/linrongbin16/lsp-progress.nvim/issues/110)) ([7f805eb](https://github.com/linrongbin16/lsp-progress.nvim/commit/7f805eb18a9a227f6a2c0eea81918be4ae57d72e))
+
 ## [1.0.4](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.3...v1.0.4) (2023-11-07)
 
 
