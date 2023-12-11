@@ -1,5 +1,5 @@
---- @alias Configs table<any, any>
---- @type Configs
+--- @alias lsp_progress.Configs table<any, any>
+--- @type lsp_progress.Configs
 local Defaults = {
     -- Spinning icons.
     --
@@ -52,7 +52,7 @@ local Defaults = {
     --  * https://github.com/linrongbin16/lsp-progress.nvim/issues/50
     --  * https://neovim.io/doc/user/builtin.html#mode()
     --
-    --- @type DisableEventOpt[]
+    --- @type lsp_progress.DisableEventOpt[]
     disable_events_opts = {
         {
             mode = "i",
@@ -72,7 +72,7 @@ local Defaults = {
     ---     Progress in percentage numbers: 0-100.
     --- @param done boolean
     ---     Indicate whether this series is the last one in progress.
-    --- @return SeriesFormatResult
+    --- @return lsp_progress.SeriesFormatResult
     ---     The returned value will be passed to function `client_format` as
     ---     one of the `series_messages` array, or ignored if return nil.
     series_format = function(title, message, percentage, done)
@@ -109,7 +109,7 @@ local Defaults = {
     ---     Spinner icon.
     --- @param series_messages string[]|table[]
     ---     Messages array.
-    --- @return ClientFormatResult
+    --- @return lsp_progress.ClientFormatResult
     ---     The returned value will be passed to function `format` as one of the
     ---     `client_messages` array, or ignored if return nil.
     client_format = function(client_name, spinner, series_messages)
@@ -166,8 +166,8 @@ local Defaults = {
     file_log_name = "lsp-progress.log",
 }
 
---- @param option Configs
---- @return Configs
+--- @param option lsp_progress.Configs
+--- @return lsp_progress.Configs
 local function setup(option)
     local config =
         vim.tbl_deep_extend("force", vim.deepcopy(Defaults), option or {})
@@ -175,7 +175,7 @@ local function setup(option)
 end
 
 --- @package
---- @return Configs
+--- @return lsp_progress.Configs
 local function _get_defaults()
     return Defaults
 end

@@ -1,25 +1,28 @@
 local logger = require("lsp-progress.logger")
 
---- @alias ClientFormatResult string|any|nil
---- @alias ClientFormat fun(client_name:string,spinner:string,series_messages:string[]|table[]):ClientFormatResult
---- @type ClientFormat?
+--- @alias lsp_progress.ClientFormatResult string|any|nil
+--- @alias lsp_progress.ClientFormat fun(client_name:string,spinner:string,series_messages:string[]|table[]):lsp_progress.ClientFormatResult
+--- @type lsp_progress.ClientFormat?
 local ClientFormat = nil
 
 --- @type string[]|nil
 local Spinner = nil
 
---- @class Client
---- @field client_id integer|nil
+---@alias lsp_progress.ClientId integer
+---@alias lsp_progress.SeriesToken integer|string
+---
+--- @class lsp_progress.Client
+--- @field client_id lsp_progress.ClientId?
 --- @field client_name string|nil
 --- @field spin_index integer
---- @field serieses table<string, Series> map: key => SeriesObject.
---- @field private _format_cache ClientFormatResult
---- @field private _deduped_tokens table<string, integer|string> map: title+message => token.
+--- @field serieses table<lsp_progress.SeriesToken, lsp_progress.Series>  map series token => series object.
+--- @field private _format_cache lsp_progress.ClientFormatResult
+--- @field private _deduped_tokens table<string, lsp_progress.SeriesToken> map: title+message => token.
 local Client = {}
 
---- @param client_id integer
+--- @param client_id lsp_progress.ClientId
 --- @param client_name string
---- @return Client
+--- @return lsp_progress.Client
 function Client:new(client_id, client_name)
     local o = {
         client_id = client_id,
@@ -38,7 +41,7 @@ function Client:new(client_id, client_name)
     return o
 end
 
---- @param token integer|string
+--- @param token lsp_progress.SeriesToken
 --- @return boolean
 function Client:has_series(token)
     return self.serieses[token] ~= nil
@@ -63,7 +66,7 @@ end
 --- @package
 --- @param title string
 --- @param message string
---- @param token integer|string
+--- @param token lsp_progress.SeriesToken
 function Client:_set_dedup_token(title, message, token)
     self._deduped_tokens[_get_dedup_key(title, message)] = token
 end
@@ -78,12 +81,12 @@ end
 --- @package
 --- @param title string
 --- @param message string
---- @return integer|string token
+--- @return lsp_progress.SeriesToken
 function Client:_get_dedup_token(title, message)
     return self._deduped_tokens[_get_dedup_key(title, message)]
 end
 
---- @param token integer|string
+--- @param token lsp_progress.SeriesToken
 function Client:remove_series(token)
     if self:has_series(token) then
         local series = self:get_series(token)
@@ -102,14 +105,14 @@ function Client:remove_series(token)
     self:format()
 end
 
---- @param token integer|string
---- @return Series
+--- @param token lsp_progress.SeriesToken
+--- @return lsp_progress.Series
 function Client:get_series(token)
     return self.serieses[token]
 end
 
---- @param token integer|string
---- @param series Series
+--- @param token lsp_progress.SeriesToken
+--- @param series lsp_progress.Series
 function Client:add_series(token, series)
     self:_set_dedup_token(series.title, series.message, token)
     self.serieses[token] = series
@@ -135,18 +138,19 @@ function Client:increase_spin_index()
     self:format()
 end
 
+--- @return string
 function Client:get_spin_index()
     assert(Spinner ~= nil, "Spinner cannot be nil")
     assert(#Spinner > 0, "Spinner length must greater than 0")
     return Spinner[self.spin_index + 1]
 end
 
---- @return ClientFormatResult
+--- @return lsp_progress.ClientFormatResult
 function Client:format()
-    --- @type SeriesFormatResult[]
+    --- @type lsp_progress.SeriesFormatResult[]
     local series_messages = {}
 
-    --- @type table<string, boolean>
+    --- @type table<lsp_progress.SeriesToken, boolean>
     local visited_tokens = {}
 
     for dedup_key, token in pairs(self._deduped_tokens) do
@@ -188,12 +192,12 @@ function Client:format()
     return self._format_cache
 end
 
---- @return ClientFormatResult
+--- @return lsp_progress.ClientFormatResult
 function Client:format_result()
     return self._format_cache
 end
 
---- @param client_format ClientFormat
+--- @param client_format lsp_progress.ClientFormat
 --- @param spinner string[]
 local function setup(client_format, spinner)
     ClientFormat = client_format

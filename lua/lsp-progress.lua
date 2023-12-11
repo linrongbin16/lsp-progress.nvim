@@ -8,30 +8,30 @@ local Client = require("lsp-progress.client").Client
 
 local Registered = false
 
---- @type Configs
+--- @type lsp_progress.Configs
 local Configs = {}
 
 -- client manager {
 
---- @type table<integer, Client>
+--- @type table<lsp_progress.ClientId, lsp_progress.Client>
 local LspClients = {}
 
 --- @package
---- @param client_id integer
+--- @param client_id lsp_progress.ClientId
 --- @return boolean
 local function _has_client(client_id)
     return LspClients[client_id] ~= nil
 end
 
 --- @package
---- @param client_id integer
---- @return Client
+--- @param client_id lsp_progress.ClientId
+--- @return lsp_progress.Client
 local function _get_client(client_id)
     return LspClients[client_id]
 end
 
 --- @package
---- @param client_id integer
+--- @param client_id lsp_progress.ClientId
 local function _remove_client(client_id)
     LspClients[client_id] = nil
     if not next(LspClients) then
@@ -40,7 +40,7 @@ local function _remove_client(client_id)
 end
 
 --- @package
---- @param client_id integer
+--- @param client_id lsp_progress.ClientId
 --- @param client_name string
 local function _register_client(client_id, client_name)
     if not _has_client(client_id) then
@@ -54,8 +54,8 @@ end
 
 -- client manager }
 
---- @param client_id integer
---- @param token integer|string
+--- @param client_id lsp_progress.ClientId
+--- @param token lsp_progress.SeriesToken
 local function spin(client_id, token)
     local function spin_again()
         spin(client_id, token)
@@ -231,7 +231,7 @@ local function update_progress(client, progress)
     event.emit()
 end
 
---- @param err any
+--- @param err string?
 --- @param msg table<string, any>
 --- @param ctx table<string, any>
 local function method_handler(err, msg, ctx)
@@ -261,7 +261,7 @@ local function event_handler()
     end
 end
 
---- @param option Configs?
+--- @param option lsp_progress.Configs?
 --- @return string?
 local function progress(option)
     option = vim.tbl_deep_extend("force", vim.deepcopy(Configs), option or {})
@@ -308,7 +308,7 @@ local function progress(option)
     return content
 end
 
---- @param option table<string, any>
+--- @param option lsp_progress.Configs
 local function setup(option)
     -- setup config
     Configs = defaults.setup(option)

@@ -1,3 +1,6 @@
+local uv = (vim.fn.has("nvim-0.10") > 0 and vim.uv ~= nil) and vim.uv
+    or vim.loop
+
 local PATH_SEPARATOR = (vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0)
         and "\\"
     or "/"
@@ -27,7 +30,7 @@ local LogHighlights = {
     [4] = "ErrorMsg",
 }
 
---- @type Configs
+--- @type lsp_progress.Configs
 local Configs = {
     level = LogLevels.INFO,
     console_log = true,
@@ -75,10 +78,12 @@ local function log(level, msg)
         local fp = io.open(Configs.file_name, "a")
         if fp then
             for _, line in ipairs(msg_lines) do
+                local secs, ms = uv.gettimeofday()
                 fp:write(
                     string.format(
-                        "%s [%s]: %s\n",
-                        os.date("%Y-%m-%d %H:%M:%S"),
+                        "%s.%03d [%s]: %s\n",
+                        os.date("%Y-%m-%d %H:%M:%S", secs),
+                        math.floor(ms / 1000),
                         LogLevelNames[level],
                         line
                     )
