@@ -131,7 +131,8 @@ local Defaults = {
     --- @return string
     ---     The returned value will be returned as the result of `progress` API.
     format = function(client_messages)
-        local sign = " LSP" -- nf-fa-gear \uf013
+        -- icon: nf-fa-gear \uf013
+        local sign = " LSP"
         if #client_messages > 0 then
             return sign .. " " .. table.concat(client_messages, " ")
         end
