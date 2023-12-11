@@ -335,7 +335,7 @@ local function setup(option)
     -- init client
     require("lsp-progress.client").setup(Configs.client_format, Configs.spinner)
 
-    if vim.fn.has("nvim-0.10") > 0 and type(vim.lsp.status) == "function" then
+    if vim.fn.has("nvim-0.10") > 0 then
         -- see:
         -- https://github.com/neovim/neovim/blob/582d7f47905d82f315dc852a9d2937cd5b655e55/runtime/doc/news.txt#L44
         -- https://github.com/neovim/neovim/blob/582d7f47905d82f315dc852a9d2937cd5b655e55/runtime/lua/vim/lsp/util.lua#L348
