@@ -169,8 +169,6 @@ For more details, please see [Design & Technics](https://github.com/linrongbin16
 ```lua
 -- lua
 return require('packer').startup(function(use)
-
-  use {'nvim-tree/nvim-web-devicons'},
   use {
     'linrongbin16/lsp-progress.nvim',
     config = function()
@@ -195,7 +193,6 @@ require("lazy").setup({
 
   {
     'linrongbin16/lsp-progress.nvim',
-    dependencies = { 'nvim-tree/nvim-web-devicons' },
     config = function()
       require('lsp-progress').setup()
     end
@@ -204,10 +201,7 @@ require("lazy").setup({
   -- integrate with lualine
   {
     'nvim-lualine/lualine.nvim',
-    dependencies = {
-      'nvim-tree/nvim-web-devicons',
-      'linrongbin16/lsp-progress.nvim',
-    },
+    dependencies = { 'linrongbin16/lsp-progress.nvim' },
     config = ...
   },
 
@@ -220,7 +214,6 @@ require("lazy").setup({
 " vim
 call plug#begin()
 
-Plug 'nvim-tree/nvim-web-devicons'
 Plug 'linrongbin16/lsp-progress.nvim'
 
 " integrate with lualine
