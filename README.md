@@ -141,9 +141,6 @@ require("lsp-progress").setup({
 - [Performance](#performance)
 - [Requirement](#requirement)
 - [Install](#install)
-  - [packer.nvim](#packernvim)
-  - [lazy.nvim](#lazynvim)
-  - [vim-plug](#vim-plug)
 - [Usage](#usage)
   - [Statusline Integration](#statusline-integration)
 - [Configuration](#configuration)
@@ -166,7 +163,8 @@ For more details, please see [Design & Technics](https://github.com/linrongbin16
 
 ## Install
 
-### [packer.nvim](https://github.com/wbthomason/packer.nvim)
+<details>
+<summary><b>With <a href="https://github.com/wbthomason/packer.nvim">packer.nvim</a></b></summary>
 
 ```lua
 -- lua
@@ -183,16 +181,17 @@ return require('packer').startup(function(use)
     'nvim-lualine/lualine.nvim',
     config = ...,
   }
-
 end)
 ```
 
-### [lazy.nvim](https://github.com/folke/lazy.nvim)
+</details>
+
+<details>
+<summary><b>With <a href="https://github.com/folke/lazy.nvim">lazy.nvim</a></b></summary>
 
 ```lua
 -- lua
 require("lazy").setup({
-
   {
     'linrongbin16/lsp-progress.nvim',
     config = function()
@@ -206,25 +205,27 @@ require("lazy").setup({
     dependencies = { 'linrongbin16/lsp-progress.nvim' },
     config = ...
   },
-
 })
 ```
 
-### [vim-plug](https://github.com/junegunn/vim-plug)
+</details>
+
+<details>
+<summary><b>With <a href="https://github.com/junegunn/vim-plug">vim-plug</a></b></summary>
 
 ```vim
 " vim
 call plug#begin()
-
 Plug 'linrongbin16/lsp-progress.nvim'
 
 " integrate with lualine
 Plug 'nvim-lualine/lualine.nvim'
-
 call plug#end()
 
 lua require('lsp-progress').setup()
 ```
+
+</details>
 
 ## Usage
 
