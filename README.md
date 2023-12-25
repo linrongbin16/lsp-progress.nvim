@@ -142,7 +142,7 @@ require("lsp-progress").setup({
 - [Requirement](#requirement)
 - [Install](#install)
 - [Usage](#usage)
-  - [Statusline Integration](#statusline-integration)
+  - [Lualine Integration](#lualine-integration)
 - [Configuration](#configuration)
 - [Credit](#credit)
 - [Contribute](#contribute)
@@ -244,7 +244,7 @@ lua require('lsp-progress').setup()
   The fields share the same schema with `setup(option)` (see [Configuration](#configuration))
   to provide more dynamic abilities.
 
-### Statusline Integration
+### LuaLine Integration
 
 ```lua
 require("lualine").setup({
