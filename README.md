@@ -217,8 +217,8 @@ lua require('lsp-progress').setup()
 
 - `LspProgressStatusUpdated`: user event to notify new status, and trigger statusline
   refresh.
-- `require('lsp-progress').progress(option)`: get lsp progress status, parameter
-  `option` is an optional lua table:
+- `require('lsp-progress').progress(opts)`: get lsp progress status, parameter
+  `opts` is an optional lua table:
 
   ```lua
   require('lsp-progress').progress({
