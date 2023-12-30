@@ -259,10 +259,10 @@ vim.api.nvim_create_autocmd("User", {
 To configure options, please use:
 
 ```lua
-require('lsp-progress').setup(option)
+require('lsp-progress').setup(opts)
 ```
 
-The `option` is an optional lua table that override the default options.
+The `opts` is an optional lua table that override the default options.
 
 For complete options and defaults, please check [defaults.lua](https://github.com/linrongbin16/lsp-progress.nvim/blob/main/lua/lsp-progress/defaults.lua).
 
