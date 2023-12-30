@@ -175,12 +175,6 @@ return require('packer').startup(function(use)
       require('lsp-progress').setup()
     end
   }
-
-  -- integrate with lualine
-  use {
-    'nvim-lualine/lualine.nvim',
-    config = ...,
-  }
 end)
 ```
 
@@ -198,13 +192,6 @@ require("lazy").setup({
       require('lsp-progress').setup()
     end
   }
-
-  -- integrate with lualine
-  {
-    'nvim-lualine/lualine.nvim',
-    dependencies = { 'linrongbin16/lsp-progress.nvim' },
-    config = ...
-  },
 })
 ```
 
@@ -216,10 +203,9 @@ require("lazy").setup({
 ```vim
 " vim
 call plug#begin()
+
 Plug 'linrongbin16/lsp-progress.nvim'
 
-" integrate with lualine
-Plug 'nvim-lualine/lualine.nvim'
 call plug#end()
 
 lua require('lsp-progress').setup()
