@@ -227,7 +227,7 @@ lua require('lsp-progress').setup()
   })
   ```
 
-  The fields share the same schema with `setup(option)` (see [Configuration](#configuration))
+  The fields are the same value passing to `setup` (see [Configuration](#configuration))
   to provide more dynamic abilities.
 
 ### LuaLine Integration
