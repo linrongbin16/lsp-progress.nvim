@@ -1,15 +1,30 @@
+<!-- markdownlint-disable MD001 MD013 MD034 MD033 MD051 -->
+
 # lsp-progress.nvim
 
 <p align="center">
-<a href="https://github.com/neovim/neovim/releases/v0.6.0"><img alt="Neovim" src="https://img.shields.io/badge/Neovim-v0.6-57A143?logo=neovim&logoColor=57A143" /></a>
-<a href="https://luarocks.org/modules/linrongbin16/lsp-progress.nvim"><img alt="luarocks" src="https://custom-icon-badges.demolab.com/luarocks/v/linrongbin16/lsp-progress.nvim?label=LuaRocks&labelColor=063B70&logo=tag&logoColor=fff&color=008B8B" /></a>
+<a href="https://github.com/neovim/neovim/releases/v0.6.0"><img alt="Neovim" src="https://img.shields.io/badge/Neovim-v0.6+-57A143?logo=neovim&logoColor=57A143" /></a>
+<a href="https://luarocks.org/modules/linrongbin16/lsp-progress.nvim"><img alt="luarocks" src="https://custom-icon-badges.demolab.com/luarocks/v/linrongbin16/lsp-progress.nvim?label=LuaRocks&labelColor=2C2D72&logo=tag&logoColor=fff&color=blue" /></a>
 <a href="https://github.com/linrongbin16/lsp-progress.nvim/actions/workflows/ci.yml"><img alt="ci.yml" src="https://img.shields.io/github/actions/workflow/status/linrongbin16/lsp-progress.nvim/ci.yml?label=GitHub%20CI&labelColor=181717&logo=github&logoColor=fff" /></a>
 <a href="https://app.codecov.io/github/linrongbin16/lsp-progress.nvim"><img alt="codecov" src="https://img.shields.io/codecov/c/github/linrongbin16/lsp-progress.nvim?logo=codecov&logoColor=F01F7A&label=Codecov" /></a>
 </p>
 
-A performant lsp progress status for Neovim.
+<p align="center"><i> A performant lsp progress status for Neovim. </i></p>
+
+<!-- https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/a0436100-d35c-48a1-a9c4-4346b09d6b25 -->
 
 ![default](https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/e089234b-d465-45ae-840f-72a57b846b0d)
+
+<details>
+<summary><i>Click here to see how to configure</i></summary>
+
+```lua
+require("lsp-progress").setup()
+```
+
+</details>
+
+<!-- https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/84f17744-9404-4a7b-bbdf-aac5babc0ed3 -->
 
 ![client-names](https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/01dac7a0-678a-421d-a243-9dba2576b15b)
 
@@ -18,58 +33,60 @@ A performant lsp progress status for Neovim.
 
 ```lua
 require("lsp-progress").setup({
-client_format = function(client_name, spinner, series_messages)
-  if #series_messages == 0 then
-    return nil
-  end
-  return {
-    name = client_name,
-    body = spinner .. " " .. table.concat(series_messages, ", "),
-  }
-end,
-format = function(client_messages)
-  --- @param name string
-  --- @param msg string?
-  --- @return string
-  local function stringify(name, msg)
-    return msg and string.format("%s %s", name, msg) or name
-  end
+  client_format = function(client_name, spinner, series_messages)
+    if #series_messages == 0 then
+      return nil
+    end
+    return {
+      name = client_name,
+      body = spinner .. " " .. table.concat(series_messages, ", "),
+    }
+  end,
+  format = function(client_messages)
+    --- @param name string
+    --- @param msg string?
+    --- @return string
+    local function stringify(name, msg)
+      return msg and string.format("%s %s", name, msg) or name
+    end
 
-  local sign = "" -- nf-fa-gear \uf013
-  local lsp_clients = vim.lsp.get_active_clients()
-  local messages_map = {}
-  for _, climsg in ipairs(client_messages) do
-    messages_map[climsg.name] = climsg.body
-  end
+    local sign = "" -- nf-fa-gear \uf013
+    local lsp_clients = vim.lsp.get_active_clients()
+    local messages_map = {}
+    for _, climsg in ipairs(client_messages) do
+      messages_map[climsg.name] = climsg.body
+    end
 
-  if #lsp_clients > 0 then
-    table.sort(lsp_clients, function(a, b)
-      return a.name < b.name
-    end)
-    local builder = {}
-    for _, cli in ipairs(lsp_clients) do
-      if
-        type(cli) == "table"
-        and type(cli.name) == "string"
-        and string.len(cli.name) > 0
-      then
-        if messages_map[cli.name] then
-          table.insert(builder, stringify(cli.name, messages_map[cli.name]))
-        else
-          table.insert(builder, stringify(cli.name))
+    if #lsp_clients > 0 then
+      table.sort(lsp_clients, function(a, b)
+        return a.name < b.name
+      end)
+      local builder = {}
+      for _, cli in ipairs(lsp_clients) do
+        if
+          type(cli) == "table"
+          and type(cli.name) == "string"
+          and string.len(cli.name) > 0
+        then
+          if messages_map[cli.name] then
+            table.insert(builder, stringify(cli.name, messages_map[cli.name]))
+          else
+            table.insert(builder, stringify(cli.name))
+          end
         end
       end
+      if #builder > 0 then
+        return sign .. " " .. table.concat(builder, ", ")
+      end
     end
-    if #builder > 0 then
-      return sign .. " " .. table.concat(builder, ", ")
-    end
-  end
-  return ""
-end,
+    return ""
+  end,
 })
 ```
 
 </details>
+
+<!-- https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/9436de63-ea94-4ada-adb7-3812681a5106 -->
 
 ![green-check](https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/2666b105-4939-4985-8b5e-74bc43e5615c)
 
@@ -130,11 +147,8 @@ require("lsp-progress").setup({
 - [Performance](#performance)
 - [Requirement](#requirement)
 - [Install](#install)
-  - [packer.nvim](#packernvim)
-  - [lazy.nvim](#lazynvim)
-  - [vim-plug](#vim-plug)
 - [Usage](#usage)
-  - [Statusline Integration](#statusline-integration)
+  - [Lualine Integration](#lualine-integration)
 - [Configuration](#configuration)
 - [Credit](#credit)
 - [Contribute](#contribute)
@@ -150,100 +164,67 @@ For more details, please see [Design & Technics](https://github.com/linrongbin16
 
 ## Requirement
 
-- Neovim version &ge; 0.6.0.
+- Neovim &ge; 0.6.0.
 - [Nerd fonts](https://www.nerdfonts.com/) for icons.
 
 ## Install
 
-### [packer.nvim](https://github.com/wbthomason/packer.nvim)
+<details>
+<summary><b>With <a href="https://github.com/wbthomason/packer.nvim">packer.nvim</a></b></summary>
 
 ```lua
 -- lua
 return require('packer').startup(function(use)
-
-  use {'nvim-tree/nvim-web-devicons'},
   use {
     'linrongbin16/lsp-progress.nvim',
     config = function()
       require('lsp-progress').setup()
     end
-  }
-
-  -- integrate with lualine
-  use {
-    'nvim-lualine/lualine.nvim',
-    config = ...,
-  }
-
-  -- integrate with heirline
-  use {
-    'rebelot/heirline.nvim',
-    config = ...,
   }
 end)
 ```
 
-### [lazy.nvim](https://github.com/folke/lazy.nvim)
+</details>
+
+<details>
+<summary><b>With <a href="https://github.com/folke/lazy.nvim">lazy.nvim</a></b></summary>
 
 ```lua
 -- lua
 require("lazy").setup({
-
   {
     'linrongbin16/lsp-progress.nvim',
-    dependencies = { 'nvim-tree/nvim-web-devicons' },
     config = function()
       require('lsp-progress').setup()
     end
   }
-
-  -- integrate with lualine
-  {
-    'nvim-lualine/lualine.nvim',
-    dependencies = {
-      'nvim-tree/nvim-web-devicons',
-      'linrongbin16/lsp-progress.nvim',
-    },
-    config = ...
-  },
-
-  -- integrate with heirline
-  {
-    'rebelot/heirline.nvim',
-    dependencies = {
-      'linrongbin16/lsp-progress.nvim',
-    },
-    config = ...
-  }
 })
 ```
 
-### [vim-plug](https://github.com/junegunn/vim-plug)
+</details>
+
+<details>
+<summary><b>With <a href="https://github.com/junegunn/vim-plug">vim-plug</a></b></summary>
 
 ```vim
 " vim
 call plug#begin()
 
-Plug 'nvim-tree/nvim-web-devicons'
 Plug 'linrongbin16/lsp-progress.nvim'
-
-" integrate with lualine
-Plug 'nvim-lualine/lualine.nvim'
-
-" integrate with heirline
-Plug 'rebelot/heirline.nvim'
 
 call plug#end()
 
 lua require('lsp-progress').setup()
 ```
 
+</details>
+
 ## Usage
 
 - `LspProgressStatusUpdated`: user event to notify new status, and trigger statusline
   refresh.
-- `require('lsp-progress').progress(option)`: get lsp progress status, parameter
-  `option` is an optional lua table:
+- `require('lsp-progress').progress(opts)`: get lsp progress status, parameter
+  `opts` is an optional lua table:
 
   ```lua
   require('lsp-progress').progress({
@@ -252,12 +233,10 @@ lua require('lsp-progress').setup()
   })
   ```
 
-  The fields share the same schema with `setup(option)` (see [Configuration](#configuration))
+  The fields are the same value passing to `setup` (see [Configuration](#configuration))
   to provide more dynamic abilities.
 
-### Statusline Integration
-
-#### [lualine](https://github.com/nvim-lualine/lualine.nvim)
+### [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim) Integration
 
 ```lua
 require("lualine").setup({
@@ -281,7 +260,7 @@ vim.api.nvim_create_autocmd("User", {
 })
 ```
 
-#### [heirline](https://github.com/rebelot/heirline.nvim)
+### [heirline.nvim](https://github.com/rebelot/heirline.nvim) Integration
 
 ```lua
 local LspProgress = {
@@ -299,6 +278,8 @@ local StatusLine = {
   -- Other StatusLine components
   { ... },
   { ... },
+
+  -- Lsp progress status component here
   LspProgress
 }
 
@@ -312,10 +293,10 @@ require('heirline').setup({
 To configure options, please use:
 
 ```lua
-require('lsp-progress').setup(option)
+require('lsp-progress').setup(opts)
 ```
 
-The `option` is an optional lua table that override the default options.
+The `opts` is an optional lua table that overwrite the default options.
 
 For complete options and defaults, please check [defaults.lua](https://github.com/linrongbin16/lsp-progress.nvim/blob/main/lua/lsp-progress/defaults.lua).
 

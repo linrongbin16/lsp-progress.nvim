@@ -1,6 +1,6 @@
 local logger = require("lsp-progress.logger")
 
---- @type Configs
+--- @type lsp_progress.Configs
 local Configs = {
     --- @type string?
     name = nil,
@@ -12,7 +12,7 @@ local Configs = {
     emit = false,
 }
 
---- @class DisableEventOpt
+--- @class lsp_progress.DisableEventOpt
 --- @field mode string?
 --- @field filetype string?
 local DisableEventOpt = {
@@ -21,8 +21,8 @@ local DisableEventOpt = {
 }
 
 --- @package
---- @param opts Configs
---- @return DisableEventOpt
+--- @param opts lsp_progress.Configs
+--- @return lsp_progress.DisableEventOpt
 function DisableEventOpt:new(opts)
     local o = {
         mode = opts.mode,
@@ -57,15 +57,15 @@ function DisableEventOpt:match()
     return mode_match and filetype_match
 end
 
---- @class DisableEventOptsManager
---- @field disable_event_opts DisableEventOpt[]
+--- @class lsp_progress.DisableEventOptsManager
+--- @field disable_event_opts lsp_progress.DisableEventOpt[]
 local DisableEventOptsManager = {
     disable_event_opts = {},
 }
 
 --- @package
---- @param opts Configs[]?
---- @return DisableEventOptsManager
+--- @param opts lsp_progress.Configs[]?
+--- @return lsp_progress.DisableEventOptsManager
 function DisableEventOptsManager:new(opts)
     local disable_event_opts = {}
     if type(opts) == "table" then
@@ -92,7 +92,7 @@ function DisableEventOptsManager:match()
     return false
 end
 
---- @type DisableEventOptsManager?
+--- @type lsp_progress.DisableEventOptsManager?
 local GlobalDisabledEventOptsManager = nil
 
 --- @package
@@ -128,8 +128,7 @@ end
 --- @param event_name string
 --- @param event_update_time_limit integer
 --- @param internal_regular_update_time integer
---- @param disable_events_opts Configs[]?
---- @return nil
+--- @param disable_events_opts lsp_progress.Configs[]?
 local function setup(
     event_name,
     event_update_time_limit,
@@ -145,7 +144,6 @@ local function setup(
     regular_update()
 end
 
---- @type table<string, any>
 local M = {
     setup = setup,
     emit = emit,

@@ -1,22 +1,22 @@
 local logger = require("lsp-progress.logger")
 
---- @alias SeriesFormatResult string|any|nil
---- @alias SeriesFormat fun(title:string?,message:string?,percentage:integer?,done:boolean):SeriesFormatResult
---- @type SeriesFormat?
+--- @alias lsp_progress.SeriesFormatResult string|any|nil
+--- @alias lsp_progress.SeriesFormat fun(title:string?,message:string?,percentage:integer?,done:boolean):lsp_progress.SeriesFormatResult
+--- @type lsp_progress.SeriesFormat?
 local SeriesFormat = nil
 
---- @class Series
+--- @class lsp_progress.Series
 --- @field title string?
 --- @field message string?
 --- @field percentage integer?
 --- @field done boolean
---- @field private _format_cache SeriesFormatResult
+--- @field private _format_cache lsp_progress.SeriesFormatResult
 local Series = {}
 
 --- @param title string?
 --- @param message string?
 --- @param percentage integer?
---- @return Series
+--- @return lsp_progress.Series
 function Series:new(title, message, percentage)
     local o = {
         title = title,
@@ -36,7 +36,7 @@ function Series:new(title, message, percentage)
 end
 
 --- @package
---- @return SeriesFormatResult
+--- @return lsp_progress.SeriesFormatResult
 function Series:_format()
     assert(SeriesFormat ~= nil, "SeriesFormat cannot be null")
 
@@ -92,12 +92,12 @@ function Series:finish(message)
     -- logger.debug("|series - Series:finish| finish: %s", vim.inspect(self))
 end
 
---- @return SeriesFormatResult
+--- @return lsp_progress.SeriesFormatResult
 function Series:format_result()
     return self._format_cache
 end
 
---- @param series_format SeriesFormat
+--- @param series_format lsp_progress.SeriesFormat
 local function setup(series_format)
     SeriesFormat = series_format
 end
