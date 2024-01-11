@@ -148,7 +148,9 @@ require("lsp-progress").setup({
 - [Requirement](#requirement)
 - [Install](#install)
 - [Usage](#usage)
-  - [Lualine Integration](#lualine-integration)
+- [Integration](#integration)
+  - [lualine.nvim](#lualinenvim)
+  - [heirline.nvim](#heirlinenvim)
 - [Configuration](#configuration)
 - [Credit](#credit)
 - [Contribute](#contribute)
@@ -236,7 +238,9 @@ lua require('lsp-progress').setup()
   The fields are the same value passing to `setup` (see [Configuration](#configuration))
   to provide more dynamic abilities.
 
-### [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim) Integration
+## Integration
+
+### [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim)
 
 ```lua
 require("lualine").setup({
@@ -260,7 +264,7 @@ vim.api.nvim_create_autocmd("User", {
 })
 ```
 
-### [heirline.nvim](https://github.com/rebelot/heirline.nvim) Integration
+### [heirline.nvim](https://github.com/rebelot/heirline.nvim)
 
 ```lua
 local LspProgress = {
