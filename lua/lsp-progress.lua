@@ -160,8 +160,10 @@ local function spin(client_id, token)
     event.emit()
 end
 
---- @param client table<any, any>
---- @param progress table<any, any>
+--- @alias lsp_progress.LspClientObj {id:lsp_progress.ClientId,name:string}
+--- @alias lsp_progress.LspProgressObj {token:lsp_progress.SeriesToken,value:{kind:"begin"|"report"|"end",title:string?,message:string?,percentage:integer?}}
+--- @param client lsp_progress.LspClientObj
+--- @param progress lsp_progress.LspProgressObj
 local function update_progress(client, progress)
     local client_id = client.id
     local client_name = client.name
