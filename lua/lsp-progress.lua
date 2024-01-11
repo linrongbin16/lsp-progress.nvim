@@ -241,21 +241,21 @@ local function method_handler(err, msg, ctx)
     update_progress(client, msg)
 end
 
+local function _is_lsp_client_obj(c)
+    return type(c) == "table" and c.id and type(c.name) == "string"
+end
+
+local function _is_lsp_progress_obj(p)
+    return type(p) == "table" and p.token and type(p.value) == "table"
+end
+
 local function event_handler()
     local lsp_clients = vim.lsp.get_active_clients()
     for _, client in ipairs(lsp_clients) do
-        if
-            type(client) == "table"
-            and type(client.name) == "string"
-            and type(client.progress) == "table"
-        then
+        if _is_lsp_client_obj(client) and type(client.progress) == "table" then
             for progress in client.progress do
                 -- logger.debug("|setup| v0.10 progress:%s", vim.inspect(progress))
-                if
-                    type(progress) == "table"
-                    and progress.token ~= nil
-                    and type(progress.value) == "table"
-                then
+                if _is_lsp_progress_obj(progress) then
                     update_progress(client, progress)
                 end
             end
