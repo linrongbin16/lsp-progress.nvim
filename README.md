@@ -149,8 +149,6 @@ require("lsp-progress").setup({
 - [Install](#install)
 - [Usage](#usage)
 - [Integration](#integration)
-  - [lualine.nvim](#lualinenvim)
-  - [heirline.nvim](#heirlinenvim)
 - [Configuration](#configuration)
 - [Credit](#credit)
 - [Contribute](#contribute)
