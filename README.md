@@ -181,18 +181,6 @@ return require('packer').startup(function(use)
       require('lsp-progress').setup()
     end
   }
-
-  -- integrate with lualine
-  use {
-    'nvim-lualine/lualine.nvim',
-    config = ...,
-  }
-
-  -- integrate with heirline
-  use {
-    'rebelot/heirline.nvim',
-    config = ...,
-  }
 end)
 ```
 
@@ -210,25 +198,6 @@ require("lazy").setup({
       require('lsp-progress').setup()
     end
   }
-
-  -- integrate with lualine
-  {
-    'nvim-lualine/lualine.nvim',
-    dependencies = {
-      'nvim-tree/nvim-web-devicons',
-      'linrongbin16/lsp-progress.nvim',
-    },
-    config = ...
-  },
-
-  -- integrate with heirline
-  {
-    'rebelot/heirline.nvim',
-    dependencies = {
-      'linrongbin16/lsp-progress.nvim',
-    },
-    config = ...
-  }
 })
 ```
 
@@ -242,12 +211,6 @@ require("lazy").setup({
 call plug#begin()
 
 Plug 'linrongbin16/lsp-progress.nvim'
-
-" integrate with lualine
-Plug 'nvim-lualine/lualine.nvim'
-
-" integrate with heirline
-Plug 'rebelot/heirline.nvim'
 
 call plug#end()
 
@@ -273,9 +236,7 @@ lua require('lsp-progress').setup()
   The fields are the same value passing to `setup` (see [Configuration](#configuration))
   to provide more dynamic abilities.
 
-### LuaLine Integration
-
-#### [lualine](https://github.com/nvim-lualine/lualine.nvim)
+### [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim) Integration
 
 ```lua
 require("lualine").setup({
@@ -299,7 +260,7 @@ vim.api.nvim_create_autocmd("User", {
 })
 ```
 
-#### [heirline](https://github.com/rebelot/heirline.nvim)
+### [heirline.nvim](https://github.com/rebelot/heirline.nvim) Integration
 
 ```lua
 local LspProgress = {
@@ -317,6 +278,8 @@ local StatusLine = {
   -- Other StatusLine components
   { ... },
   { ... },
+
+  -- Lsp progress status component here
   LspProgress
 }
 
