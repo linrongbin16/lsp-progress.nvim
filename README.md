@@ -240,7 +240,8 @@ lua require('lsp-progress').setup()
 
 ## Integration
 
-### [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim)
+<details>
+<summary><b>With <a href="https://github.com/nvim-lualine/lualine.nvim">lualine.nvim</a></b></summary>
 
 ```lua
 require("lualine").setup({
@@ -264,7 +265,10 @@ vim.api.nvim_create_autocmd("User", {
 })
 ```
 
-### [heirline.nvim](https://github.com/rebelot/heirline.nvim)
+</details>
+
+<details>
+<summary><b>With <a href="https://github.com/rebelot/heirline.nvim">heirline.nvim</a></b></summary>
 
 ```lua
 local LspProgress = {
@@ -291,6 +295,8 @@ require('heirline').setup({
   statusline = StatusLine
 })
 ```
+
+</details>
 
 ## Configuration
 
