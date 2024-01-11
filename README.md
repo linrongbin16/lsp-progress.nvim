@@ -11,7 +11,9 @@
 
 <p align="center"><i> A performant lsp progress status for Neovim. </i></p>
 
-https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/a0436100-d35c-48a1-a9c4-4346b09d6b25
+<!-- https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/a0436100-d35c-48a1-a9c4-4346b09d6b25 -->
+
+![default](https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/e089234b-d465-45ae-840f-72a57b846b0d)
 
 <details>
 <summary><i>Click here to see how to configure</i></summary>
@@ -22,7 +24,9 @@ require("lsp-progress").setup()
 
 </details>
 
-https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/84f17744-9404-4a7b-bbdf-aac5babc0ed3
+<!-- https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/84f17744-9404-4a7b-bbdf-aac5babc0ed3 -->
+
+![client-names](https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/01dac7a0-678a-421d-a243-9dba2576b15b)
 
 <details>
 <summary><i>Click here to see how to configure</i></summary>
@@ -82,7 +86,9 @@ require("lsp-progress").setup({
 
 </details>
 
-https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/9436de63-ea94-4ada-adb7-3812681a5106
+<!-- https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/9436de63-ea94-4ada-adb7-3812681a5106 -->
+
+![green-check](https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/2666b105-4939-4985-8b5e-74bc43e5615c)
 
 <details>
 <summary><i>Click here to see how to configure</i></summary>
