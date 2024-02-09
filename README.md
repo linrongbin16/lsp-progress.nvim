@@ -167,7 +167,7 @@ For more details, please see [Design & Technics](https://github.com/linrongbin16
 ## Requirement
 
 - Neovim &ge; 0.6.0.
-- [Nerd fonts](https://www.nerdfonts.com/) for icons.
+- [nerd fonts](https://www.nerdfonts.com/) for icons.
 
 ## Install
 
@@ -245,6 +245,7 @@ lua require('lsp-progress').setup()
 ```lua
 require("lualine").setup({
   sections = {
+    -- Other Status Line components
     lualine_a = { ... },
     lualine_b = { ... },
     lualine_c = {
