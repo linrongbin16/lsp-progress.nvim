@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.7](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.6...v1.0.7) (2024-02-09)
+
+
+### Bug Fixes
+
+* **format:** fix '%' escape issue again ([#118](https://github.com/linrongbin16/lsp-progress.nvim/issues/118)) ([ad6240c](https://github.com/linrongbin16/lsp-progress.nvim/commit/ad6240c79634dedf85eb8830582c539a11214c09))
+
 ## [1.0.6](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.5...v1.0.6) (2024-01-11)
 
 
