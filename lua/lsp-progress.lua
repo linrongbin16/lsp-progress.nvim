@@ -299,10 +299,14 @@ local function progress(option)
             content = vim.fn.strpart(
                 content,
                 0,
-                vim.fn.max({ option.max_size - 1, 0 })
+                math.max(option.max_size - 1, 0)
             ) .. "…"
         end
     end
+    if type(content) == "string" then
+        content = content:gsub("%%", "%%%%")
+    end
+
     logger.debug(
         "|lsp-progress.progress| returned content: %s",
         vim.inspect(content)

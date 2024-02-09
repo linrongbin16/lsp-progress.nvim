@@ -80,17 +80,15 @@ local Defaults = {
         local has_title = false
         local has_message = false
         if type(title) == "string" and string.len(title) > 0 then
-            local escaped_title = title:gsub("%%", "%%%%")
-            table.insert(builder, escaped_title)
+            table.insert(builder, title)
             has_title = true
         end
         if type(message) == "string" and string.len(message) > 0 then
-            local escaped_message = message:gsub("%%", "%%%%")
-            table.insert(builder, escaped_message)
+            table.insert(builder, message)
             has_message = true
         end
         if percentage and (has_title or has_message) then
-            table.insert(builder, string.format("(%.0f%%%%)", percentage))
+            table.insert(builder, string.format("(%.0f%%)", percentage))
         end
         if done and (has_title or has_message) then
             table.insert(builder, "- done")
