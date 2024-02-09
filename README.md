@@ -166,7 +166,7 @@ For more details, please see [Design & Technics](https://github.com/linrongbin16
 
 ## Requirement
 
-- Neovim &ge; 0.6.0.
+- neovim &ge; 0.6.0.
 - [nerd fonts](https://www.nerdfonts.com/) for icons.
 
 ## Install
