@@ -294,10 +294,13 @@ local function progress(option)
         )
     end
     if result == nil then
-        return ''
+        return ""
     end
-    if type(result) ~= 'string' then
-        logger.throw("invalid 'format' result, it must be a string! result:%s", vim.inspect(result))
+    if type(result) ~= "string" then
+        logger.throw(
+            "invalid 'format' result, it must be a string! result:%s",
+            vim.inspect(result)
+        )
     end
     local content = result
     if option.max_size >= 0 then
@@ -309,7 +312,7 @@ local function progress(option)
             ) .. "…"
         end
     end
-    content = content:gsub('%%', '%%%%')
+    content = content:gsub("%%", "%%%%")
     logger.debug(
         "|lsp-progress.progress| returned content: %s",
         vim.inspect(content)
