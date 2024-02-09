@@ -293,7 +293,6 @@ local function progress(option)
             vim.inspect(client_messages)
         )
     end
-
     local content = result
     if option.max_size >= 0 then
         if vim.fn.strdisplaywidth(content) > option.max_size then
