@@ -292,7 +292,7 @@ local function progress(option)
             vim.inspect(result),
             vim.inspect(client_messages)
         )
-  end
+    end
 
     local content = result
     if option.max_size >= 0 then
@@ -304,9 +304,9 @@ local function progress(option)
             ) .. "…"
         end
     end
-  if type(content) == 'string' then
-    content = content:gsub("%%", "%%%%")
-  end
+    if type(content) == "string" then
+        content = content:gsub("%%", "%%%%")
+    end
 
     logger.debug(
         "|lsp-progress.progress| returned content: %s",
