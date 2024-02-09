@@ -292,16 +292,8 @@ local function progress(option)
             vim.inspect(result),
             vim.inspect(client_messages)
         )
-    end
-    if result == nil then
-        return ""
-    end
-    if type(result) ~= "string" then
-        logger.throw(
-            "invalid 'format' result, it must be a string! result:%s",
-            vim.inspect(result)
-        )
-    end
+  end
+
     local content = result
     if option.max_size >= 0 then
         if vim.fn.strdisplaywidth(content) > option.max_size then
@@ -312,7 +304,10 @@ local function progress(option)
             ) .. "…"
         end
     end
+  if type(content) == 'string' then
     content = content:gsub("%%", "%%%%")
+  end
+
     logger.debug(
         "|lsp-progress.progress| returned content: %s",
         vim.inspect(content)
