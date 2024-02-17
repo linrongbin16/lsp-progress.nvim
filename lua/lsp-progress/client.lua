@@ -18,6 +18,7 @@ local Spinner = nil
 --- @field serieses table<lsp_progress.SeriesToken, lsp_progress.Series>  map series token => series object.
 --- @field private _format_cache lsp_progress.ClientFormatResult
 --- @field private _deduped_tokens table<string, lsp_progress.SeriesToken> map: title+message => token.
+--- @field private _formatting boolean
 local Client = {}
 
 --- @param client_id lsp_progress.ClientId
@@ -31,6 +32,7 @@ function Client:new(client_id, client_name)
         serieses = {},
         _format_cache = nil,
         _deduped_tokens = {},
+        _formatting = false,
     }
     setmetatable(o, self)
     self.__index = self
@@ -147,6 +149,12 @@ end
 
 --- @return lsp_progress.ClientFormatResult
 function Client:format()
+    if self._formatting then
+        return self._format_cache
+    end
+
+    self._formatting = true
+
     --- @type lsp_progress.SeriesFormatResult[]
     local series_messages = {}
 
@@ -179,6 +187,10 @@ function Client:format()
         self:get_spin_index(),
         series_messages
     )
+
+    vim.schedule(function()
+        self._formatting = false
+    end)
 
     logger.ensure(
         ok,
