@@ -40,11 +40,12 @@ end
 --- @package
 --- @return lsp_progress.SeriesFormatResult
 function Series:_format()
+    assert(SeriesFormat ~= nil, "SeriesFormat cannot be null")
+
     if self._formatting then
         return self._format_cache
     end
-
-    assert(SeriesFormat ~= nil, "SeriesFormat cannot be null")
+    self._formatting = true
 
     local ok, result_or_err = pcall(
         SeriesFormat,
@@ -53,6 +54,9 @@ function Series:_format()
         self.percentage,
         self.done
     )
+    vim.schedule(function()
+        self._formatting = false
+    end)
 
     logger.ensure(
         ok,
