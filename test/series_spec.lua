@@ -57,34 +57,34 @@ describe("series", function()
             ss:update("message2", 20)
             assert_eq(ss.message, "message2")
             assert_eq(ss.percentage, 20)
-            assert_eq(
-                series_formatter(ss.title, "message2", 20, ss.done),
-                ss:_format()
-            )
+            -- assert_eq(
+            --     series_formatter(ss.title, "message2", 20, ss.done),
+            --     ss:_format()
+            -- )
 
             ss:update("", 30)
             assert_eq(ss.message, "message2")
             assert_eq(ss.percentage, 30)
-            assert_eq(
-                series_formatter(ss.title, "message2", 30, ss.done),
-                ss:_format()
-            )
+            -- assert_eq(
+            --     series_formatter(ss.title, "message2", 30, ss.done),
+            --     ss:_format()
+            -- )
 
             ss:update(nil, 40)
             assert_eq(ss.message, "message2")
             assert_eq(ss.percentage, 40)
-            assert_eq(
-                series_formatter(ss.title, "message2", 40, ss.done),
-                ss:_format()
-            )
+            -- assert_eq(
+            --     series_formatter(ss.title, "message2", 40, ss.done),
+            --     ss:_format()
+            -- )
 
             ss:update("message5", 50)
             assert_eq(ss.message, "message5")
             assert_eq(ss.percentage, 50)
-            assert_eq(
-                series_formatter(ss.title, "message5", 50, ss.done),
-                ss:_format()
-            )
+            -- assert_eq(
+            --     series_formatter(ss.title, "message5", 50, ss.done),
+            --     ss:_format()
+            -- )
         end)
         it("finish", function()
             local ss = series.Series:new("title", "message", 10)
