@@ -38,12 +38,8 @@ end
 function DisableEventOpt:match()
     local current_mode = vim.api.nvim_get_mode()
     local current_bufnr = vim.api.nvim_get_current_buf()
-    local current_filetype = vim.fn.has("nvim-0.7") > 0
-            and vim.api.nvim_get_option_value(
-                "filetype",
-                { buf = current_bufnr }
-            )
-        or vim.api.nvim_buf_get_option(current_bufnr, "filetype")
+    local current_filetype =
+        vim.api.nvim_get_option_value("filetype", { buf = current_bufnr })
     -- logger.debug(
     --     "|lsp-progress.event - DisableEventOpt:match| current mode:%s, bufnr:%s, ft:%s, self:%s",
     --     vim.inspect(current_mode),
@@ -109,11 +105,11 @@ local function emit()
             GlobalDisabledEventOptsManager == nil
             or not GlobalDisabledEventOptsManager:match()
         then
-            vim.cmd("doautocmd <nomodeline> User " .. Configs.name)
+            vim.api.nvim_exec_autocmds(
+                "User",
+                { pattern = Configs.name, modeline = false }
+            )
             Configs.emit = true
-            -- logger.debug("Emit user event:%s", Configs.name)
-            -- else
-            -- logger.debug("Disabled emit user event:%s", Configs.name)
         end
         vim.defer_fn(reset, Configs.update_time_limit --[[@as integer]])
     end
