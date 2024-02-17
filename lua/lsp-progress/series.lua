@@ -11,6 +11,7 @@ local SeriesFormat = nil
 --- @field percentage integer?
 --- @field done boolean
 --- @field private _format_cache lsp_progress.SeriesFormatResult
+--- @field private _formatting boolean
 local Series = {}
 
 --- @param title string?
@@ -24,6 +25,7 @@ function Series:new(title, message, percentage)
         percentage = percentage,
         done = false,
         _format_cache = nil,
+        _formatting = false,
     }
 
     setmetatable(o, self)
@@ -38,6 +40,10 @@ end
 --- @package
 --- @return lsp_progress.SeriesFormatResult
 function Series:_format()
+    if self._formatting then
+        return self._format_cache
+    end
+
     assert(SeriesFormat ~= nil, "SeriesFormat cannot be null")
 
     local ok, result_or_err = pcall(
