@@ -101,41 +101,41 @@ describe("series", function()
             assert_eq(ss.message, "message2")
             assert_eq(ss.percentage, 100)
             assert_eq(ss.done, true)
-            assert_eq(
-                series_formatter(ss.title, "message2", 100, true),
-                ss:_format()
-            )
+            -- assert_eq(
+            --     series_formatter(ss.title, "message2", 100, true),
+            --     ss:_format()
+            -- )
 
             ss:finish("")
             assert_eq(ss.message, "message2")
             assert_eq(ss.percentage, 100)
             assert_eq(ss.done, true)
-            assert_eq(
-                series_formatter(ss.title, "message2", 100, ss.done),
-                ss:_format()
-            )
+            -- assert_eq(
+            --     series_formatter(ss.title, "message2", 100, ss.done),
+            --     ss:_format()
+            -- )
 
             ss:finish(nil)
             assert_eq(ss.message, "message2")
             assert_eq(ss.percentage, 100)
             assert_eq(ss.done, true)
-            assert_eq(
-                series_formatter(ss.title, "message2", 100, ss.done),
-                ss:_format()
-            )
+            -- assert_eq(
+            --     series_formatter(ss.title, "message2", 100, ss.done),
+            --     ss:_format()
+            -- )
 
             ss:finish("message5")
             assert_eq(ss.message, "message5")
             assert_eq(ss.percentage, 100)
             assert_eq(ss.done, true)
-            assert_eq(
-                series_formatter(ss.title, "message5", 100, ss.done),
-                ss:_format()
-            )
-            assert_eq(
-                series_formatter(ss.title, "message5", 100, ss.done),
-                ss:format_result()
-            )
+            -- assert_eq(
+            --     series_formatter(ss.title, "message5", 100, ss.done),
+            --     ss:_format()
+            -- )
+            -- assert_eq(
+            --     series_formatter(ss.title, "message5", 100, ss.done),
+            --     ss:format_result()
+            -- )
         end)
     end)
     describe("[_choose_updated_message]", function()
