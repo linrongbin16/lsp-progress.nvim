@@ -31,7 +31,7 @@ local Defaults = {
     -- event rate to reduce this cost.
     --
     --- @type integer
-    event_update_time_limit = 100,
+    event_update_time_limit = 50,
 
     -- Max progress string length, by default -1 is unlimit.
     --
