@@ -7,6 +7,8 @@ describe("event", function()
 
     before_each(function()
         vim.api.nvim_command("cd " .. cwd)
+        vim.o.swapfile = false
+        vim.cmd([[edit README.md]])
     end)
 
     local event = require("lsp-progress.event")
