@@ -57,10 +57,10 @@ describe("series", function()
             ss:update("message2", 20)
             assert_eq(ss.message, "message2")
             assert_eq(ss.percentage, 20)
-            -- assert_eq(
-            --     series_formatter(ss.title, "message2", 20, ss.done),
-            --     ss:_format()
-            -- )
+            assert_eq(
+                series_formatter(ss.title, "message", 10, ss.done),
+                ss:_format()
+            )
 
             ss:update("", 30)
             assert_eq(ss.message, "message2")
