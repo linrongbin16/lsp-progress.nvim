@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.8](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.7...v1.0.8) (2024-02-24)
+
+
+### Performance Improvements
+
+* **format:** lock formatting object ([#121](https://github.com/linrongbin16/lsp-progress.nvim/issues/121)) ([1e13812](https://github.com/linrongbin16/lsp-progress.nvim/commit/1e13812ab86b965859b66f908c38a34549779444))
+
 ## [1.0.7](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.6...v1.0.7) (2024-02-09)
 
 
