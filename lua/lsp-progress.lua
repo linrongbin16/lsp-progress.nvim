@@ -4,6 +4,8 @@ local event = require("lsp-progress.event")
 local Series = require("lsp-progress.series").Series
 local Client = require("lsp-progress.client").Client
 
+local NVIM_VERSION_010 = vim.fn.has("nvim-0.10") > 0
+
 -- global variable
 
 local Registered = false
@@ -341,7 +343,7 @@ local function setup(option)
     -- init client
     require("lsp-progress.client").setup(Configs.client_format, Configs.spinner)
 
-    if vim.fn.has("nvim-0.10") > 0 then
+    if NVIM_VERSION_010 then
         -- see:
         -- https://github.com/neovim/neovim/blob/582d7f47905d82f315dc852a9d2937cd5b655e55/runtime/doc/news.txt#L44
         -- https://github.com/neovim/neovim/blob/582d7f47905d82f315dc852a9d2937cd5b655e55/runtime/lua/vim/lsp/util.lua#L348
