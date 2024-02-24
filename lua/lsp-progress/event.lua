@@ -107,10 +107,11 @@ local function emit()
             GlobalDisabledEventOptsManager == nil
             or not GlobalDisabledEventOptsManager:match()
         then
-            vim.api.nvim_exec_autocmds(
-                "User",
-                { pattern = Configs.name, modeline = false }
-            )
+            -- vim.api.nvim_exec_autocmds(
+            --     "User",
+            --     { pattern = Configs.name, modeline = false }
+            -- )
+            vim.cmd("doautocmd <nomodeline> User " .. Configs.name)
             Configs.emit = true
         end
         vim.defer_fn(reset, Configs.update_time_limit --[[@as integer]])
