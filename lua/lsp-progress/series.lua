@@ -11,6 +11,7 @@ local SeriesFormat = nil
 --- @field percentage integer?
 --- @field done boolean
 --- @field private _format_cache lsp_progress.SeriesFormatResult
+--- @field private _formatting boolean
 local Series = {}
 
 --- @param title string?
@@ -24,6 +25,7 @@ function Series:new(title, message, percentage)
         percentage = percentage,
         done = false,
         _format_cache = nil,
+        _formatting = false,
     }
 
     setmetatable(o, self)
@@ -40,6 +42,11 @@ end
 function Series:_format()
     assert(SeriesFormat ~= nil, "SeriesFormat cannot be null")
 
+    if self._formatting then
+        return self._format_cache
+    end
+    self._formatting = true
+
     local ok, result_or_err = pcall(
         SeriesFormat,
         self.title,
@@ -47,6 +54,9 @@ function Series:_format()
         self.percentage,
         self.done
     )
+    vim.schedule(function()
+        self._formatting = false
+    end)
 
     logger.ensure(
         ok,

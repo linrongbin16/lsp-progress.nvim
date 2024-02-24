@@ -156,15 +156,15 @@ require("lsp-progress").setup({
 ## Performance
 
 I use a 2-layer map to cache all lsp progress messages, thus transforming the
-**O(n \* m)** time complexity calculation to almost **O(1)**.
+**O(N \* M)** time complexity calculation to almost **O(1)**.
 
-> **n** is active lsp clients count, **m** is token count of each lsp client.
+> **N** is active lsp clients count, **M** is token count of each lsp client.
 
 For more details, please see [Design & Technics](https://github.com/linrongbin16/lsp-progress.nvim/wiki/Design-&-Technics).
 
 ## Requirement
 
-- neovim &ge; 0.6.0.
+- neovim &ge; 0.6.
 - [nerd fonts](https://www.nerdfonts.com/) for icons.
 
 ## Install
