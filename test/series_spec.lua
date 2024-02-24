@@ -102,7 +102,7 @@ describe("series", function()
             assert_eq(ss.percentage, 100)
             assert_eq(ss.done, true)
             assert_eq(
-                series_formatter(ss.title, "message", 10, true),
+                series_formatter(ss.title, "message", 10, false),
                 ss:_format()
             )
 
