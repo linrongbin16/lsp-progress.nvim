@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.9](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.8...v1.0.9) (2024-02-24)
+
+
+### Performance Improvements
+
+* detect 0.10 version only once ([#123](https://github.com/linrongbin16/lsp-progress.nvim/issues/123)) ([74e6e0e](https://github.com/linrongbin16/lsp-progress.nvim/commit/74e6e0ef5ceecd294678073c8b849d08f754f542))
+
 ## [1.0.8](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.7...v1.0.8) (2024-02-24)
 
 
