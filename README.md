@@ -150,7 +150,7 @@ require("lsp-progress").setup({
   - [lualine.nvim](#lualinenvim)
   - [heirline.nvim](#heirlinenvim)
 - [Configuration](#configuration)
-- [Credit](#credit)
+- [Alternatives](#alternatives)
 - [Contribute](#contribute)
 
 ## Performance
@@ -306,7 +306,7 @@ For complete options and defaults, please check [defaults.lua](https://github.co
 
 For more advanced configurations, please see [Advanced Configuration](https://github.com/linrongbin16/lsp-progress.nvim/wiki/Advanced-Configuration).
 
-## Credit
+## Alternatives
 
 - [lsp-status.nvim](https://github.com/nvim-lua/lsp-status.nvim): Utility
   functions for getting diagnostic status and progress messages from LSP servers,
