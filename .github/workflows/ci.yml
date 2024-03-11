@@ -6,19 +6,18 @@ on:
   push:
     branches:
       - main
-      - master
 jobs:
-  conventional_commit:
-    name: Conventional Commit
+  commit:
+    name: Commit
     if: ${{ github.ref != 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ytanikin/PRConventionalCommits@1.1.0
-        with:
-          task_types: '["feat","fix","docs","test","ci","refactor","perf","chore","revert","break"]'
-  luacheck:
-    name: Lua check
+      - uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,15 +27,17 @@ jobs:
           level: Information
           configpath: ".luarc.json"
           neodev-version: stable
-      - uses: lunarmodules/luacheck@v1
-        with:
-          args: lua --config .luacheckrc
+      - uses: cargo-bins/cargo-binstall@main
+      - name: Selene
+        run: |
+          cargo binstall --no-confirm selene
+          selene --config selene.toml ./lua
       - uses: JohnnyMorganz/stylua-action@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: latest
           args: --config-path .stylua.toml ./lua ./test
-      - uses: stefanzweifel/git-auto-commit-action@v4
+      - uses: stefanzweifel/git-auto-commit-action@v5
         if: ${{ github.ref != 'refs/heads/main' }}
         with:
           commit_message: "chore(pr): auto-commit"
@@ -60,7 +61,6 @@ jobs:
       - name: Run Tests
         shell: bash
         run: |
-          luarocks install luacheck
           luarocks install vusted
           vusted --shuffle ./test
   code_coverage:
@@ -80,7 +80,6 @@ jobs:
       - name: Run Tests
         shell: bash
         run: |
-          luarocks install luacheck
           luarocks install luacov
           luarocks install vusted
           vusted --coverage ./test
@@ -104,7 +103,7 @@ jobs:
     name: Release
     if: ${{ github.ref == 'refs/heads/main' }}
     needs:
-      - luacheck
+      - lint
       - unit_test
       - code_coverage
     runs-on: ubuntu-latest

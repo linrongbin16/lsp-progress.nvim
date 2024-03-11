@@ -1,0 +1,8 @@
+std = "vim"
+
+exclude = []
+
+[lints]
+mixed_table = "allow"
+unused_variable = "allow"
+incorrect_standard_library_use = "allow"
