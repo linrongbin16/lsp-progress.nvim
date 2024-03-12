@@ -309,15 +309,18 @@ local function progress(option)
         content = content:gsub("%%", "%%%%")
     end
 
-    logger.debug(
-        "|lsp-progress.progress| returned content: %s",
-        vim.inspect(content)
-    )
+    -- logger.debug(
+    --     "|lsp-progress.progress| returned content: %s",
+    --     vim.inspect(content)
+    -- )
     return content
 end
 
 --- @param option lsp_progress.Configs
 local function setup(option)
+    local uv = vim.uv or vim.loop
+    local start_secs, start_ms = uv.gettimeofday()
+
     -- setup config
     Configs = defaults.setup(option)
 
@@ -362,6 +365,11 @@ local function setup(option)
             Registered = true
         end
     end
+    local end_secs, end_ms = uv.gettimeofday()
+    local used = (
+        (end_secs * 1000000 + end_ms) - (start_secs * 1000000 + start_ms)
+    ) / 1000
+    logger.debug("|setup| used millis:{%s}", vim.inspect(used))
 end
 
 local M = {
