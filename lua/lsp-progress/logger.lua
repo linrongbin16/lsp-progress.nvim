@@ -1,5 +1,4 @@
-local uv = (vim.fn.has("nvim-0.10") > 0 and vim.uv ~= nil) and vim.uv
-    or vim.loop
+local uv = vim.uv or vim.loop
 
 local PATH_SEPARATOR = (vim.fn.has("win32") > 0 or vim.fn.has("win64") > 0)
         and "\\"
