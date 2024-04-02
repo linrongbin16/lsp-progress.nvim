@@ -248,7 +248,9 @@ require("lualine").setup({
     lualine_b = { ... },
     lualine_c = {
       -- invoke `progress` here.
-      require('lsp-progress').progress,
+      function()
+        return require('lsp-progress').progress()
+      end,
     },
     ...
   }
@@ -267,7 +269,9 @@ vim.api.nvim_create_autocmd("User", {
 
 ```lua
 local LspProgress = {
-  provider = require('lsp-progress').progress,
+  provider = function()
+    return require('lsp-progress').progress(),
+  end,
   update = {
     'User',
     pattern = 'LspProgressStatusUpdated',
