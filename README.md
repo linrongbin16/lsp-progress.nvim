@@ -284,11 +284,9 @@ local LspProgress = {
 local StatusLine = {
   -- Other StatusLine components
   { ... },
-  { ... },
 
   -- Lsp progress status component here
   LspProgress,
-  ...
 }
 
 require('heirline').setup({
