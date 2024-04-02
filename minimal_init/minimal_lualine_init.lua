@@ -51,7 +51,9 @@ local plugins = {
                     { "branch", icons_enabled = false },
                 },
                 lualine_c = {
-                    require("lsp-progress").progress,
+                    function()
+                        return require("lsp-progress").progress()
+                    end,
                 },
             },
             tabline = {
