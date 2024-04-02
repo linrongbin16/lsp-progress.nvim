@@ -240,7 +240,7 @@ lua require('lsp-progress').setup()
 
 > [!IMPORTANT]
 >
-> Do not directly put `require('lsp-progress').progress` as lualine component or heirline's component provider, wrap it with a function to avoid the dependency issue, see [#131](https://github.com/linrongbin16/lsp-progress.nvim/issues/131).
+> Don't directly put `require('lsp-progress').progress` as lualine component or heirline's component provider, wrap it with a function to avoid the dependency issue, see [#131](https://github.com/linrongbin16/lsp-progress.nvim/issues/131).
 
 ### [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim)
 
