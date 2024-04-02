@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.10](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.9...v1.0.10) (2024-04-02)
+
+
+### Bug Fixes
+
+* fix integration tutorials on lazy dependency issue ([#133](https://github.com/linrongbin16/lsp-progress.nvim/issues/133)) ([047417b](https://github.com/linrongbin16/lsp-progress.nvim/commit/047417b36d5c21c944a1bb4c450517587ffe9e8e))
+
 ## [1.0.9](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.8...v1.0.9) (2024-02-24)
 
 
