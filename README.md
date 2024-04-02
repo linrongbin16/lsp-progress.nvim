@@ -238,6 +238,10 @@ lua require('lsp-progress').setup()
 
 ## Integration
 
+> [!IMPORTANT]
+>
+> Don't directly put `require('lsp-progress').progress` as lualine component or heirline's component provider, wrap it with a function to avoid the dependency issue, see [#131](https://github.com/linrongbin16/lsp-progress.nvim/issues/131).
+
 ### [lualine.nvim](https://github.com/nvim-lualine/lualine.nvim)
 
 ```lua
@@ -248,7 +252,9 @@ require("lualine").setup({
     lualine_b = { ... },
     lualine_c = {
       -- invoke `progress` here.
-      require('lsp-progress').progress,
+      function()
+        return require('lsp-progress').progress()
+      end,
     },
     ...
   }
@@ -267,7 +273,9 @@ vim.api.nvim_create_autocmd("User", {
 
 ```lua
 local LspProgress = {
-  provider = require('lsp-progress').progress,
+  provider = function()
+    return require('lsp-progress').progress(),
+  end,
   update = {
     'User',
     pattern = 'LspProgressStatusUpdated',
@@ -280,11 +288,9 @@ local LspProgress = {
 local StatusLine = {
   -- Other StatusLine components
   { ... },
-  { ... },
 
   -- Lsp progress status component here
   LspProgress,
-  ...
 }
 
 require('heirline').setup({
