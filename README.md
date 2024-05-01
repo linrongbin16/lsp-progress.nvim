@@ -274,7 +274,7 @@ vim.api.nvim_create_autocmd("User", {
 ```lua
 local LspProgress = {
   provider = function()
-    return require('lsp-progress').progress(),
+    return require('lsp-progress').progress()
   end,
   update = {
     'User',
