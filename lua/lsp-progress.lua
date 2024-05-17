@@ -252,7 +252,7 @@ local function _is_lsp_progress_obj(p)
 end
 
 local function event_handler()
-    local lsp_clients = vim.lsp.get_active_clients()
+    local lsp_clients = vim.lsp.get_clients()
     for _, client in ipairs(lsp_clients) do
         if _is_lsp_client_obj(client) and type(client.progress) == "table" then
             for progress in client.progress do
