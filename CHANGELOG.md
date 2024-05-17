@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.12](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.11...v1.0.12) (2024-05-17)
+
+
+### Bug Fixes
+
+* **defaults:** use api.get_clients() ([#142](https://github.com/linrongbin16/lsp-progress.nvim/issues/142)) ([3f1bc7a](https://github.com/linrongbin16/lsp-progress.nvim/commit/3f1bc7afced59a68fbacc92d84a0d88590a58a10))
+
 ## [1.0.11](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.10...v1.0.11) (2024-05-17)
 
 
