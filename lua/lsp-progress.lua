@@ -244,12 +244,11 @@ local function method_handler(err, msg, ctx)
     update_progress(client, msg)
 end
 
---- @param c vim.lsp.Client
+--- @param c table
 local function _is_lsp_client_obj(c)
     return type(c) == "table"
         and type(c.id) == "number"
         and type(c.name) == "string"
-        ---@diagnostic disable-next-line: undefined-field
         and type(c.progress) == "table"
 end
 
