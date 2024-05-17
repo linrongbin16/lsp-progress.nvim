@@ -155,8 +155,7 @@ require("lsp-progress").setup({
 
 ## Performance
 
-I use a 2-layer map to cache all lsp progress messages, thus transforming the
-**O(N \* M)** time complexity calculation to almost **O(1)**.
+I use a 2-layer map to cache all lsp progress messages, thus split the **O(N \* M)** time complexity calculation into almost **O(1)** on every LSP progress update.
 
 > **N** is active lsp clients count, **M** is token count of each lsp client.
 
@@ -164,8 +163,8 @@ For more details, please see [Design & Technics](https://github.com/linrongbin16
 
 ## Requirement
 
-- neovim &ge; 0.6.
-- [nerd fonts](https://www.nerdfonts.com/) for icons.
+- Neovim &ge; 0.6.
+- [Nerd fonts](https://www.nerdfonts.com/) for icons.
 
 ## Install
 
@@ -221,20 +220,17 @@ lua require('lsp-progress').setup()
 
 ## Usage
 
-- `LspProgressStatusUpdated`: user event to notify new status, and trigger statusline
-  refresh.
-- `require('lsp-progress').progress(opts)`: get lsp progress status, parameter
-  `opts` is an optional lua table:
+- `LspProgressStatusUpdated`: user event to notify new status, and trigger statusline refresh.
+- `require('lsp-progress').progress(opts)`: get lsp progress status, parameter `opts` is an optional lua table:
 
   ```lua
   require('lsp-progress').progress({
-      format = ...,
-      max_size = ...,
+    format = ...,
+    max_size = ...,
   })
   ```
 
-  The fields are the same value passing to `setup` (see [Configuration](#configuration))
-  to provide more dynamic abilities.
+  The fields are the same value passing to `setup` (see [Configuration](#configuration)) for more dynamic abilities.
 
 ## Integration
 
@@ -250,9 +246,10 @@ require("lualine").setup({
     -- Other Status Line components
     lualine_a = { ... },
     lualine_b = { ... },
+
     lualine_c = {
-      -- invoke `progress` here.
       function()
+        -- invoke `progress` here.
         return require('lsp-progress').progress()
       end,
     },
@@ -314,11 +311,8 @@ For more advanced configurations, please see [Advanced Configuration](https://gi
 
 ## Alternatives
 
-- [lsp-status.nvim](https://github.com/nvim-lua/lsp-status.nvim): Utility
-  functions for getting diagnostic status and progress messages from LSP servers,
-  for use in the Neovim statusline.
-- [fidget.nvim](https://github.com/j-hui/fidget.nvim): Standalone UI for
-  nvim-lsp progress.
+- [lsp-status.nvim](https://github.com/nvim-lua/lsp-status.nvim): Utility functions for getting diagnostic status and progress messages from LSP servers, for use in the Neovim statusline.
+- [fidget.nvim](https://github.com/j-hui/fidget.nvim): Standalone UI for nvim-lsp progress.
 
 ## Contribute
 
