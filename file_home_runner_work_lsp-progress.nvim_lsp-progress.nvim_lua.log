@@ -1,124 +1,124 @@
-[02:46:33.155][info] [#0:/nix/store/805rh8zphzap7063qcdz4fnlvlc2m782-lua-language-server-3.7.4/share/lua-language-server/main.lua:66]: Lua Lsp startup, root: 	/nix/store/805rh8zphzap7063qcdz4fnlvlc2m782-lua-language-server-3.7.4/share/lua-language-server
-[02:46:33.155][info] [#0:/nix/store/805rh8zphzap7063qcdz4fnlvlc2m782-lua-language-server-3.7.4/share/lua-language-server/main.lua:67]: ROOT:	/nix/store/805rh8zphzap7063qcdz4fnlvlc2m782-lua-language-server-3.7.4/share/lua-language-server
-[02:46:33.155][info] [#0:/nix/store/805rh8zphzap7063qcdz4fnlvlc2m782-lua-language-server-3.7.4/share/lua-language-server/main.lua:68]: LOGPATH:	.
-[02:46:33.155][info] [#0:/nix/store/805rh8zphzap7063qcdz4fnlvlc2m782-lua-language-server-3.7.4/share/lua-language-server/main.lua:69]: METAPATH:	/home/runner/.cache/lua-language-server/meta
-[02:46:33.155][info] [#0:/nix/store/805rh8zphzap7063qcdz4fnlvlc2m782-lua-language-server-3.7.4/share/lua-language-server/main.lua:70]: VERSION:	3.7.4
-[02:46:33.179][info] [#0:script/language.lua:137]: VSC language: nil
-[02:46:33.179][info] [#0:script/language.lua:138]: LS  language: en-us
-[02:46:33.180][info] [#0:script/client.lua:657]: Client init	{
+[02:48:18.847][info] [#0:/nix/store/805rh8zphzap7063qcdz4fnlvlc2m782-lua-language-server-3.7.4/share/lua-language-server/main.lua:66]: Lua Lsp startup, root: 	/nix/store/805rh8zphzap7063qcdz4fnlvlc2m782-lua-language-server-3.7.4/share/lua-language-server
+[02:48:18.847][info] [#0:/nix/store/805rh8zphzap7063qcdz4fnlvlc2m782-lua-language-server-3.7.4/share/lua-language-server/main.lua:67]: ROOT:	/nix/store/805rh8zphzap7063qcdz4fnlvlc2m782-lua-language-server-3.7.4/share/lua-language-server
+[02:48:18.847][info] [#0:/nix/store/805rh8zphzap7063qcdz4fnlvlc2m782-lua-language-server-3.7.4/share/lua-language-server/main.lua:68]: LOGPATH:	.
+[02:48:18.847][info] [#0:/nix/store/805rh8zphzap7063qcdz4fnlvlc2m782-lua-language-server-3.7.4/share/lua-language-server/main.lua:69]: METAPATH:	/home/runner/.cache/lua-language-server/meta
+[02:48:18.847][info] [#0:/nix/store/805rh8zphzap7063qcdz4fnlvlc2m782-lua-language-server-3.7.4/share/lua-language-server/main.lua:70]: VERSION:	3.7.4
+[02:48:18.871][info] [#0:script/language.lua:137]: VSC language: nil
+[02:48:18.871][info] [#0:script/language.lua:138]: LS  language: en-us
+[02:48:18.871][info] [#0:script/client.lua:657]: Client init	{
   rootUri = "file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua"
 }
-[02:46:33.180][info] [#0:script/language.lua:137]: VSC language: nil
-[02:46:33.180][info] [#0:script/language.lua:138]: LS  language: en-us
-[02:46:33.180][info] [#0:script/workspace/workspace.lua:38]: Workspace init root: 	file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
-[02:46:33.180][info] [#0:script/workspace/workspace.lua:42]: Log path: 	./file_home_runner_work_lsp-progress.nvim_lsp-progress.nvim_lua.log
-[02:46:33.180][info] [#0:script/workspace/workspace.lua:48]: Workspace create: 	file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
-[02:46:33.181][info] [#0:script/provider/provider.lua:36]: Load config from specified	/home/runner/work/lsp-progress.nvim/lsp-progress.nvim/.luarc.json
-[02:46:33.181][info] [#0:script/provider/provider.lua:37]: {
+[02:48:18.871][info] [#0:script/language.lua:137]: VSC language: nil
+[02:48:18.871][info] [#0:script/language.lua:138]: LS  language: en-us
+[02:48:18.871][info] [#0:script/workspace/workspace.lua:38]: Workspace init root: 	file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
+[02:48:18.871][info] [#0:script/workspace/workspace.lua:42]: Log path: 	./file_home_runner_work_lsp-progress.nvim_lsp-progress.nvim_lua.log
+[02:48:18.872][info] [#0:script/workspace/workspace.lua:48]: Workspace create: 	file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
+[02:48:18.872][info] [#0:script/provider/provider.lua:36]: Load config from specified	/home/runner/work/lsp-progress.nvim/lsp-progress.nvim/.luarc.json
+[02:48:18.872][info] [#0:script/provider/provider.lua:37]: {
   ["diagnostics.globals"] = { "vim", "describe", "before_each", "it" },
   ["workspace.checkThirdParty"] = "Disable"
 }
-[02:46:33.183][info] [#0:script/provider/provider.lua:36]: Load config from specified	/home/runner/work/lsp-progress.nvim/lsp-progress.nvim/.luarc.json
-[02:46:33.183][info] [#0:script/provider/provider.lua:37]: {
+[02:48:18.874][info] [#0:script/provider/provider.lua:36]: Load config from specified	/home/runner/work/lsp-progress.nvim/lsp-progress.nvim/.luarc.json
+[02:48:18.874][info] [#0:script/provider/provider.lua:37]: {
   ["diagnostics.globals"] = { "vim", "describe", "before_each", "it" },
   ["workspace.checkThirdParty"] = "Disable"
 }
-[02:46:33.183][warn] [#0:script/config/loader.lua:116]: No config?	nil
-[02:46:33.183][warn] [#0:script/config/loader.lua:116]: No config?	nil
-[02:46:33.183][warn] [#0:script/config/loader.lua:116]: No config?	nil
-[02:46:33.183][info] [#0:script/provider/provider.lua:61]: Load config from client	fallback
-[02:46:33.183][info] [#0:script/provider/provider.lua:62]: nil
-[02:46:33.183][warn] [#0:script/config/loader.lua:116]: No config?	nil
-[02:46:33.183][info] [#0:script/provider/provider.lua:61]: Load config from client	fallback
-[02:46:33.183][info] [#0:script/provider/provider.lua:62]: nil
-[02:46:33.183][info] [#0:script/library.lua:212]: Init builtin library at:	file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
-[02:46:33.191][info] [#0:script/library.lua:212]: Init builtin library at:	nil
-[02:46:33.197][info] [#0:script/workspace/workspace.lua:324]: Preload start:	file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
-[02:46:33.200][info] [#0:script/workspace/workspace.lua:330]: Scan files at:	file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
-[02:46:33.200][info] [#0:script/workspace/workspace.lua:324]: Preload start:	<fallback>
-[02:46:33.202][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/utf8.lua
-[02:46:33.202][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/table.lua
-[02:46:33.202][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/debug.lua
-[02:46:33.202][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/math.lua
-[02:46:33.202][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/string.lua
-[02:46:33.203][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/io.lua
-[02:46:33.203][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/builtin.lua
-[02:46:33.203][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/utf8.lua
-[02:46:33.203][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/package.lua
-[02:46:33.203][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/table.lua
-[02:46:33.203][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/os.lua
-[02:46:33.203][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/debug.lua
-[02:46:33.203][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/coroutine.lua
-[02:46:33.203][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/math.lua
-[02:46:33.203][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/basic.lua
-[02:46:33.203][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/string.lua
-[02:46:33.203][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/io.lua
-[02:46:33.203][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/builtin.lua
-[02:46:33.203][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/package.lua
-[02:46:33.203][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/os.lua
-[02:46:33.204][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/coroutine.lua
-[02:46:33.204][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/basic.lua
-[02:46:33.204][info] [#0:script/workspace/workspace.lua:379]: Found 11 files at:	<fallback>
-[02:46:33.204][info] [#0:script/workspace/loading.lua:161]: Load files from disk:	<fallback>
-[02:46:33.204][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/basic.lua , size = 15.377 KB
-[02:46:33.212][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/basic.lua
-[02:46:33.212][info] [#0:script/workspace/workspace.lua:379]: Found 18 files at:	file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
-[02:46:33.212][info] [#0:script/workspace/loading.lua:161]: Load files from disk:	file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
-[02:46:33.212][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/basic.lua
-[02:46:33.212][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/basic.lua
-[02:46:33.212][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/coroutine.lua , size = 2.590 KB
-[02:46:33.213][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/coroutine.lua
-[02:46:33.213][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/coroutine.lua
-[02:46:33.213][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/coroutine.lua
-[02:46:33.213][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/os.lua , size = 5.600 KB
-[02:46:33.216][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/os.lua
-[02:46:33.216][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/os.lua
-[02:46:33.216][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/os.lua
-[02:46:33.217][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/package.lua , size = 2.944 KB
-[02:46:33.219][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/package.lua
-[02:46:33.219][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/package.lua
-[02:46:33.219][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/package.lua
-[02:46:33.219][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/builtin.lua , size = 0.302 KB
-[02:46:33.219][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/builtin.lua
-[02:46:33.219][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/builtin.lua
-[02:46:33.219][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/builtin.lua
-[02:46:33.220][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/io.lua , size = 6.364 KB
-[02:46:33.223][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/io.lua
-[02:46:33.223][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/io.lua
-[02:46:33.223][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/io.lua
-[02:46:33.223][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/string.lua , size = 6.341 KB
-[02:46:33.226][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/string.lua
-[02:46:33.226][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/string.lua
-[02:46:33.226][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/string.lua
-[02:46:33.226][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/math.lua , size = 8.509 KB
-[02:46:33.232][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/math.lua
-[02:46:33.232][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/math.lua
-[02:46:33.232][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/math.lua
-[02:46:33.232][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/debug.lua , size = 7.637 KB
-[02:46:33.236][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/debug.lua
-[02:46:33.236][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/debug.lua
-[02:46:33.236][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/debug.lua
-[02:46:33.236][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/table.lua , size = 4.230 KB
-[02:46:33.238][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/table.lua
-[02:46:33.238][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/table.lua
-[02:46:33.238][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/table.lua
-[02:46:33.238][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/utf8.lua , size = 2.386 KB
-[02:46:33.239][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/utf8.lua
-[02:46:33.239][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/utf8.lua
-[02:46:33.239][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/utf8.lua
-[02:46:33.239][info] [#0:script/workspace/loading.lua:173]: Loaded files takes [0.036] sec: <fallback>
-[02:46:33.239][info] [#0:script/workspace/loading.lua:182]: Compile files takes [0.000] sec: <fallback>
-[02:46:33.239][info] [#0:script/workspace/loading.lua:183]: Loaded finish:	<fallback>
-[02:46:33.239][info] [#0:script/workspace/workspace.lua:381]: Preload finish at:	<fallback>
-[02:46:33.240][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua/lsp-progress/client.lua , size = 6.275 KB
-[02:46:33.244][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua/lsp-progress/api.lua , size = 0.265 KB
-[02:46:33.245][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua/lsp-progress/event.lua , size = 3.984 KB
-[02:46:33.247][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua/lsp-progress/defaults.lua , size = 5.470 KB
-[02:46:33.250][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua/lsp-progress/logger.lua , size = 3.303 KB
-[02:46:33.254][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua/lsp-progress/series.lua , size = 3.196 KB
-[02:46:33.256][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua/lsp-progress.lua , size = 11.474 KB
-[02:46:33.261][info] [#0:script/workspace/loading.lua:173]: Loaded files takes [0.049] sec: file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
-[02:46:33.261][info] [#0:script/workspace/loading.lua:182]: Compile files takes [0.000] sec: file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
-[02:46:33.261][info] [#0:script/workspace/loading.lua:183]: Loaded finish:	file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
-[02:46:33.261][info] [#0:script/workspace/workspace.lua:381]: Preload finish at:	file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
-[02:46:33.263][info] [#0:script/provider/diagnostic.lua:557]: Diagnostics scope [file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua], files count:[18]
+[02:48:18.875][warn] [#0:script/config/loader.lua:116]: No config?	nil
+[02:48:18.875][warn] [#0:script/config/loader.lua:116]: No config?	nil
+[02:48:18.875][warn] [#0:script/config/loader.lua:116]: No config?	nil
+[02:48:18.875][info] [#0:script/provider/provider.lua:61]: Load config from client	fallback
+[02:48:18.875][info] [#0:script/provider/provider.lua:62]: nil
+[02:48:18.875][warn] [#0:script/config/loader.lua:116]: No config?	nil
+[02:48:18.875][info] [#0:script/provider/provider.lua:61]: Load config from client	fallback
+[02:48:18.875][info] [#0:script/provider/provider.lua:62]: nil
+[02:48:18.875][info] [#0:script/library.lua:212]: Init builtin library at:	file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
+[02:48:18.883][info] [#0:script/library.lua:212]: Init builtin library at:	nil
+[02:48:18.889][info] [#0:script/workspace/workspace.lua:324]: Preload start:	file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
+[02:48:18.892][info] [#0:script/workspace/workspace.lua:330]: Scan files at:	file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
+[02:48:18.892][info] [#0:script/workspace/workspace.lua:324]: Preload start:	<fallback>
+[02:48:18.894][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/utf8.lua
+[02:48:18.894][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/table.lua
+[02:48:18.894][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/debug.lua
+[02:48:18.894][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/math.lua
+[02:48:18.894][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/string.lua
+[02:48:18.894][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/io.lua
+[02:48:18.895][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/builtin.lua
+[02:48:18.895][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/utf8.lua
+[02:48:18.895][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/package.lua
+[02:48:18.895][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/table.lua
+[02:48:18.895][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/os.lua
+[02:48:18.895][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/debug.lua
+[02:48:18.895][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/coroutine.lua
+[02:48:18.895][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/math.lua
+[02:48:18.895][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/basic.lua
+[02:48:18.895][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/string.lua
+[02:48:18.895][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/io.lua
+[02:48:18.895][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/builtin.lua
+[02:48:18.895][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/package.lua
+[02:48:18.895][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/os.lua
+[02:48:18.895][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/coroutine.lua
+[02:48:18.896][info] [#0:script/workspace/workspace.lua:353]: Scan library at:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/basic.lua
+[02:48:18.896][info] [#0:script/workspace/workspace.lua:379]: Found 11 files at:	<fallback>
+[02:48:18.896][info] [#0:script/workspace/loading.lua:161]: Load files from disk:	<fallback>
+[02:48:18.896][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/basic.lua , size = 15.377 KB
+[02:48:18.903][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/basic.lua
+[02:48:18.903][info] [#0:script/workspace/workspace.lua:379]: Found 18 files at:	file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
+[02:48:18.903][info] [#0:script/workspace/loading.lua:161]: Load files from disk:	file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
+[02:48:18.903][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/basic.lua
+[02:48:18.903][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/basic.lua
+[02:48:18.904][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/coroutine.lua , size = 2.590 KB
+[02:48:18.905][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/coroutine.lua
+[02:48:18.905][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/coroutine.lua
+[02:48:18.905][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/coroutine.lua
+[02:48:18.905][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/os.lua , size = 5.600 KB
+[02:48:18.908][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/os.lua
+[02:48:18.908][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/os.lua
+[02:48:18.908][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/os.lua
+[02:48:18.909][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/package.lua , size = 2.944 KB
+[02:48:18.910][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/package.lua
+[02:48:18.910][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/package.lua
+[02:48:18.910][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/package.lua
+[02:48:18.910][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/builtin.lua , size = 0.302 KB
+[02:48:18.911][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/builtin.lua
+[02:48:18.911][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/builtin.lua
+[02:48:18.911][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/builtin.lua
+[02:48:18.911][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/io.lua , size = 6.364 KB
+[02:48:18.914][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/io.lua
+[02:48:18.914][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/io.lua
+[02:48:18.914][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/io.lua
+[02:48:18.914][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/string.lua , size = 6.341 KB
+[02:48:18.918][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/string.lua
+[02:48:18.918][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/string.lua
+[02:48:18.918][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/string.lua
+[02:48:18.918][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/math.lua , size = 8.509 KB
+[02:48:18.923][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/math.lua
+[02:48:18.923][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/math.lua
+[02:48:18.923][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/math.lua
+[02:48:18.923][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/debug.lua , size = 7.637 KB
+[02:48:18.927][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/debug.lua
+[02:48:18.927][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/debug.lua
+[02:48:18.927][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/debug.lua
+[02:48:18.927][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/table.lua , size = 4.230 KB
+[02:48:18.929][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/table.lua
+[02:48:18.929][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/table.lua
+[02:48:18.929][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/table.lua
+[02:48:18.929][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/utf8.lua , size = 2.386 KB
+[02:48:18.931][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/utf8.lua
+[02:48:18.931][info] [#0:script/workspace/loading.lua:89]: Skip loaded file: file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/utf8.lua
+[02:48:18.931][info] [#0:script/workspace/loading.lua:113]: ++++As library of:	file:///home/runner/.cache/lua-language-server/meta/Lua%205.4%20en-us%20utf8/utf8.lua
+[02:48:18.931][info] [#0:script/workspace/loading.lua:173]: Loaded files takes [0.035] sec: <fallback>
+[02:48:18.931][info] [#0:script/workspace/loading.lua:182]: Compile files takes [0.000] sec: <fallback>
+[02:48:18.931][info] [#0:script/workspace/loading.lua:183]: Loaded finish:	<fallback>
+[02:48:18.931][info] [#0:script/workspace/workspace.lua:381]: Preload finish at:	<fallback>
+[02:48:18.932][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua/lsp-progress/client.lua , size = 6.275 KB
+[02:48:18.936][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua/lsp-progress/api.lua , size = 0.265 KB
+[02:48:18.936][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua/lsp-progress/event.lua , size = 3.984 KB
+[02:48:18.939][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua/lsp-progress/defaults.lua , size = 5.470 KB
+[02:48:18.941][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua/lsp-progress/logger.lua , size = 3.303 KB
+[02:48:18.945][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua/lsp-progress/series.lua , size = 3.196 KB
+[02:48:18.947][info] [#0:script/workspace/loading.lua:101]: Preload file at: file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua/lsp-progress.lua , size = 11.444 KB
+[02:48:18.952][info] [#0:script/workspace/loading.lua:173]: Loaded files takes [0.048] sec: file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
+[02:48:18.952][info] [#0:script/workspace/loading.lua:182]: Compile files takes [0.000] sec: file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
+[02:48:18.952][info] [#0:script/workspace/loading.lua:183]: Loaded finish:	file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
+[02:48:18.952][info] [#0:script/workspace/workspace.lua:381]: Preload finish at:	file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua
+[02:48:18.955][info] [#0:script/provider/diagnostic.lua:557]: Diagnostics scope [file:///home/runner/work/lsp-progress.nvim/lsp-progress.nvim/lua], files count:[18]
