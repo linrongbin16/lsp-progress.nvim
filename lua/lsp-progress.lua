@@ -251,6 +251,7 @@ local function _is_lsp_client_obj(c)
         and type(c.progress) == "table"
 end
 
+--- @param p {token: integer|string, value: table}
 local function _is_lsp_progress_obj(p)
     return type(p) == "table" and p.token and type(p.value) == "table"
 end
