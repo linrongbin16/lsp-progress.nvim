@@ -244,7 +244,7 @@ local function method_handler(err, msg, ctx)
     update_progress(client, msg)
 end
 
---- @param c table
+--- @param c table?
 local function _is_lsp_client_obj(c)
     return type(c) == "table"
         and type(c.id) == "number"
@@ -252,7 +252,7 @@ local function _is_lsp_client_obj(c)
         and type(c.progress) == "table"
 end
 
---- @param p {token: integer|string, value: table}
+--- @param p table?
 local function _is_lsp_progress_obj(p)
     return type(p) == "table" and p.token and type(p.value) == "table"
 end
