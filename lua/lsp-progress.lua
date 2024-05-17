@@ -3,6 +3,7 @@ local defaults = require("lsp-progress.defaults")
 local event = require("lsp-progress.event")
 local Series = require("lsp-progress.series").Series
 local Client = require("lsp-progress.client").Client
+local api = require("lsp-progress.api")
 
 local NVIM_VERSION_010 = vim.fn.has("nvim-0.10") > 0
 
@@ -257,7 +258,7 @@ local function _is_lsp_progress_obj(p)
 end
 
 local function event_handler()
-    local clients = vim.lsp.get_clients()
+    local clients = api.lsp_clients()
     for _, client in ipairs(clients) do
         if _is_lsp_client_obj(client) then
             local progress = client.progress
@@ -279,7 +280,7 @@ end
 local function progress(option)
     option = vim.tbl_deep_extend("force", vim.deepcopy(Configs), option or {})
 
-    local active_clients_count = #vim.lsp.get_active_clients()
+    local active_clients_count = #api.lsp_clients()
     if active_clients_count <= 0 then
         return ""
     end
