@@ -3,6 +3,7 @@ local defaults = require("lsp-progress.defaults")
 local event = require("lsp-progress.event")
 local Series = require("lsp-progress.series").Series
 local Client = require("lsp-progress.client").Client
+local api = require("lsp-progress.api")
 
 local NVIM_VERSION_010 = vim.fn.has("nvim-0.10") > 0
 
@@ -243,22 +244,31 @@ local function method_handler(err, msg, ctx)
     update_progress(client, msg)
 end
 
+--- @param c table?
 local function _is_lsp_client_obj(c)
-    return type(c) == "table" and c.id and type(c.name) == "string"
+    return type(c) == "table"
+        and type(c.id) == "number"
+        and type(c.name) == "string"
+        and type(c.progress) == "table"
 end
 
+--- @param p table?
 local function _is_lsp_progress_obj(p)
     return type(p) == "table" and p.token and type(p.value) == "table"
 end
 
 local function event_handler()
-    local lsp_clients = vim.lsp.get_active_clients()
-    for _, client in ipairs(lsp_clients) do
-        if _is_lsp_client_obj(client) and type(client.progress) == "table" then
-            for progress in client.progress do
-                -- logger.debug("|setup| v0.10 progress:%s", vim.inspect(progress))
-                if _is_lsp_progress_obj(progress) then
-                    update_progress(client, progress)
+    local clients = api.lsp_clients()
+    for _, client in ipairs(clients) do
+        if _is_lsp_client_obj(client) then
+            local progress = client.progress
+            while true do
+                local prog_obj = progress:pop()
+                if prog_obj == nil then
+                    break
+                end
+                if _is_lsp_progress_obj(prog_obj) then
+                    update_progress(client, prog_obj)
                 end
             end
         end
@@ -270,7 +280,7 @@ end
 local function progress(option)
     option = vim.tbl_deep_extend("force", vim.deepcopy(Configs), option or {})
 
-    local active_clients_count = #vim.lsp.get_active_clients()
+    local active_clients_count = #api.lsp_clients()
     if active_clients_count <= 0 then
         return ""
     end
@@ -344,9 +354,6 @@ local function setup(option)
     require("lsp-progress.client").setup(Configs.client_format, Configs.spinner)
 
     if NVIM_VERSION_010 then
-        -- see:
-        -- https://github.com/neovim/neovim/blob/582d7f47905d82f315dc852a9d2937cd5b655e55/runtime/doc/news.txt#L44
-        -- https://github.com/neovim/neovim/blob/582d7f47905d82f315dc852a9d2937cd5b655e55/runtime/lua/vim/lsp/util.lua#L348
         vim.api.nvim_create_autocmd("LspProgress", { callback = event_handler })
     else
         if not Registered then
