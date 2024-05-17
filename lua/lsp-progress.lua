@@ -249,6 +249,7 @@ local function _is_lsp_client_obj(c)
     return type(c) == "table"
         and type(c.id) == "number"
         and type(c.name) == "string"
+        ---@diagnostic disable-next-line: undefined-field
         and type(c.progress) == "table"
 end
 
