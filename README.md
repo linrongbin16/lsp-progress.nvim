@@ -155,8 +155,7 @@ require("lsp-progress").setup({
 
 ## Performance
 
-I use a 2-layer map to cache all lsp progress messages, thus transforming the
-**O(N \* M)** time complexity calculation to almost **O(1)**.
+I use a 2-layer map to cache all lsp progress messages, thus split the **O(N \* M)** time complexity calculation into almost **O(1)** on every LSP progress update.
 
 > **N** is active lsp clients count, **M** is token count of each lsp client.
 
