@@ -60,25 +60,6 @@ jobs:
       - name: Run Tests
         shell: bash
         run: |
-          luarocks install vusted
-          vusted --shuffle ./test
-  code_coverage:
-    name: Code Coverage
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: rhysd/action-setup-vim@v1
-        id: vim
-        with:
-          neovim: true
-          version: stable
-      - uses: leafo/gh-actions-lua@v10
-        with:
-          luaVersion: "luajit-2.1.0-beta3"
-      - uses: leafo/gh-actions-luarocks@v4
-      - name: Run Tests
-        shell: bash
-        run: |
           luarocks install luacov
           luarocks install vusted
           vusted --coverage ./test
@@ -93,7 +74,7 @@ jobs:
           ls -l .
           echo "cat ./luacov.report.out"
           cat ./luacov.report.out
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         with:
           files: luacov.report.out
         env:
@@ -104,7 +85,6 @@ jobs:
     needs:
       - lint
       - unit_test
-      - code_coverage
     runs-on: ubuntu-latest
     steps:
       - uses: google-github-actions/release-please-action@v3
