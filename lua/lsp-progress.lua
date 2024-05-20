@@ -244,34 +244,28 @@ local function method_handler(err, msg, ctx)
     update_progress(client, msg)
 end
 
---- @param c table?
-local function _is_lsp_client_obj(c)
-    return type(c) == "table"
-        and type(c.id) == "number"
-        and type(c.name) == "string"
-        and type(c.progress) == "table"
-end
-
 --- @param p table?
+--- @return boolean
 local function _is_lsp_progress_obj(p)
-    return type(p) == "table" and p.token and type(p.value) == "table"
+    return type(p) == "table" and p.token ~= nil and type(p.value) == "table"
 end
 
-local function event_handler()
-    local clients = api.lsp_clients()
-    for _, client in ipairs(clients) do
-        if _is_lsp_client_obj(client) then
-            local progress = client.progress
-            while true do
-                local prog_obj = progress:pop()
-                if prog_obj == nil then
-                    break
-                end
-                if _is_lsp_progress_obj(prog_obj) then
-                    update_progress(client, prog_obj)
-                end
-            end
-        end
+--- @param ev table?
+--- @return boolean
+local function _is_lsp_progress_event(ev)
+    return type(ev) == "table"
+        and type(ev.data) == "table"
+        and type(ev.data.client_id) == "number"
+        and _is_lsp_progress_obj(ev.data.params)
+end
+
+--- @param ev table?
+local function event_handler(ev)
+    logger.debug("|lsp-progress.event_handler| ev:%s", vim.inspect(ev))
+    if ev ~= nil and _is_lsp_progress_event(ev) then
+        local client_id = ev.data.client_id
+        local client = vim.lsp.get_client_by_id(client_id) --[[@as table]]
+        update_progress(client, ev.data.params)
     end
 end
 
