@@ -11,8 +11,6 @@
 
 <p align="center"><i> A performant lsp progress status for Neovim. </i></p>
 
-<!-- https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/a0436100-d35c-48a1-a9c4-4346b09d6b25 -->
-
 ![default](https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/e089234b-d465-45ae-840f-72a57b846b0d)
 
 <details>
@@ -23,8 +21,6 @@ require("lsp-progress").setup()
 ```
 
 </details>
-
-<!-- https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/84f17744-9404-4a7b-bbdf-aac5babc0ed3 -->
 
 ![client-names](https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/01dac7a0-678a-421d-a243-9dba2576b15b)
 
@@ -85,8 +81,6 @@ require("lsp-progress").setup({
 ```
 
 </details>
-
-<!-- https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/9436de63-ea94-4ada-adb7-3812681a5106 -->
 
 ![green-check](https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/2666b105-4939-4985-8b5e-74bc43e5615c)
 
@@ -159,7 +153,7 @@ I use a 2-layer map to cache all lsp progress messages, thus split the **O(N \* 
 
 > **N** is active lsp clients count, **M** is token count of each lsp client.
 
-For more details, please see [Design & Technics](https://github.com/linrongbin16/lsp-progress.nvim/wiki/Design-&-Technics).
+For more details, please see [Design & Technologies](https://linrongbin16.github.io/lsp-progress.nvim/#/design_and_technologies).
 
 ## Requirement
 
@@ -307,7 +301,7 @@ The `opts` is an optional lua table that overwrite the default options.
 
 For complete options and defaults, please check [defaults.lua](https://github.com/linrongbin16/lsp-progress.nvim/blob/main/lua/lsp-progress/defaults.lua).
 
-For more advanced configurations, please see [Advanced Configuration](https://github.com/linrongbin16/lsp-progress.nvim/wiki/Advanced-Configuration).
+For more advanced configurations, please see [Advanced Configuration](https://linrongbin16.github.io/lsp-progress.nvim/#/advanced_configurations).
 
 ## Alternatives
 
@@ -321,5 +315,5 @@ Please open [issue](https://github.com/linrongbin16/lsp-progress.nvim/issues)/[P
 Like lsp-progress.nvim? Consider
 
 [![Github Sponsor](https://img.shields.io/badge/-Sponsor%20Me%20on%20Github-magenta?logo=github&logoColor=white)](https://github.com/sponsors/linrongbin16)
-[![Wechat Pay](https://img.shields.io/badge/-Tip%20Me%20on%20WeChat-brightgreen?logo=wechat&logoColor=white)](https://github.com/linrongbin16/lin.nvim/wiki/Sponsor)
-[![Alipay](https://img.shields.io/badge/-Tip%20Me%20on%20Alipay-blue?logo=alipay&logoColor=white)](https://github.com/linrongbin16/lin.nvim/wiki/Sponsor)
+[![Wechat Pay](https://img.shields.io/badge/-Tip%20Me%20on%20WeChat-brightgreen?logo=wechat&logoColor=white)](https://linrongbin16.github.io/lsp-progress.nvim/#/sponsor?id=wechat-pay)
+[![Alipay](https://img.shields.io/badge/-Tip%20Me%20on%20Alipay-blue?logo=alipay&logoColor=white)](https://linrongbin16.github.io/lsp-progress.nvim/#/sponsor?id=alipay)
