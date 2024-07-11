@@ -184,11 +184,11 @@ local function update_progress(client, progress)
         cli:add_series(token, ss)
         -- start spin, it will also notify user at a fixed rate
         spin(client_id, token)
-        -- logger.debug(
-        --     "|progress_handler| add new series to client(%s): %s",
-        --     vim.inspect(cli),
-        --     vim.inspect(ss)
-        -- )
+    -- logger.debug(
+    --     "|progress_handler| add new series to client(%s): %s",
+    --     vim.inspect(cli),
+    --     vim.inspect(ss)
+    -- )
     elseif value.kind == "report" then
         local ss = cli:get_series(token)
         if ss then
@@ -207,28 +207,40 @@ local function update_progress(client, progress)
             -- )
         end
     else
+        -- The `$/progress` actually has several types:
+        -- 1. Work Done Progress: The `value` payload has a `kind` field to tell user "begin", "report" and "end".
+        -- 2. Partial Result Progress: The `value` has no such `kind` field, i.e. the `kind` is `nil`.
+        --
+        -- References:
+        -- Progress Support: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#progress
+        -- Work Done Progress: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#workDoneProgress
+        -- Partial Result Progress: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#partialResults
         if value.kind ~= "end" then
+            -- It's a partial result progress
             logger.warn(
-                "|lsp-progress.progress_handler| Unknown message kind `%s` from client %s",
+                "|lsp-progress.progress_handler| Unknown message kind `%s` from client %s, progress: %s",
                 value.kind,
-                vim.inspect(cli)
+                vim.inspect(cli),
+                vim.inspect(progress)
             )
-        end
-        if cli:has_series(token) then
-            local ss = cli:get_series(token)
-            ss:finish(value.message)
-            cli:format()
-            -- logger.debug(
-            --     "|progress_handler| series is done in client(%s): %s",
-            --     vim.inspect(cli),
-            --     vim.inspect(ss)
-            -- )
-            -- else
-            -- logger.debug(
-            --     "|lsp-progress.progress_handler| Series (token: %s) not found in client %s when ending",
-            --     token,
-            --     vim.inspect(cli)
-            -- )
+        else
+            -- It's a work done progress
+            if cli:has_series(token) then
+                local ss = cli:get_series(token)
+                ss:finish(value.message)
+                cli:format()
+                -- logger.debug(
+                --     "|progress_handler| series is done in client(%s): %s",
+                --     vim.inspect(cli),
+                --     vim.inspect(ss)
+                -- )
+                -- else
+                -- logger.debug(
+                --     "|lsp-progress.progress_handler| Series (token: %s) not found in client %s when ending",
+                --     token,
+                --     vim.inspect(cli)
+                -- )
+            end
         end
     end
 
