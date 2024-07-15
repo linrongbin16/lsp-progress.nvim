@@ -215,15 +215,7 @@ local function update_progress(client, progress)
         -- Progress Support: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#progress
         -- Work Done Progress: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#workDoneProgress
         -- Partial Result Progress: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#partialResults
-        if value.kind ~= "end" then
-            -- It's a partial result progress
-            logger.warn(
-                "|lsp-progress.progress_handler| Unknown message kind `%s` from client %s, progress: %s",
-                value.kind,
-                vim.inspect(cli),
-                vim.inspect(progress)
-            )
-        else
+        if value.kind == "end" then
             -- It's a work done progress
             if cli:has_series(token) then
                 local ss = cli:get_series(token)
