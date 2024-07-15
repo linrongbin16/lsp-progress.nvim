@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.13](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.12...v1.0.13) (2024-07-15)
+
+
+### Bug Fixes
+
+* **lsp:** remove warnings from "Partial Result Progress" ([#148](https://github.com/linrongbin16/lsp-progress.nvim/issues/148)) ([5314be5](https://github.com/linrongbin16/lsp-progress.nvim/commit/5314be5a0237dc1a524f84700e4642335efc66da))
+
 ## [1.0.12](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.11...v1.0.12) (2024-05-17)
 
 
