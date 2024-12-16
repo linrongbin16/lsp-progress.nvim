@@ -54,7 +54,7 @@ local Defaults = {
     --  * https://github.com/linrongbin16/lsp-progress.nvim/issues/50
     --  * https://neovim.io/doc/user/builtin.html#mode()
     --
-    --- @type lsp_progress.DisableEventOpt[]
+    --- @type lsp_progress.Configs[]
     disable_events_opts = {
         {
             mode = "i",
