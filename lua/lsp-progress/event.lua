@@ -1,3 +1,5 @@
+---@diagnostic disable: deprecated
+
 local logger = require("lsp-progress.logger")
 
 local NVIM_VERSION_08 = vim.fn.has("nvim-0.8") > 0
