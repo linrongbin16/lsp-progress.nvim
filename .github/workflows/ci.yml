@@ -21,9 +21,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: mrcjkb/lua-typecheck-action@v0
+      - uses: stevearc/nvim-typecheck-action@v2
         with:
-          directories: lua
+          path: lua
           configpath: ".luarc.json"
       - uses: cargo-bins/cargo-binstall@main
       - name: Selene
@@ -55,7 +55,7 @@ jobs:
           version: ${{ matrix.nvim_version }}
       - uses: leafo/gh-actions-lua@v10
         with:
-          luaVersion: "luajit-2.1.0-beta3"
+          luaVersion: "luajit-openresty"
       - uses: leafo/gh-actions-luarocks@v4
       - name: Run Tests
         shell: bash
