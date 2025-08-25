@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.14](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.13...v1.0.14) (2025-08-25)
+
+
+### Bug Fixes
+
+* **nvim-0.12:** upgrade deprecated api "vim.lsp.client_is_stopped()" ([#156](https://github.com/linrongbin16/lsp-progress.nvim/issues/156)) ([395d1c0](https://github.com/linrongbin16/lsp-progress.nvim/commit/395d1c04f52325c804bd9e724bcc0f6943f68368)), closes [#154](https://github.com/linrongbin16/lsp-progress.nvim/issues/154)
+
 ## [1.0.13](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.12...v1.0.13) (2024-07-15)
 
 
