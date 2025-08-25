@@ -3,7 +3,7 @@
 # lsp-progress.nvim
 
 <p>
-<a href="https://github.com/neovim/neovim/releases/v0.10.0"><img alt="Neovim" src="https://img.shields.io/badge/require-0.10%2B-blue" /></a>
+<a href="https://github.com/neovim/neovim/releases/v0.8.0"><img alt="Neovim" src="https://img.shields.io/badge/require-0.8%2B-blue" /></a>
 <a href="https://luarocks.org/modules/linrongbin16/lsp-progress.nvim"><img alt="luarocks" src="https://img.shields.io/luarocks/v/linrongbin16/lsp-progress.nvim" /></a>
 <a href="https://github.com/linrongbin16/lsp-progress.nvim/actions/workflows/ci.yml"><img alt="ci.yml" src="https://img.shields.io/github/actions/workflow/status/linrongbin16/lsp-progress.nvim/ci.yml?label=ci" /></a>
 </p>
@@ -156,7 +156,7 @@ For more details, please see [Design & Technologies](https://linrongbin16.github
 
 ## Requirement
 
-- Neovim &ge; 0.10.
+- Neovim &ge; 0.8.
 - [Nerd fonts](https://www.nerdfonts.com/) for icons.
 
 ## Install
