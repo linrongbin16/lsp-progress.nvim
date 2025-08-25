@@ -134,7 +134,7 @@ local function spin(client_id, token)
         -- )
     end
     -- if client is stopped, remove this client later
-    if vim.lsp.client_is_stopped(client_id) then
+    if api.lsp_client_is_stopped(client_id) then
         vim.defer_fn(function()
             -- check client id again
             if not _has_client(client_id) then

@@ -12,7 +12,7 @@ jobs:
     if: ${{ github.ref != 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: amannn/action-semantic-pull-request@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -20,7 +20,7 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: stevearc/nvim-typecheck-action@v2
         with:
           path: lua
@@ -34,7 +34,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: latest
-          args: --config-path .stylua.toml ./lua ./test
+          args: --config-path .stylua.toml ./lua ./spec
       - uses: stefanzweifel/git-auto-commit-action@v5
         if: ${{ github.ref != 'refs/heads/main' }}
         with:
@@ -44,41 +44,16 @@ jobs:
     name: Unit test
     strategy:
       matrix:
-        nvim_version: [stable, nightly, v0.6.0, v0.7.0]
+        nvim_version: [stable, nightly, v0.8.0, v0.9.0, v0.10.0]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: rhysd/action-setup-vim@v1
-        id: vim
         with:
           neovim: true
           version: ${{ matrix.nvim_version }}
-      - uses: leafo/gh-actions-lua@v10
-        with:
-          luaVersion: "luajit-openresty"
-      - uses: leafo/gh-actions-luarocks@v4
-      - name: Run Tests
-        shell: bash
-        run: |
-          luarocks install luacov
-          luarocks install vusted
-          vusted --coverage ./test
-      - name: Generate Coverage Report
-        shell: bash
-        run: |
-          echo "ls ."
-          ls -l .
-          echo "run luacov"
-          luacov
-          echo "ls ."
-          ls -l .
-          echo "cat ./luacov.report.out"
-          cat ./luacov.report.out
-      - uses: codecov/codecov-action@v4
-        with:
-          files: luacov.report.out
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - name: Run Test Cases
+        run: make test
   release:
     name: Release
     if: ${{ github.ref == 'refs/heads/main' }}
@@ -92,7 +67,7 @@ jobs:
         with:
           release-type: simple
           package-name: lsp-progress.nvim
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: LuaRocks Upload
         uses: nvim-neorocks/luarocks-tag-release@v5
         if: ${{ steps.release.outputs.release_created }}
