@@ -16,9 +16,9 @@ end
 --- @return boolean
 M.lsp_client_is_stopped = function(client_id)
     if NVIM_VERSION_012 then
-        return vim.lsp.client_is_stopped(client_id)
-    else
         return vim.lsp.get_client_by_id(client_id) == nil
+    else
+        return vim.lsp.client_is_stopped(client_id)
     end
 end
 
