@@ -3,7 +3,6 @@ local defaults = require("lsp-progress.defaults")
 local event = require("lsp-progress.event")
 local Series = require("lsp-progress.series").Series
 local Client = require("lsp-progress.client").Client
-local api = require("lsp-progress.api")
 
 local NVIM_VERSION_010 = vim.fn.has("nvim-0.10") > 0
 
