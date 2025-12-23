@@ -1,5 +1,3 @@
-local api = require("lsp-progress.api")
-
 --- @alias lsp_progress.Configs table<any, any>
 --- @type lsp_progress.Configs
 local Defaults = {
@@ -136,7 +134,7 @@ local Defaults = {
         if #client_messages > 0 then
             return sign .. " " .. table.concat(client_messages, " ")
         end
-        if #api.lsp_clients() > 0 then
+        if #vim.lsp.get_clients() > 0 then
             return sign
         end
         return ""

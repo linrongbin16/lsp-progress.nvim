@@ -134,7 +134,7 @@ local function spin(client_id, token)
         -- )
     end
     -- if client is stopped, remove this client later
-    if api.lsp_client_is_stopped(client_id) then
+    if vim.lsp.get_client_by_id(client_id) == nil then
         vim.defer_fn(function()
             -- check client id again
             if not _has_client(client_id) then
@@ -278,7 +278,7 @@ end
 local function progress(option)
     option = vim.tbl_deep_extend("force", vim.deepcopy(Configs), option or {})
 
-    local active_clients_count = #api.lsp_clients()
+    local active_clients_count = #vim.lsp.get_clients()
     if active_clients_count <= 0 then
         return ""
     end
@@ -351,22 +351,7 @@ local function setup(option)
     -- init client
     require("lsp-progress.client").setup(Configs.client_format, Configs.spinner)
 
-    if NVIM_VERSION_010 then
-        vim.api.nvim_create_autocmd("LspProgress", { callback = event_handler })
-    else
-        if not Registered then
-            if vim.lsp.handlers["$/progress"] then
-                local old_handler = vim.lsp.handlers["$/progress"]
-                vim.lsp.handlers["$/progress"] = function(...)
-                    old_handler(...)
-                    method_handler(...)
-                end
-            else
-                vim.lsp.handlers["$/progress"] = method_handler
-            end
-            Registered = true
-        end
-    end
+    vim.api.nvim_create_autocmd("LspProgress", { callback = event_handler })
 end
 
 local M = {
