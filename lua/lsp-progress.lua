@@ -4,12 +4,6 @@ local event = require("lsp-progress.event")
 local Series = require("lsp-progress.series").Series
 local Client = require("lsp-progress.client").Client
 
-local NVIM_VERSION_010 = vim.fn.has("nvim-0.10") > 0
-
--- global variable
-
-local Registered = false
-
 --- @type lsp_progress.Configs
 local Configs = {}
 
