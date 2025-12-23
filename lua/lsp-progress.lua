@@ -233,14 +233,6 @@ local function update_progress(client, progress)
     event.emit()
 end
 
---- @param err string?
---- @param msg table<string, any>
---- @param ctx table<string, any>
-local function method_handler(err, msg, ctx)
-    local client = vim.lsp.get_client_by_id(ctx.client_id) --[[@as table]]
-    update_progress(client, msg)
-end
-
 --- @param p table?
 --- @return boolean
 local function _is_lsp_progress_obj(p)
