@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.15...v2.0.0) (2026-02-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop parameters from api 'progress' ([#161](https://github.com/linrongbin16/lsp-progress.nvim/issues/161))
+
+### Code Refactoring
+
+* drop parameters from api 'progress' ([#161](https://github.com/linrongbin16/lsp-progress.nvim/issues/161)) ([4f97a0d](https://github.com/linrongbin16/lsp-progress.nvim/commit/4f97a0d577ec1e47b07327a7f45cdcab0bdabd81))
+
 ## [1.0.15](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.14...v1.0.15) (2025-09-20)
 
 
