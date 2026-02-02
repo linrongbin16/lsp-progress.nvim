@@ -69,7 +69,7 @@ jobs:
           package-name: lsp-progress.nvim
       - uses: actions/checkout@v5
       - name: LuaRocks Upload
-        uses: nvim-neorocks/luarocks-tag-release@v5
+        uses: nvim-neorocks/luarocks-tag-release@v7
         if: ${{ steps.release.outputs.release_created }}
         env:
           LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
