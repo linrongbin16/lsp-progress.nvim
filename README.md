@@ -214,16 +214,7 @@ lua require('lsp-progress').setup()
 ## Usage
 
 - `LspProgressStatusUpdated`: user event to notify new status, and trigger statusline refresh.
-- `require('lsp-progress').progress(opts)`: get lsp progress status, parameter `opts` is an optional lua table:
-
-  ```lua
-  require('lsp-progress').progress({
-    format = ...,
-    max_size = ...,
-  })
-  ```
-
-  The fields are the same value passing to `setup` (see [Configuration](#configuration)) for more dynamic abilities.
+- `require('lsp-progress').progress()`: returns lsp progress status as a string, returns empty string `""` if there's no lsp progress.
 
 ## Integration
 
