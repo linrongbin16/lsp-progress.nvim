@@ -273,11 +273,8 @@ local function event_handler(ev)
     end
 end
 
---- @param option lsp_progress.Configs?
 --- @return string?
-local function progress(option)
-    option = vim.tbl_deep_extend("force", vim.deepcopy(Configs), option or {})
-
+local function progress()
     local active_clients_count = #api.lsp_clients()
     if active_clients_count <= 0 then
         return ""
@@ -295,7 +292,7 @@ local function progress(option)
             -- )
         end
     end
-    local ok, result = pcall(option.format, client_messages)
+    local ok, result = pcall(Configs.format, client_messages)
     if not ok then
         logger.throw(
             "failed to invoke 'format' function! error: %s, params: %s",
@@ -304,12 +301,12 @@ local function progress(option)
         )
     end
     local content = result
-    if option.max_size >= 0 then
-        if vim.fn.strdisplaywidth(content) > option.max_size then
+    if Configs.max_size >= 0 then
+        if vim.fn.strdisplaywidth(content) > Configs.max_size then
             content = vim.fn.strpart(
                 content,
                 0,
-                math.max(option.max_size - 1, 0)
+                math.max(Configs.max_size - 1, 0)
             ) .. "…"
         end
     end
