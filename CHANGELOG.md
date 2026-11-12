@@ -1,5 +1,26 @@
 # Changelog
 
+## [3.0.0](https://github.com/linrongbin16/lsp-progress.nvim/compare/v2.0.0...v3.0.0) (2026-11-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* replace logger with a log module, require Neovim 0.10+ ([#174](https://github.com/linrongbin16/lsp-progress.nvim/issues/174))
+
+### Bug Fixes
+
+* guard against nil client in progress event callbacks ([#168](https://github.com/linrongbin16/lsp-progress.nvim/issues/168)) ([a35dd97](https://github.com/linrongbin16/lsp-progress.nvim/commit/a35dd978d51f240c64f565f8336cfbfd3e1a8a04))
+* keep the previous percentage when a report omits it ([#171](https://github.com/linrongbin16/lsp-progress.nvim/issues/171)) ([7aa2a96](https://github.com/linrongbin16/lsp-progress.nvim/commit/7aa2a96611395491a012011b9da0c76025f91258))
+* keep UTF-8 valid when truncating statusline to max_size ([#166](https://github.com/linrongbin16/lsp-progress.nvim/issues/166)) ([df7f975](https://github.com/linrongbin16/lsp-progress.nvim/commit/df7f9752f8d3ff570f91d40534af4414e299f9bb))
+* load the plugin only once in setup() ([#173](https://github.com/linrongbin16/lsp-progress.nvim/issues/173)) ([9c6a1ba](https://github.com/linrongbin16/lsp-progress.nvim/commit/9c6a1babdbe907f704085f3afa0587fdd6f273c9))
+* rebuild dedup map on format to avoid unbounded growth and key collisions ([#170](https://github.com/linrongbin16/lsp-progress.nvim/issues/170)) ([ba2e6c5](https://github.com/linrongbin16/lsp-progress.nvim/commit/ba2e6c5aafd4f3fbb1fb8efbf2906b4e4ac5636e))
+* rebuild the format cache on read instead of locking it ([#172](https://github.com/linrongbin16/lsp-progress.nvim/issues/172)) ([1dfc429](https://github.com/linrongbin16/lsp-progress.nvim/commit/1dfc429c5db45873b08a54559b9fb91359ef4959))
+
+
+### Code Refactoring
+
+* replace logger with a log module, require Neovim 0.10+ ([#174](https://github.com/linrongbin16/lsp-progress.nvim/issues/174)) ([4142ebd](https://github.com/linrongbin16/lsp-progress.nvim/commit/4142ebd338bc70abd853a0a0d1574dddf55ac84b))
+
 ## [2.0.0](https://github.com/linrongbin16/lsp-progress.nvim/compare/v1.0.15...v2.0.0) (2026-02-02)
 
 
