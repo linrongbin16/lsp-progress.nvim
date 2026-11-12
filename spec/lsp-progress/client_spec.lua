@@ -42,10 +42,24 @@ describe("client", function()
         it("make dedup keys", function()
             assert_eq(
                 client._get_dedup_key("title", "message"),
-                "title-message"
+                "5:title:message"
             )
-            assert_eq(client._get_dedup_key("", ""), "-")
-            assert_eq(client._get_dedup_key(nil, nil), "nil-nil")
+            assert_eq(client._get_dedup_key("", ""), "0::")
+            assert_eq(client._get_dedup_key(nil, nil), "3:nil:nil")
+        end)
+        it("never collides on the title/message boundary", function()
+            assert_true(
+                client._get_dedup_key("a-b", "c")
+                    ~= client._get_dedup_key("a", "b-c")
+            )
+            assert_true(
+                client._get_dedup_key("a:", "b")
+                    ~= client._get_dedup_key("a", ":b")
+            )
+            assert_true(
+                client._get_dedup_key("1:a", "b")
+                    ~= client._get_dedup_key("1", "a:b")
+            )
         end)
     end)
     describe("[Client]", function()
@@ -129,6 +143,76 @@ describe("client", function()
 
             cli:remove_series("token1")
             assert_false(cli:has_series("token1"))
+        end)
+        it("dedup series with the same title and message", function()
+            local cli = client.Client:new(3, "clangd")
+            local ss1 = series.Series:new("title", "message", 50)
+            local ss2 = series.Series:new("title", "message", 10)
+            cli:add_series("token1", ss1)
+            cli:add_series("token2", ss2)
+
+            -- the one that needs more time to complete wins.
+            cli._formatting = false
+            assert_eq(
+                client_format("clangd", SPINNER[1], {
+                    series_formatter("title", "message", 10, false),
+                }),
+                cli:format()
+            )
+
+            cli:remove_series("token2")
+            cli._formatting = false
+            assert_eq(
+                client_format("clangd", SPINNER[1], {
+                    series_formatter("title", "message", 50, false),
+                }),
+                cli:format()
+            )
+        end)
+        it("does not dedup series that only look alike", function()
+            local cli = client.Client:new(5, "clangd")
+            cli:add_series("token1", series.Series:new("a-b", "c", 10))
+            cli:add_series("token2", series.Series:new("a", "b-c", 20))
+
+            cli._formatting = false
+            local formatted = cli:format()
+            assert_true(
+                formatted:find(series_formatter("a-b", "c", 10, false), 1, true)
+                    ~= nil
+            )
+            assert_true(
+                formatted:find(series_formatter("a", "b-c", 20, false), 1, true)
+                    ~= nil
+            )
+        end)
+        it("renders only the latest message after many updates", function()
+            local cli = client.Client:new(4, "clangd")
+            local ss = series.Series:new("title", "message0", 0)
+            cli:add_series("token1", ss)
+
+            for i = 1, 5 do
+                ss:update("message" .. i, i * 10)
+                cli:add_series("token1", ss)
+                -- let the scheduled `_formatting` unlock run, as it does in
+                -- the editor event loop.
+                vim.wait(10)
+            end
+
+            cli._formatting = false
+            assert_eq(
+                client_format("clangd", SPINNER[1], {
+                    series_formatter("title", "message5", 50, false),
+                }),
+                cli:format()
+            )
+            -- the dedup map is built on the fly, so the client only tracks the
+            -- live series and nothing grows with the update count.
+            assert_eq(vim.tbl_count(cli.serieses), 1)
+            assert_true(cli._deduped_tokens == nil)
+
+            cli:remove_series("token1")
+            cli._formatting = false
+            assert_eq(client_format("clangd", SPINNER[1], {}), cli:format())
         end)
     end)
 end)
