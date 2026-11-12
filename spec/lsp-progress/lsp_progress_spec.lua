@@ -129,7 +129,8 @@ describe("lsp-progress", function()
 
     describe("[max_size]", function()
         -- Drive the real progress() path: stub the LSP client list so the
-        -- default format renders, and bypass the same-tick format cache.
+        -- default format renders. Adding a series marks the client dirty, so
+        -- the following read already reflects it, no matter the tick.
         local api = require("lsp-progress.api")
         local real_lsp_clients = api.lsp_clients
         local real_ambiwidth
@@ -159,9 +160,6 @@ describe("lsp-progress", function()
                     return message
                 end,
             })
-            cli._format_cache = nil
-            cli._formatting = false
-            cli:format()
             return lsp_progress.progress()
         end
 

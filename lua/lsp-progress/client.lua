@@ -17,7 +17,7 @@ local Spinner = nil
 --- @field spin_index integer
 --- @field serieses table<lsp_progress.SeriesToken, lsp_progress.Series>  map series token => series object.
 --- @field private _format_cache lsp_progress.ClientFormatResult
---- @field private _formatting boolean
+--- @field private _dirty boolean
 local Client = {}
 
 --- @param client_id lsp_progress.ClientId
@@ -30,12 +30,12 @@ function Client:new(client_id, client_name)
         spin_index = 0,
         serieses = {},
         _format_cache = nil,
-        _formatting = false,
+        _dirty = true,
     }
     setmetatable(o, self)
     self.__index = self
 
-    o:format()
+    -- The cache is built on first read, see `Client:format_result`.
     -- logger.debug("|client - Client:new| new: %s", vim.inspect(o))
 
     return o
@@ -66,7 +66,7 @@ function Client:remove_series(token)
     if self:empty() then
         self.serieses = {}
     end
-    self:format()
+    self._dirty = true
 end
 
 --- @param token lsp_progress.SeriesToken
@@ -79,7 +79,7 @@ end
 --- @param series lsp_progress.Series
 function Client:add_series(token, series)
     self.serieses[token] = series
-    self:format()
+    self._dirty = true
 end
 
 --- @return boolean
@@ -98,7 +98,7 @@ function Client:increase_spin_index()
     --     old,
     --     self.spin_index
     -- )
-    self:format()
+    self._dirty = true
 end
 
 --- @return string
@@ -116,12 +116,6 @@ end
 
 --- @return lsp_progress.ClientFormatResult
 function Client:format()
-    if self._formatting then
-        return self._format_cache
-    end
-
-    self._formatting = true
-
     --- @type lsp_progress.SeriesFormatResult[]
     local series_messages = {}
 
@@ -156,10 +150,6 @@ function Client:format()
         series_messages
     )
 
-    vim.schedule(function()
-        self._formatting = false
-    end)
-
     logger.ensure(
         ok,
         "failed to invoke 'client_format' function with params: %s! error: %s",
@@ -168,12 +158,21 @@ function Client:format()
     )
 
     self._format_cache = result_or_err
+    self._dirty = false
     -- logger.debug("|client - Client:format| format: %s", vim.inspect(self))
     return self._format_cache
 end
 
+--- Return the formatted result of this client.
+---
+--- The result is rebuilt on read when the client changed since the last
+--- format, so a read always observes the latest state, even when the caller
+--- runs in the same event-loop tick as the update.
 --- @return lsp_progress.ClientFormatResult
 function Client:format_result()
+    if self._dirty or self._format_cache == nil then
+        return self:format()
+    end
     return self._format_cache
 end
 
