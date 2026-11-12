@@ -1,4 +1,4 @@
-local logger = require("lsp-progress.logger")
+local log = require("lsp-progress.log")
 
 --- @alias lsp_progress.ClientFormatResult string|any|nil
 --- @alias lsp_progress.ClientFormat fun(client_name:string,spinner:string,series_messages:string[]|table[]):lsp_progress.ClientFormatResult
@@ -36,7 +36,7 @@ function Client:new(client_id, client_name)
     self.__index = self
 
     -- The cache is built on first read, see `Client:format_result`.
-    -- logger.debug("|client - Client:new| new: %s", vim.inspect(o))
+    -- log.debug("|client - Client:new| new: %s", vim.inspect(o))
 
     return o
 end
@@ -92,7 +92,7 @@ function Client:increase_spin_index()
     assert(type(Spinner) == "table", "Spinner must be a lua table")
     assert(#Spinner > 0, "Spinner length must greater than 0")
     self.spin_index = (self.spin_index + 1) % #Spinner
-    -- logger.debug(
+    -- log.debug(
     --     "|client.increase_spin_index| client(%s) spin index: %d => %d",
     --     vim.inspect(self),
     --     old,
@@ -150,16 +150,18 @@ function Client:format()
         series_messages
     )
 
-    logger.ensure(
+    log.ensure(
         ok,
-        "failed to invoke 'client_format' function with params: %s! error: %s",
-        vim.inspect(self),
-        vim.inspect(result_or_err)
+        string.format(
+            "failed to invoke 'client_format' function with params: %s! error: %s",
+            vim.inspect(self),
+            vim.inspect(result_or_err)
+        )
     )
 
     self._format_cache = result_or_err
     self._dirty = false
-    -- logger.debug("|client - Client:format| format: %s", vim.inspect(self))
+    -- log.debug("|client - Client:format| format: %s", vim.inspect(self))
     return self._format_cache
 end
 

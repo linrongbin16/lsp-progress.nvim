@@ -1,15 +1,11 @@
-local logger = require("lsp-progress.logger")
+local log = require("lsp-progress.log")
 local defaults = require("lsp-progress.defaults")
 local event = require("lsp-progress.event")
 local Series = require("lsp-progress.series").Series
 local Client = require("lsp-progress.client").Client
 local api = require("lsp-progress.api")
 
-local NVIM_VERSION_010 = vim.fn.has("nvim-0.10") > 0
-
 -- global variable
-
-local Registered = false
 
 --- @type lsp_progress.Configs
 local Configs = {}
@@ -48,7 +44,7 @@ end
 local function _register_client(client_id, client_name)
     if not _has_client(client_id) then
         LspClients[client_id] = Client:new(client_id, client_name)
-        -- logger.debug(
+        -- log.debug(
         --     "|lsp-progress.register_client| Register client %s",
         --     vim.inspect(_get_client(client_id))
         -- )
@@ -66,7 +62,7 @@ local function spin(client_id, token)
 
     -- check client exist
     if not _has_client(client_id) then
-        -- logger.debug(
+        -- log.debug(
         --     "|lsp-progress.spin| Client id %d not found, stop spin",
         --     client_id
         -- )
@@ -76,7 +72,7 @@ local function spin(client_id, token)
     -- check token exist
     local cli = _get_client(client_id)
     if not cli:has_series(token) then
-        -- logger.debug(
+        -- log.debug(
         --     "|lsp-progress.spin| Token %s not found in client %s, stop spin",
         --     token,
         --     vim.inspect(cli)
@@ -93,7 +89,7 @@ local function spin(client_id, token)
         vim.defer_fn(function()
             -- check client id again
             if not _has_client(client_id) then
-                -- logger.debug(
+                -- log.debug(
                 --     "|lsp-progress.spin| Client id %d not found, stop remove series",
                 --     client_id
                 -- )
@@ -103,7 +99,7 @@ local function spin(client_id, token)
             local cli2 = _get_client(client_id)
             -- check token again
             if not cli2:has_series(token) then
-                -- logger.debug(
+                -- log.debug(
                 --     "|lsp-progress.spin| Token %s not found in client %s, stop remove series",
                 --     token,
                 --     vim.inspect(cli2)
@@ -112,7 +108,7 @@ local function spin(client_id, token)
                 return
             end
             cli2:remove_series(token)
-            -- logger.debug(
+            -- log.debug(
             --     "|lsp-progress.spin| Token %s has been removed from client %s since it's done",
             --     token,
             --     vim.inspect(cli2)
@@ -120,14 +116,14 @@ local function spin(client_id, token)
             if cli2:empty() then
                 -- if client2 is empty, also remove it from Clients
                 _remove_client(client_id)
-                -- logger.debug(
+                -- log.debug(
                 --     "|lsp-progress.spin| Client %s has been removed from since it's empty",
                 --     vim.inspect(cli2)
                 -- )
             end
             event.emit()
         end, Configs.decay)
-        -- logger.debug(
+        -- log.debug(
         --     "|lsp-progress.spin| Token %s is done in client %s, remove series later...",
         --     token,
         --     vim.inspect(cli)
@@ -138,7 +134,7 @@ local function spin(client_id, token)
         vim.defer_fn(function()
             -- check client id again
             if not _has_client(client_id) then
-                -- logger.debug(
+                -- log.debug(
                 --     "|lsp-progress.spin| Client id %d not found, stop remove series",
                 --     client_id
                 -- )
@@ -147,13 +143,13 @@ local function spin(client_id, token)
             end
             -- if this client is stopped, remove it from Clients
             _remove_client(client_id)
-            -- logger.debug(
+            -- log.debug(
             --     "|lsp-progress.spin| Client id %d has been removed from since it's stopped",
             --     client_id
             -- )
             event.emit()
         end, Configs.decay)
-        -- logger.debug(
+        -- log.debug(
         --     "|lsp-progress.spin| Client id %d is stopped, remove it later...",
         --     client_id
         -- )
@@ -172,9 +168,11 @@ local function update_progress(client, progress)
     -- runs, then `vim.lsp.get_client_by_id` returns nil. Ignore the
     -- notification instead of crashing on `client.id`.
     if not client then
-        logger.debug(
-            "|lsp-progress.update_progress| nil client, ignore progress: %s",
-            vim.inspect(progress)
+        log.debug(
+            string.format(
+                "|lsp-progress.update_progress| nil client, ignore progress: %s",
+                vim.inspect(progress)
+            )
         )
         return
     end
@@ -194,7 +192,7 @@ local function update_progress(client, progress)
         cli:add_series(token, ss)
         -- start spin, it will also notify user at a fixed rate
         spin(client_id, token)
-    -- logger.debug(
+    -- log.debug(
     --     "|progress_handler| add new series to client(%s): %s",
     --     vim.inspect(cli),
     --     vim.inspect(ss)
@@ -204,13 +202,13 @@ local function update_progress(client, progress)
         if ss then
             ss:update(value.message, value.percentage)
             cli:add_series(token, ss)
-            -- logger.debug(
+            -- log.debug(
             --     "|progress_handler| update series in client(%s): %s",
             --     vim.inspect(cli),
             --     vim.inspect(ss)
             -- )
             -- else
-            -- logger.debug(
+            -- log.debug(
             --     "|lsp-progress.progress_handler| Series (token: %s) not found in client %s when updating",
             --     token,
             --     vim.inspect(cli)
@@ -232,13 +230,13 @@ local function update_progress(client, progress)
                 ss:finish(value.message)
                 -- mark the client cache stale, the series changed above.
                 cli:add_series(token, ss)
-                -- logger.debug(
+                -- log.debug(
                 --     "|progress_handler| series is done in client(%s): %s",
                 --     vim.inspect(cli),
                 --     vim.inspect(ss)
                 -- )
                 -- else
-                -- logger.debug(
+                -- log.debug(
                 --     "|lsp-progress.progress_handler| Series (token: %s) not found in client %s when ending",
                 --     token,
                 --     vim.inspect(cli)
@@ -249,14 +247,6 @@ local function update_progress(client, progress)
 
     -- notify user to refresh UI
     event.emit()
-end
-
---- @param err string?
---- @param msg table<string, any>
---- @param ctx table<string, any>
-local function method_handler(err, msg, ctx)
-    local client = vim.lsp.get_client_by_id(ctx.client_id)
-    update_progress(client, msg)
 end
 
 --- @param p table?
@@ -276,7 +266,9 @@ end
 
 --- @param ev table?
 local function event_handler(ev)
-    logger.debug("|lsp-progress.event_handler| ev:%s", vim.inspect(ev))
+    log.debug(
+        string.format("|lsp-progress.event_handler| ev:%s", vim.inspect(ev))
+    )
     if ev ~= nil and _is_lsp_progress_event(ev) then
         local client_id = ev.data.client_id
         local client = vim.lsp.get_client_by_id(client_id)
@@ -348,7 +340,7 @@ local function progress()
         local msg = cli:format_result()
         if msg and msg ~= "" then
             table.insert(client_messages, msg)
-            -- logger.debug(
+            -- log.debug(
             --     "|lsp-progress.progress| Get client %s format result: %s",
             --     vim.inspect(cli),
             --     vim.inspect(client_messages)
@@ -357,10 +349,12 @@ local function progress()
     end
     local ok, result = pcall(Configs.format, client_messages)
     if not ok then
-        logger.throw(
-            "failed to invoke 'format' function! error: %s, params: %s",
-            vim.inspect(result),
-            vim.inspect(client_messages)
+        log.throw(
+            string.format(
+                "failed to invoke 'format' function! error: %s, params: %s",
+                vim.inspect(result),
+                vim.inspect(client_messages)
+            )
         )
     end
     local content = result
@@ -371,9 +365,11 @@ local function progress()
         content = content:gsub("%%", "%%%%")
     end
 
-    logger.debug(
-        "|lsp-progress.progress| returned content: %s",
-        vim.inspect(content)
+    log.debug(
+        string.format(
+            "|lsp-progress.progress| returned content: %s",
+            vim.inspect(content)
+        )
     )
     return content
 end
@@ -383,7 +379,7 @@ local function setup(option)
     -- This plugin only needs to be loaded once, calling `setup()` again would
     -- register duplicated autocmds and stack the background timers.
     if vim.g.loaded_lsp_progress == 1 then
-        logger.warn(
+        log.warn(
             "lsp-progress is already loaded, `setup()` should only be called once"
         )
         return
@@ -394,12 +390,12 @@ local function setup(option)
     Configs = defaults.setup(option)
 
     -- setup logger
-    logger.setup(
-        Configs.debug and "DEBUG" or "INFO",
-        Configs.console_log,
-        Configs.file_log,
-        Configs.file_log_name
-    )
+    log.setup({
+        level = Configs.debug and vim.log.levels.DEBUG or vim.log.levels.INFO,
+        use_console = Configs.console_log,
+        use_file = Configs.file_log,
+        file_name = Configs.file_log_name,
+    })
 
     -- setup event
     event.setup(
@@ -415,22 +411,9 @@ local function setup(option)
     -- init client
     require("lsp-progress.client").setup(Configs.client_format, Configs.spinner)
 
-    if NVIM_VERSION_010 then
-        vim.api.nvim_create_autocmd("LspProgress", { callback = event_handler })
-    else
-        if not Registered then
-            if vim.lsp.handlers["$/progress"] then
-                local old_handler = vim.lsp.handlers["$/progress"]
-                vim.lsp.handlers["$/progress"] = function(...)
-                    old_handler(...)
-                    method_handler(...)
-                end
-            else
-                vim.lsp.handlers["$/progress"] = method_handler
-            end
-            Registered = true
-        end
-    end
+    -- The `LspProgress` event requires Neovim >= 0.10, which is the minimum
+    -- version this plugin supports.
+    vim.api.nvim_create_autocmd("LspProgress", { callback = event_handler })
 end
 
 local M = {
@@ -441,7 +424,6 @@ local M = {
     _remove_client = _remove_client,
     _register_client = _register_client,
     _update_progress = update_progress,
-    _method_handler = method_handler,
     _event_handler = event_handler,
     _truncate = _truncate,
 }

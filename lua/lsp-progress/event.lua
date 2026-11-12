@@ -1,8 +1,4 @@
----@diagnostic disable: deprecated
-
-local logger = require("lsp-progress.logger")
-
-local NVIM_VERSION_08 = vim.fn.has("nvim-0.8") > 0
+local log = require("lsp-progress.log")
 
 --- @type lsp_progress.Configs
 local Configs = {
@@ -41,10 +37,9 @@ end
 --- @return boolean
 function DisableEventOpt:match()
     local current_mode = vim.api.nvim_get_mode()
-    local current_filetype = NVIM_VERSION_08
-            and vim.api.nvim_get_option_value("filetype", { buf = 0 })
-        or vim.api.nvim_buf_get_option(0, "filetype")
-    -- logger.debug(
+    local current_filetype =
+        vim.api.nvim_get_option_value("filetype", { buf = 0 })
+    -- log.debug(
     --     "|lsp-progress.event - DisableEventOpt:match| current mode:%s, bufnr:%s, ft:%s, self:%s",
     --     vim.inspect(current_mode),
     --     vim.inspect(current_bufnr),

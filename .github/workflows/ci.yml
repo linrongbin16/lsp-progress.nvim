@@ -44,7 +44,7 @@ jobs:
     name: Unit test
     strategy:
       matrix:
-        nvim_version: [stable, nightly, v0.8.0, v0.9.0, v0.10.0]
+        nvim_version: [stable, nightly, v0.10.0]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -63,4 +63,3 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: googleapis/release-please-action@v5
-      - uses: actions/checkout@v7

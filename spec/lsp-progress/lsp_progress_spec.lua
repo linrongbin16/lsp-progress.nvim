@@ -213,17 +213,6 @@ describe("lsp-progress", function()
             assert_false(lsp_progress._has_client(99999))
         end)
 
-        it("method_handler ignores unknown client id", function()
-            assert.has_no.errors(function()
-                lsp_progress._method_handler(
-                    nil,
-                    progress_obj,
-                    { client_id = 99999 }
-                )
-            end)
-            assert_false(lsp_progress._has_client(99999))
-        end)
-
         it("event_handler ignores unknown client id", function()
             assert.has_no.errors(function()
                 lsp_progress._event_handler(ev(99999, progress_obj.value))
@@ -319,9 +308,6 @@ describe("lsp-progress", function()
     end)
     describe("[setup]", function()
         it("only loads the plugin once", function()
-            if vim.fn.has("nvim-0.10") <= 0 then
-                return
-            end
             setup()
             local count = #vim.api.nvim_get_autocmds({ event = "LspProgress" })
             lsp_progress.setup()
