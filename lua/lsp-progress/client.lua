@@ -17,7 +17,6 @@ local Spinner = nil
 --- @field spin_index integer
 --- @field serieses table<lsp_progress.SeriesToken, lsp_progress.Series>  map series token => series object.
 --- @field private _format_cache lsp_progress.ClientFormatResult
---- @field private _deduped_tokens table<string, lsp_progress.SeriesToken> map: title+message => token.
 --- @field private _formatting boolean
 local Client = {}
 
@@ -31,7 +30,6 @@ function Client:new(client_id, client_name)
         spin_index = 0,
         serieses = {},
         _format_cache = nil,
-        _deduped_tokens = {},
         _formatting = false,
     }
     setmetatable(o, self)
@@ -49,60 +47,24 @@ function Client:has_series(token)
     return self.serieses[token] ~= nil
 end
 
---- @package
---- @param title string
---- @param message string
+--- Build the dedup key of a series from its title and message.
+---
+--- The title length is prefixed to the key, so a title can never be confused
+--- with a part of the message: `("a-b", "c")` and `("a", "b-c")` produce
+--- different keys.
+--- @param title string?
+--- @param message string?
 --- @return string
 local function _get_dedup_key(title, message)
-    return tostring(title) .. "-" .. tostring(message)
-end
-
---- @package
---- @param title string
---- @param message string
---- @return boolean
-function Client:_has_dedup_token(title, message)
-    return self._deduped_tokens[_get_dedup_key(title, message)] ~= nil
-end
-
---- @package
---- @param title string
---- @param message string
---- @param token lsp_progress.SeriesToken
-function Client:_set_dedup_token(title, message, token)
-    self._deduped_tokens[_get_dedup_key(title, message)] = token
-end
-
---- @package
---- @param title string
---- @param message string
-function Client:_remove_dedup_token(title, message)
-    self._deduped_tokens[_get_dedup_key(title, message)] = nil
-end
-
---- @package
---- @param title string
---- @param message string
---- @return lsp_progress.SeriesToken
-function Client:_get_dedup_token(title, message)
-    return self._deduped_tokens[_get_dedup_key(title, message)]
+    title = tostring(title)
+    return string.format("%d:%s:%s", #title, title, tostring(message))
 end
 
 --- @param token lsp_progress.SeriesToken
 function Client:remove_series(token)
-    if self:has_series(token) then
-        local series = self:get_series(token)
-        if
-            self:_has_dedup_token(series.title, series.message)
-            and self:_get_dedup_token(series.title, series.message) == token
-        then
-            self:_remove_dedup_token(series.title, series.message)
-        end
-    end
     self.serieses[token] = nil
     if self:empty() then
         self.serieses = {}
-        self._deduped_tokens = {}
     end
     self:format()
 end
@@ -116,7 +78,6 @@ end
 --- @param token lsp_progress.SeriesToken
 --- @param series lsp_progress.Series
 function Client:add_series(token, series)
-    self:_set_dedup_token(series.title, series.message, token)
     self.serieses[token] = series
     self:format()
 end
@@ -147,6 +108,12 @@ function Client:get_spin_index()
     return Spinner[self.spin_index + 1]
 end
 
+--- @param series lsp_progress.Series
+--- @return integer
+local function _series_priority(series)
+    return series.percentage or -1
+end
+
 --- @return lsp_progress.ClientFormatResult
 function Client:format()
     if self._formatting then
@@ -158,25 +125,26 @@ function Client:format()
     --- @type lsp_progress.SeriesFormatResult[]
     local series_messages = {}
 
-    --- @type table<lsp_progress.SeriesToken, boolean>
-    local visited_tokens = {}
+    -- Dedup the series that have the same title and message on the fly. The
+    -- dedup map is rebuilt on every format, so it can never grow unboundedly
+    -- nor keep stale entries of updated/removed series.
+    --- @type table<string, lsp_progress.Series>
+    local deduped_serieses = {}
 
-    for dedup_key, token in pairs(self._deduped_tokens) do
-        if not visited_tokens[token] then
-            if self:has_series(token) then
-                local ss = self:get_series(token)
-                local result = ss:format_result()
-                -- logger.debug(
-                --     "|client - Client:format| get series %s (deduped key: %s) format result in client %s, series_messages: %s",
-                --     vim.inspect(ss),
-                --     dedup_key,
-                --     vim.inspect(self),
-                --     vim.inspect(series_messages)
-                -- )
-                table.insert(series_messages, result)
-            end
-            visited_tokens[token] = true
+    for _, series in pairs(self.serieses) do
+        local key = _get_dedup_key(series.title, series.message)
+        local old_series = deduped_serieses[key]
+        if
+            not old_series
+            or _series_priority(series) < _series_priority(old_series)
+        then
+            -- keep the series that needs more time to complete.
+            deduped_serieses[key] = series
         end
+    end
+
+    for _, series in pairs(deduped_serieses) do
+        table.insert(series_messages, series:format_result())
     end
 
     assert(type(ClientFormat) == "function", "ClientFormat must be a function")
