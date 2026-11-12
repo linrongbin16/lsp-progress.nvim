@@ -11,7 +11,7 @@ local SeriesFormat = nil
 --- @field percentage integer?
 --- @field done boolean
 --- @field private _format_cache lsp_progress.SeriesFormatResult
---- @field private _formatting boolean
+--- @field private _dirty boolean
 local Series = {}
 
 --- @param title string?
@@ -25,13 +25,13 @@ function Series:new(title, message, percentage)
         percentage = percentage,
         done = false,
         _format_cache = nil,
-        _formatting = false,
+        _dirty = true,
     }
 
     setmetatable(o, self)
     self.__index = self
 
-    o:_format()
+    -- The cache is built on first read, see `Series:format_result`.
     -- logger.debug("|series - Series:new| new: %s", vim.inspect(o))
 
     return o
@@ -42,11 +42,6 @@ end
 function Series:_format()
     assert(SeriesFormat ~= nil, "SeriesFormat cannot be null")
 
-    if self._formatting then
-        return self._format_cache
-    end
-    self._formatting = true
-
     local ok, result_or_err = pcall(
         SeriesFormat,
         self.title,
@@ -54,9 +49,6 @@ function Series:_format()
         self.percentage,
         self.done
     )
-    vim.schedule(function()
-        self._formatting = false
-    end)
 
     logger.ensure(
         ok,
@@ -66,6 +58,7 @@ function Series:_format()
     )
 
     self._format_cache = result_or_err
+    self._dirty = false
     -- logger.debug("|series - Series:_format| format: %s", vim.inspect(self))
 
     return self._format_cache
@@ -102,7 +95,9 @@ end
 function Series:update(message, percentage)
     self.message = _choose_updated_message(self.message, message)
     self.percentage = _choose_updated_percentage(self.percentage, percentage)
-    self:_format()
+    -- Only mark the cache stale: the new content is rendered on the next read,
+    -- so an update never blocks the caller nor serves a stale cache.
+    self._dirty = true
     -- logger.debug("|series - Series:update| update: %s", vim.inspect(self))
 end
 
@@ -111,12 +106,20 @@ function Series:finish(message)
     self.message = _choose_updated_message(self.message, message)
     self.percentage = 100
     self.done = true
-    self:_format()
+    self._dirty = true
     -- logger.debug("|series - Series:finish| finish: %s", vim.inspect(self))
 end
 
+--- Return the formatted result of this series.
+---
+--- The result is recomputed on read when the series changed since the last
+--- format, so a read always observes the latest state, even when the caller
+--- runs in the same event-loop tick as the update.
 --- @return lsp_progress.SeriesFormatResult
 function Series:format_result()
+    if self._dirty or self._format_cache == nil then
+        return self:_format()
+    end
     return self._format_cache
 end
 

@@ -230,7 +230,8 @@ local function update_progress(client, progress)
             if cli:has_series(token) then
                 local ss = cli:get_series(token)
                 ss:finish(value.message)
-                cli:format()
+                -- mark the client cache stale, the series changed above.
+                cli:add_series(token, ss)
                 -- logger.debug(
                 --     "|progress_handler| series is done in client(%s): %s",
                 --     vim.inspect(cli),

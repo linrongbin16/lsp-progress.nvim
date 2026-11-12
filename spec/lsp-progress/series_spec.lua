@@ -58,33 +58,53 @@ describe("series", function()
             assert_eq(ss.message, "message2")
             assert_eq(ss.percentage, 20)
             assert_eq(
-                series_formatter(ss.title, "message", 10, ss.done),
-                ss:_format()
+                series_formatter(ss.title, "message2", 20, ss.done),
+                ss:format_result()
             )
 
             ss:update("", 30)
             assert_eq(ss.message, "message2")
             assert_eq(ss.percentage, 30)
-            -- assert_eq(
-            --     series_formatter(ss.title, "message2", 30, ss.done),
-            --     ss:_format()
-            -- )
+            assert_eq(
+                series_formatter(ss.title, "message2", 30, ss.done),
+                ss:format_result()
+            )
 
             ss:update(nil, 40)
             assert_eq(ss.message, "message2")
             assert_eq(ss.percentage, 40)
-            -- assert_eq(
-            --     series_formatter(ss.title, "message2", 40, ss.done),
-            --     ss:_format()
-            -- )
+            assert_eq(
+                series_formatter(ss.title, "message2", 40, ss.done),
+                ss:format_result()
+            )
 
             ss:update("message5", 50)
             assert_eq(ss.message, "message5")
             assert_eq(ss.percentage, 50)
-            -- assert_eq(
-            --     series_formatter(ss.title, "message5", 50, ss.done),
-            --     ss:_format()
-            -- )
+            assert_eq(
+                series_formatter(ss.title, "message5", 50, ss.done),
+                ss:format_result()
+            )
+        end)
+        it("update is visible in the same tick", function()
+            local ss = series.Series:new("title", "message", 10)
+            assert_eq(
+                series_formatter(ss.title, "message", 10, ss.done),
+                ss:format_result()
+            )
+
+            -- No `vim.wait`/`vim.schedule` in between: the cached result must
+            -- not be served once the series changed.
+            ss:update("message2", 20)
+            assert_eq(
+                series_formatter(ss.title, "message2", 20, ss.done),
+                ss:format_result()
+            )
+            -- Reading repeatedly keeps returning the up-to-date value.
+            assert_eq(
+                series_formatter(ss.title, "message2", 20, ss.done),
+                ss:format_result()
+            )
         end)
         it("finish", function()
             local ss = series.Series:new("title", "message", 10)
@@ -102,40 +122,36 @@ describe("series", function()
             assert_eq(ss.percentage, 100)
             assert_eq(ss.done, true)
             assert_eq(
-                series_formatter(ss.title, "message", 10, false),
-                ss:_format()
+                series_formatter(ss.title, "message2", 100, true),
+                ss:format_result()
             )
 
             ss:finish("")
             assert_eq(ss.message, "message2")
             assert_eq(ss.percentage, 100)
             assert_eq(ss.done, true)
-            -- assert_eq(
-            --     series_formatter(ss.title, "message2", 100, ss.done),
-            --     ss:_format()
-            -- )
+            assert_eq(
+                series_formatter(ss.title, "message2", 100, ss.done),
+                ss:format_result()
+            )
 
             ss:finish(nil)
             assert_eq(ss.message, "message2")
             assert_eq(ss.percentage, 100)
             assert_eq(ss.done, true)
-            -- assert_eq(
-            --     series_formatter(ss.title, "message2", 100, ss.done),
-            --     ss:_format()
-            -- )
+            assert_eq(
+                series_formatter(ss.title, "message2", 100, ss.done),
+                ss:format_result()
+            )
 
             ss:finish("message5")
             assert_eq(ss.message, "message5")
             assert_eq(ss.percentage, 100)
             assert_eq(ss.done, true)
-            -- assert_eq(
-            --     series_formatter(ss.title, "message5", 100, ss.done),
-            --     ss:_format()
-            -- )
-            -- assert_eq(
-            --     series_formatter(ss.title, "message5", 100, ss.done),
-            --     ss:format_result()
-            -- )
+            assert_eq(
+                series_formatter(ss.title, "message5", 100, ss.done),
+                ss:format_result()
+            )
         end)
     end)
     describe("[_choose_updated_percentage]", function()

@@ -69,8 +69,14 @@ describe("client", function()
             assert_eq(cli.client_id, 1)
             assert_eq(cli.client_name, "luals")
             assert_eq(cli.spin_index, 0)
-            assert_eq(client_format("luals", SPINNER[1], {}), cli._format_cache)
+            -- the cache is built lazily, on the first read.
+            assert_eq(cli._format_cache, nil)
             assert_eq(client_format("luals", SPINNER[1], {}), cli:format())
+            assert_eq(client_format("luals", SPINNER[1], {}), cli._format_cache)
+            assert_eq(
+                client_format("luals", SPINNER[1], {}),
+                cli:format_result()
+            )
             assert_false(cli:has_series("asdf"))
         end)
         it("_format", function()
@@ -80,11 +86,11 @@ describe("client", function()
             assert_eq(cli.client_name, "clangd")
             assert_eq(cli.spin_index, 0)
 
+            assert_eq(client_format("clangd", SPINNER[1], {}), cli:format())
             assert_eq(
                 client_format("clangd", SPINNER[1], {}),
                 cli._format_cache
             )
-            assert_eq(client_format("clangd", SPINNER[1], {}), cli:format())
         end)
         it("add series", function()
             local cli = client.Client:new(2, "clangd")
@@ -114,6 +120,15 @@ describe("client", function()
 
             assert_false(cli:has_series("token2"))
             assert_true(cli:get_series("token2") == nil)
+
+            -- a series added in this tick is visible without waiting for the
+            -- next event-loop iteration.
+            assert_eq(
+                client_format("clangd", SPINNER[1], {
+                    series_formatter("title", "message", 10, false),
+                }),
+                cli:format_result()
+            )
         end)
         it("remove series", function()
             local cli = client.Client:new(2, "clangd")
@@ -152,21 +167,19 @@ describe("client", function()
             cli:add_series("token2", ss2)
 
             -- the one that needs more time to complete wins.
-            cli._formatting = false
             assert_eq(
                 client_format("clangd", SPINNER[1], {
                     series_formatter("title", "message", 10, false),
                 }),
-                cli:format()
+                cli:format_result()
             )
 
             cli:remove_series("token2")
-            cli._formatting = false
             assert_eq(
                 client_format("clangd", SPINNER[1], {
                     series_formatter("title", "message", 50, false),
                 }),
-                cli:format()
+                cli:format_result()
             )
         end)
         it("does not dedup series that only look alike", function()
@@ -174,8 +187,7 @@ describe("client", function()
             cli:add_series("token1", series.Series:new("a-b", "c", 10))
             cli:add_series("token2", series.Series:new("a", "b-c", 20))
 
-            cli._formatting = false
-            local formatted = cli:format()
+            local formatted = cli:format_result()
             assert_true(
                 formatted:find(series_formatter("a-b", "c", 10, false), 1, true)
                     ~= nil
@@ -190,29 +202,34 @@ describe("client", function()
             local ss = series.Series:new("title", "message0", 0)
             cli:add_series("token1", ss)
 
+            -- Every update happens in the same event-loop tick: a read right
+            -- after it must already observe the new message.
             for i = 1, 5 do
                 ss:update("message" .. i, i * 10)
                 cli:add_series("token1", ss)
-                -- let the scheduled `_formatting` unlock run, as it does in
-                -- the editor event loop.
-                vim.wait(10)
+                assert_eq(
+                    client_format("clangd", SPINNER[1], {
+                        series_formatter(
+                            "title",
+                            "message" .. i,
+                            i * 10,
+                            false
+                        ),
+                    }),
+                    cli:format_result()
+                )
             end
 
-            cli._formatting = false
-            assert_eq(
-                client_format("clangd", SPINNER[1], {
-                    series_formatter("title", "message5", 50, false),
-                }),
-                cli:format()
-            )
             -- the dedup map is built on the fly, so the client only tracks the
             -- live series and nothing grows with the update count.
             assert_eq(vim.tbl_count(cli.serieses), 1)
             assert_true(cli._deduped_tokens == nil)
 
             cli:remove_series("token1")
-            cli._formatting = false
-            assert_eq(client_format("clangd", SPINNER[1], {}), cli:format())
+            assert_eq(
+                client_format("clangd", SPINNER[1], {}),
+                cli:format_result()
+            )
         end)
     end)
 end)
