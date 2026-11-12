@@ -63,15 +63,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: googleapis/release-please-action@v5
-        id: release
       - uses: actions/checkout@v7
-      - name: LuaRocks Upload
-        uses: nvim-neorocks/luarocks-tag-release@v9
-        if: ${{ steps.release.outputs.release_created }}
-        env:
-          LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
-        with:
-          version: ${{ steps.release.outputs.tag_name }}
-          labels: |
-            vim
-            neovim
