@@ -286,7 +286,7 @@ end
 --- @param content string
 --- @param max_size integer
 --- @return string
-local function truncate(content, max_size)
+local function _truncate(content, max_size)
     if
         #content <= max_size
         and not content:find("[\1-\31\127]")
@@ -354,7 +354,7 @@ local function progress()
     end
     local content = result
     if Configs.max_size >= 0 and type(content) == "string" then
-        content = truncate(content, Configs.max_size)
+        content = _truncate(content, Configs.max_size)
     end
     if type(content) == "string" then
         content = content:gsub("%%", "%%%%")
@@ -419,7 +419,7 @@ local M = {
     _get_client = _get_client,
     _remove_client = _remove_client,
     _register_client = _register_client,
-    _truncate = truncate,
+    _truncate = _truncate,
 }
 
 return M
