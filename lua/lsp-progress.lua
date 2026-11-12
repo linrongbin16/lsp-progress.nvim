@@ -273,6 +273,58 @@ local function event_handler(ev)
     end
 end
 
+--- Truncate `content` to at most `max_size` display columns, appending "…"
+--- when truncated. Cuts on character boundaries so multi-byte UTF-8 is never
+--- split, and measures whole prefixes so tabs/combining marks keep their
+--- real width.
+---
+--- Fast path: if the byte length fits, the display width fits too (a UTF-8
+--- character is never wider than it is long) -- except control characters,
+--- which Vim renders wider than their bytes (tab -> 8 columns, C0 -> "^X",
+--- C1 -> "<xx>"); a cheap byte scan detects those.
+---
+--- @param content string
+--- @param max_size integer
+--- @return string
+local function _truncate(content, max_size)
+    if
+        #content <= max_size
+        and not content:find("[\1-\31\127]")
+        and not content:find("\194[\128-\159]")
+    then
+        return content
+    end
+
+    local n = vim.fn.strchars(content)
+    local budget = math.max(max_size - vim.fn.strdisplaywidth("…"), 0)
+    -- Optimistic guess: one character per column. Hits immediately for
+    -- single-width text; otherwise binary search below the guess.
+    local guess = math.min(n, budget)
+    local part = vim.fn.strcharpart(content, 0, guess)
+    local w = vim.fn.strdisplaywidth(part)
+    if guess == n then
+        -- The guess covers the whole string: it can still fit by width even
+        -- though its byte length exceeded max_size (e.g. CJK text).
+        if w <= max_size then
+            return content
+        end
+    elseif w <= budget then
+        return part .. "…"
+    end
+
+    local lo, hi = 0, guess - 1
+    while lo < hi do
+        local mid = math.ceil((lo + hi) / 2)
+        local prefix = vim.fn.strcharpart(content, 0, mid)
+        if vim.fn.strdisplaywidth(prefix) <= budget then
+            lo = mid
+        else
+            hi = mid - 1
+        end
+    end
+    return vim.fn.strcharpart(content, 0, lo) .. "…"
+end
+
 --- @return string?
 local function progress()
     local active_clients_count = #api.lsp_clients()
@@ -301,14 +353,8 @@ local function progress()
         )
     end
     local content = result
-    if Configs.max_size >= 0 then
-        if vim.fn.strdisplaywidth(content) > Configs.max_size then
-            content = vim.fn.strpart(
-                content,
-                0,
-                math.max(Configs.max_size - 1, 0)
-            ) .. "…"
-        end
+    if Configs.max_size >= 0 and type(content) == "string" then
+        content = _truncate(content, Configs.max_size)
     end
     if type(content) == "string" then
         content = content:gsub("%%", "%%%%")
@@ -373,6 +419,7 @@ local M = {
     _get_client = _get_client,
     _remove_client = _remove_client,
     _register_client = _register_client,
+    _truncate = _truncate,
 }
 
 return M
