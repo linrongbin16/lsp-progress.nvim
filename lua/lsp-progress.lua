@@ -165,9 +165,19 @@ end
 
 --- @alias lsp_progress.LspClientObj {id:lsp_progress.ClientId,name:string}
 --- @alias lsp_progress.LspProgressObj {token:lsp_progress.SeriesToken,value:{kind:"begin"|"report"|"end",title:string?,message:string?,percentage:integer?}}
---- @param client lsp_progress.LspClientObj
+--- @param client lsp_progress.LspClientObj?
 --- @param progress lsp_progress.LspProgressObj
 local function update_progress(client, progress)
+    -- The client may have been stopped and removed before this callback
+    -- runs, then `vim.lsp.get_client_by_id` returns nil. Ignore the
+    -- notification instead of crashing on `client.id`.
+    if not client then
+        logger.debug(
+            "|lsp-progress.update_progress| nil client, ignore progress: %s",
+            vim.inspect(progress)
+        )
+        return
+    end
     local client_id = client.id
     local client_name = client.name
 
@@ -244,7 +254,7 @@ end
 --- @param msg table<string, any>
 --- @param ctx table<string, any>
 local function method_handler(err, msg, ctx)
-    local client = vim.lsp.get_client_by_id(ctx.client_id) --[[@as table]]
+    local client = vim.lsp.get_client_by_id(ctx.client_id)
     update_progress(client, msg)
 end
 
@@ -268,7 +278,7 @@ local function event_handler(ev)
     logger.debug("|lsp-progress.event_handler| ev:%s", vim.inspect(ev))
     if ev ~= nil and _is_lsp_progress_event(ev) then
         local client_id = ev.data.client_id
-        local client = vim.lsp.get_client_by_id(client_id) --[[@as table]]
+        local client = vim.lsp.get_client_by_id(client_id)
         update_progress(client, ev.data.params)
     end
 end
@@ -419,6 +429,9 @@ local M = {
     _get_client = _get_client,
     _remove_client = _remove_client,
     _register_client = _register_client,
+    _update_progress = update_progress,
+    _method_handler = method_handler,
+    _event_handler = event_handler,
     _truncate = _truncate,
 }
 
