@@ -185,4 +185,90 @@ describe("lsp-progress", function()
             assert_eq(r:find("…", 1, true), nil)
         end)
     end)
+
+    describe("[nil guard]", function()
+        local progress_obj = {
+            token = "tok",
+            value = { kind = "begin", title = "t", message = "m" },
+        }
+
+        local function ev(client_id, value)
+            return {
+                data = {
+                    client_id = client_id,
+                    params = { token = "tok", value = value },
+                },
+            }
+        end
+
+        it("update_progress ignores nil client", function()
+            assert.has_no.errors(function()
+                lsp_progress._update_progress(nil, progress_obj)
+            end)
+            assert_false(lsp_progress._has_client(99999))
+        end)
+
+        it("method_handler ignores unknown client id", function()
+            assert.has_no.errors(function()
+                lsp_progress._method_handler(
+                    nil,
+                    progress_obj,
+                    { client_id = 99999 }
+                )
+            end)
+            assert_false(lsp_progress._has_client(99999))
+        end)
+
+        it("event_handler ignores unknown client id", function()
+            assert.has_no.errors(function()
+                lsp_progress._event_handler(ev(99999, progress_obj.value))
+            end)
+            assert_false(lsp_progress._has_client(99999))
+        end)
+
+        it("event_handler ignores malformed events", function()
+            assert.has_no.errors(function()
+                lsp_progress._event_handler(nil)
+                lsp_progress._event_handler({})
+                lsp_progress._event_handler({ data = {} })
+            end)
+        end)
+
+        it("still processes progress for a live client", function()
+            local real_get = vim.lsp.get_client_by_id
+            vim.lsp.get_client_by_id = function(id)
+                if id == 77 then
+                    return { id = 77, name = "stub" }
+                end
+                return real_get(id)
+            end
+            local ok, err = pcall(function()
+                lsp_progress._event_handler(ev(77, {
+                    kind = "begin",
+                    title = "t",
+                    message = "m",
+                    percentage = 10,
+                }))
+                assert_true(lsp_progress._has_client(77))
+                local cli = lsp_progress._get_client(77)
+                assert_true(cli:has_series("tok"))
+                lsp_progress._event_handler(ev(77, {
+                    kind = "report",
+                    message = "m2",
+                    percentage = 40,
+                }))
+                assert_eq(cli:get_series("tok").percentage, 40)
+                lsp_progress._event_handler(ev(77, {
+                    kind = "end",
+                    message = "done",
+                }))
+                assert_true(cli:get_series("tok").done)
+            end)
+            vim.lsp.get_client_by_id = real_get
+            lsp_progress._remove_client(77)
+            if not ok then
+                error(err)
+            end
+        end)
+    end)
 end)
