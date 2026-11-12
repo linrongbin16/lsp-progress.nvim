@@ -270,5 +270,46 @@ describe("lsp-progress", function()
                 error(err)
             end
         end)
+        it("keeps percentage when a report omits it", function()
+            local real_get = vim.lsp.get_client_by_id
+            vim.lsp.get_client_by_id = function(id)
+                if id == 78 then
+                    return { id = 78, name = "stub" }
+                end
+                return real_get(id)
+            end
+            local ok, err = pcall(function()
+                lsp_progress._event_handler(ev(78, {
+                    kind = "begin",
+                    title = "t",
+                    message = "m",
+                    percentage = 40,
+                }))
+                local cli = lsp_progress._get_client(78)
+                assert_eq(cli:get_series("tok").percentage, 40)
+
+                -- 'percentage' is optional in the LSP spec: a report without
+                -- it must not reset the progress that is already displayed.
+                lsp_progress._event_handler(ev(78, {
+                    kind = "report",
+                    message = "m2",
+                }))
+                local ss = cli:get_series("tok")
+                assert_eq(ss.message, "m2")
+                assert_eq(ss.percentage, 40)
+
+                lsp_progress._event_handler(ev(78, {
+                    kind = "report",
+                    message = "m3",
+                    percentage = 70,
+                }))
+                assert_eq(cli:get_series("tok").percentage, 70)
+            end)
+            vim.lsp.get_client_by_id = real_get
+            lsp_progress._remove_client(78)
+            if not ok then
+                error(err)
+            end
+        end)
     end)
 end)

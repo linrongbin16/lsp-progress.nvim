@@ -84,11 +84,24 @@ local function _choose_updated_message(old_message, new_message)
     end
 end
 
---- @param message string
---- @param percentage integer
+--- @param old_percentage integer?
+--- @param new_percentage integer?
+--- @return integer?
+local function _choose_updated_percentage(old_percentage, new_percentage)
+    -- the 'percentage' field is optional in the LSP spec, a 'report' without it
+    -- should not clear the progress that was already displayed.
+    if type(new_percentage) == "number" then
+        return new_percentage
+    else
+        return old_percentage
+    end
+end
+
+--- @param message string?
+--- @param percentage integer?
 function Series:update(message, percentage)
     self.message = _choose_updated_message(self.message, message)
-    self.percentage = percentage
+    self.percentage = _choose_updated_percentage(self.percentage, percentage)
     self:_format()
     -- logger.debug("|series - Series:update| update: %s", vim.inspect(self))
 end
@@ -116,6 +129,7 @@ local M = {
     setup = setup,
     Series = Series,
     _choose_updated_message = _choose_updated_message,
+    _choose_updated_percentage = _choose_updated_percentage,
 }
 
 return M
