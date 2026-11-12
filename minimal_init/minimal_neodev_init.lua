@@ -2,7 +2,7 @@ local root = vim.fn.stdpath("data")
 
 -- bootstrap lazy
 local lazypath = root .. "/lazy/plugins/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
     vim.fn.system({
         "git",
         "clone",
@@ -86,7 +86,7 @@ local plugins = {
                                 max_size = 80,
                                 format = function(messages)
                                     local active_clients =
-                                        vim.lsp.get_active_clients()
+                                        vim.lsp.get_clients()
                                     if #messages > 0 then
                                         return table.concat(messages, " ")
                                     end

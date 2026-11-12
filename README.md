@@ -3,7 +3,7 @@
 # lsp-progress.nvim
 
 <p>
-<a href="https://github.com/neovim/neovim/releases/v0.8.0"><img alt="Neovim" src="https://img.shields.io/badge/require-0.8%2B-blue" /></a>
+<a href="https://github.com/neovim/neovim/releases/v0.10.0"><img alt="Neovim" src="https://img.shields.io/badge/require-0.10%2B-blue" /></a>
 <a href="https://luarocks.org/modules/linrongbin16/lsp-progress.nvim"><img alt="luarocks" src="https://img.shields.io/luarocks/v/linrongbin16/lsp-progress.nvim" /></a>
 <a href="https://github.com/linrongbin16/lsp-progress.nvim/actions/workflows/ci.yml"><img alt="ci.yml" src="https://img.shields.io/github/actions/workflow/status/linrongbin16/lsp-progress.nvim/ci.yml?label=ci" /></a>
 </p>
@@ -46,7 +46,7 @@ require("lsp-progress").setup({
     end
 
     local sign = "" -- nf-fa-gear \uf013
-    local lsp_clients = vim.lsp.get_active_clients()
+    local lsp_clients = vim.lsp.get_clients()
     local messages_map = {}
     for _, climsg in ipairs(client_messages) do
       messages_map[climsg.name] = climsg.body
@@ -156,7 +156,7 @@ For more details, please see [Design & Technologies](https://linrongbin16.github
 
 ## Requirement
 
-- Neovim &ge; 0.8.
+- Neovim &ge; 0.10.
 - [Nerd fonts](https://www.nerdfonts.com/) for icons.
 
 ## Install

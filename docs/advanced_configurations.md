@@ -28,7 +28,7 @@ require("lsp-progress").setup({
         end
 
         local sign = "" -- nf-fa-gear \uf013
-        local lsp_clients = vim.lsp.get_active_clients()
+        local lsp_clients = vim.lsp.get_clients()
         local messages_map = {}
         for _, climsg in ipairs(client_messages) do
             messages_map[climsg.name] = climsg.body
@@ -79,7 +79,7 @@ require("lsp-progress").setup()
 ```lua
 return require("lsp-progress").progress({
     format = function(messages)
-        local active_clients = vim.lsp.get_active_clients()
+        local active_clients = vim.lsp.get_clients()
         local client_count = #active_clients
         if #messages > 0 then
             return " LSP:"
@@ -174,7 +174,7 @@ require("lsp-progress").setup({
 
 ```lua
 local function LspIcon()
-    local active_clients_count = #vim.lsp.get_active_clients()
+    local active_clients_count = #vim.lsp.get_clients()
     return active_clients_count > 0 and " LSP" or ""
 end
 
@@ -220,14 +220,14 @@ Put lsp progress messages on the right side of lualine.
   <source src="https://github.com/linrongbin16/lsp-progress.nvim/assets/6496887/cc6fbc56-cb17-496a-9bf0-dc1c87d10413" type="video/mp4">
 </video>
 
-Minimal `init.lua` (Windows 10 x86_64, Neovim v0.9.2):
+Minimal `init.lua` (Windows 10 x86_64, Neovim v0.10.0):
 
 ```lua
 local root = vim.fn.stdpath("data")
 
 -- bootstrap lazy
 local lazypath = root .. "/lazy/plugins/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
     vim.fn.system({
         "git",
         "clone",
@@ -310,7 +310,7 @@ local plugins = {
                                 max_size = 80,
                                 format = function(messages)
                                     local active_clients =
-                                        vim.lsp.get_active_clients()
+                                        vim.lsp.get_clients()
                                     if #messages > 0 then
                                         return table.concat(messages, " ")
                                     end

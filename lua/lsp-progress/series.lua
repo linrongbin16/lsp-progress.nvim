@@ -1,4 +1,4 @@
-local logger = require("lsp-progress.logger")
+local log = require("lsp-progress.log")
 
 --- @alias lsp_progress.SeriesFormatResult string|any|nil
 --- @alias lsp_progress.SeriesFormat fun(title:string?,message:string?,percentage:integer?,done:boolean):lsp_progress.SeriesFormatResult
@@ -32,7 +32,7 @@ function Series:new(title, message, percentage)
     self.__index = self
 
     -- The cache is built on first read, see `Series:format_result`.
-    -- logger.debug("|series - Series:new| new: %s", vim.inspect(o))
+    -- log.debug("|series - Series:new| new: %s", vim.inspect(o))
 
     return o
 end
@@ -50,16 +50,18 @@ function Series:_format()
         self.done
     )
 
-    logger.ensure(
+    log.ensure(
         ok,
-        "failed to invoke 'series_format' function with params: %s! error: %s",
-        vim.inspect(self),
-        vim.inspect(result_or_err)
+        string.format(
+            "failed to invoke 'series_format' function with params: %s! error: %s",
+            vim.inspect(self),
+            vim.inspect(result_or_err)
+        )
     )
 
     self._format_cache = result_or_err
     self._dirty = false
-    -- logger.debug("|series - Series:_format| format: %s", vim.inspect(self))
+    -- log.debug("|series - Series:_format| format: %s", vim.inspect(self))
 
     return self._format_cache
 end
@@ -98,7 +100,7 @@ function Series:update(message, percentage)
     -- Only mark the cache stale: the new content is rendered on the next read,
     -- so an update never blocks the caller nor serves a stale cache.
     self._dirty = true
-    -- logger.debug("|series - Series:update| update: %s", vim.inspect(self))
+    -- log.debug("|series - Series:update| update: %s", vim.inspect(self))
 end
 
 --- @param message string
@@ -107,7 +109,7 @@ function Series:finish(message)
     self.percentage = 100
     self.done = true
     self._dirty = true
-    -- logger.debug("|series - Series:finish| finish: %s", vim.inspect(self))
+    -- log.debug("|series - Series:finish| finish: %s", vim.inspect(self))
 end
 
 --- Return the formatted result of this series.

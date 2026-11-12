@@ -2,16 +2,16 @@
 
 ## The [`$/progress`](https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#progress) Method
 
-This plugin registers the `$/progress` method into Neovim's [vim.lsp.handlers](https://neovim.io/doc/user/lsp.html#vim.lsp.handlers) table (or use the `LspProgress` event for Neovim v0.10+). Once there's any lsp progress messages, the registered callback function will be invoked.
+This plugin listens to the `LspProgress` event (Neovim &ge; 0.10). Once there's any lsp progress messages, the registered callback function will be invoked.
 
 Here I use the [Producer-Consumer Pattern](https://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem) to split the data processing and UI rendering into two parts:
 
-- Producer: The lua function that registers on `$/progress` method (or `LspProgress` event). It receives lsp progress messages and saves in plugin context, then produces a user event to notify.
+- Producer: The lua function that registers on the `LspProgress` event. It receives lsp progress messages and saves in plugin context, then produces a user event to notify.
 - Consumer: A Vim `autocommand` that listens to the user event, consumes the lsp progress messages, prints to UI component, for example the statusline.
 
 That's why I provide two APIs:
 
-- `setup`: It registers a lua callback `function(err, msg, ctx)` on `$/progress` method (or `LspProgress` event).
+- `setup`: It registers a lua callback on the `LspProgress` event.
 - `progress`: It consumes the lsp progress messages, and returns the final rendered text contents.
 
 And one user event:
