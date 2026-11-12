@@ -1,0 +1,9 @@
+{
+  "packages": {
+    ".": {
+      "release-type": "simple",
+      "package-name": "lsp-progress.nvim",
+      "include-component-in-tag": false
+    }
+  }
+}
