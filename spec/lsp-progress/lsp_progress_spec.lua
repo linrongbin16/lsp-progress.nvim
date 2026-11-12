@@ -7,9 +7,16 @@ describe("lsp-progress", function()
 
     local lsp_progress = require("lsp-progress")
 
+    -- The plugin is guarded by `vim.g.loaded_lsp_progress` and refuses to be
+    -- loaded twice, the tests below need a fresh instance for each case.
+    local function setup(option)
+        vim.g.loaded_lsp_progress = nil
+        lsp_progress.setup(option)
+    end
+
     before_each(function()
         vim.api.nvim_command("cd " .. cwd)
-        lsp_progress.setup()
+        setup()
     end)
 
     describe("[LspClients]", function()
@@ -146,11 +153,11 @@ describe("lsp-progress", function()
             api.lsp_clients = real_lsp_clients
             vim.o.ambiwidth = real_ambiwidth
             lsp_progress._remove_client(1)
-            lsp_progress.setup()
+            setup()
         end)
 
         local function render(max_size, message)
-            lsp_progress.setup({ max_size = max_size })
+            setup({ max_size = max_size })
             lsp_progress._register_client(1, "stub")
             local cli = lsp_progress._get_client(1)
             cli:add_series("tok", {
@@ -308,6 +315,48 @@ describe("lsp-progress", function()
             if not ok then
                 error(err)
             end
+        end)
+    end)
+    describe("[setup]", function()
+        it("only loads the plugin once", function()
+            if vim.fn.has("nvim-0.10") <= 0 then
+                return
+            end
+            setup()
+            local count = #vim.api.nvim_get_autocmds({ event = "LspProgress" })
+            lsp_progress.setup()
+            lsp_progress.setup()
+            assert_eq(
+                #vim.api.nvim_get_autocmds({ event = "LspProgress" }),
+                count
+            )
+        end)
+        it("ignores the options of a repeated call", function()
+            local api = require("lsp-progress.api")
+            local real_lsp_clients = api.lsp_clients
+            api.lsp_clients = function()
+                return { { id = 1, name = "stub" } }
+            end
+
+            setup({ max_size = 10 })
+            lsp_progress.setup({ max_size = -1 })
+
+            -- the second call is ignored, so the truncation stays enabled
+            lsp_progress._register_client(1, "stub")
+            local cli = lsp_progress._get_client(1)
+            cli:add_series("tok", {
+                title = "t",
+                message = string.rep("x", 100),
+                format_result = function()
+                    return string.rep("x", 100)
+                end,
+            })
+            local content = lsp_progress.progress()
+
+            lsp_progress._remove_client(1)
+            api.lsp_clients = real_lsp_clients
+            assert_true(content ~= "")
+            assert_true(vim.fn.strdisplaywidth(content) <= 10)
         end)
     end)
 end)

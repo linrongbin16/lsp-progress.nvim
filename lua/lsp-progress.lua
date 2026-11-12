@@ -380,6 +380,16 @@ end
 
 --- @param option lsp_progress.Configs
 local function setup(option)
+    -- This plugin only needs to be loaded once, calling `setup()` again would
+    -- register duplicated autocmds and stack the background timers.
+    if vim.g.loaded_lsp_progress == 1 then
+        logger.warn(
+            "lsp-progress is already loaded, `setup()` should only be called once"
+        )
+        return
+    end
+    vim.g.loaded_lsp_progress = 1
+
     -- setup config
     Configs = defaults.setup(option)
 
